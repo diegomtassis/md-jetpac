@@ -17,6 +17,10 @@ static void resetButtonEvents();
 
 static u16 pressed;
 
+static void doNothing(u16 joy, u16 changed, u16 state) {
+
+}
+
 void IH_waitForPress(u16 joy, u16 button) {
 
 	// joy ignored for the moment, only JOY_1 supported
@@ -29,6 +33,7 @@ void IH_waitForPress(u16 joy, u16 button) {
 		VDP_waitVSync();
 	}
 
+	JOY_setEventHandler(&doNothing);
 	resetButtonEvents();
 }
 

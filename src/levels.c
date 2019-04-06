@@ -41,6 +41,8 @@ static void loadScreen() {
 	SYS_disableInts();
 
 	// initialization
+	VDP_clearPlan(PLAN_A, TRUE);
+	VDP_clearPlan(PLAN_B, TRUE);
 	VDP_setScreenWidth320();
 	VDP_setScreenHeight224();
 

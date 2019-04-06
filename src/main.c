@@ -16,19 +16,15 @@ int main() {
 
 	showDisclaimer();
 
-	IH_waitForPress(JOY_1, BUTTON_START);
+	JOY_waitPress(JOY_1, BUTTON_START);
 
-	VDP_clearPlan(PLAN_A, TRUE);
-	VDP_clearPlan(PLAN_B, TRUE);
+	showSplashScreen();
 
-//	showSplashScreen();
-	runGame();
-
-//	IH_waitForPress(JOY_1, BUTTON_START);
+	JOY_waitPress(JOY_1, BUTTON_START);
 
 	while (TRUE) {
 
-//		runGame();
+		runGame();
 		VDP_waitVSync();
 	}
 

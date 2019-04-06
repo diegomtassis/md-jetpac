@@ -17,6 +17,8 @@ void showSplashScreen() {
 	SYS_disableInts();
 
 	// initialization
+	VDP_clearPlan(PLAN_A, TRUE);
+	VDP_clearPlan(PLAN_B, TRUE);
 	VDP_setScreenWidth256();
 
 	VDP_setPaletteColors(0, (u16*) palette_black, 16);
