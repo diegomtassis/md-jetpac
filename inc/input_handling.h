@@ -7,9 +7,6 @@
 
 #include <types.h>
 
-
-void inputHandler(u16 joy, u16 changed, u16 state);
-
-void logInputButton(u16 joy, u16 button, u16 changed, u16 state, const char *str, u16 x, u16 y);
+void IH_waitForPress(u16 joy, u16 button);
 
 #endif // _INPUT_HANDLING_H_
