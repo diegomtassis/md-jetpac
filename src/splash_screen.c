@@ -9,8 +9,8 @@
 
 #include "../res/gfx.h"
 
-u16 palette[64];
-u16 ind;
+static u16 palette[64];
+static u16 ind;
 
 void showSplashScreen() {
 
