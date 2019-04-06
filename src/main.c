@@ -7,27 +7,35 @@
 
 #include <genesis.h>
 
-void showDisclaimer();
-void showSplashScreen();
+#include "../res/gfx.h"
+
+static void handleInput();
+static void joyEvent(u16 joy, u16 changed, u16 state);
+
+static void showDisclaimer();
+static void showSplashScreen();
+
+u16 palette[64];
+u16 ind;
 
 int main() {
 
-	// JOY_init();
-	// JOY_setEventHandler(&inputHandler);
+//	showDisclaimer();
 
-	showDisclaimer();
+	showSplashScreen();
 
-	while (1) {
+//	JOY_setEventHandler(joyEvent);
+
+	while (TRUE) {
+//		handleInput();
 
 		VDP_waitVSync();
 	}
 
-	return (0);
+	return 0;
 }
 
-
-
-void showDisclaimer() {
+static void showDisclaimer() {
 
 	VDP_setTextPalette(PAL2);
 
@@ -59,6 +67,38 @@ void showDisclaimer() {
 	VDP_drawText("End of Line", xPos, yPos++);
 }
 
-void showSplashScreen() {
+static void showSplashScreen() {
+
+	SYS_disableInts();
+
+	// initialization
+	VDP_setScreenWidth256();
+	VDP_setScreenHeight224();
+
+	VDP_setPaletteColors(0, (u16*) palette_black, 16);
+
+	// load background
+	ind = TILE_USERINDEX;
+
+//	u16 yOffset = (VDP_getScreenHeight() - splash_image.map->h) / (2 * 8);
+	u16 yOffset = 3;
+
+	VDP_drawImageEx(PLAN_B, &splash_image, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, ind), 0, yOffset, FALSE, TRUE);
+	ind += splash_image.tileset->numTile;
+
+	SYS_enableInts();
+
+	// prepare palettes
+	memcpy(&palette[0], splash_image.palette->data, 16 * 2);
+
+	// fade in
+	VDP_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
+}
+
+static void handleInput() {
+
+}
+
+static void joyEvent(u16 joy, u16 changed, u16 state) {
 
 }
