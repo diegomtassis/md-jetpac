@@ -1,3 +1,5 @@
+PALETTE game_palette "gfx/palette.png"
+
 IMAGE splash_image "gfx/splash.png" BEST
 IMAGE oneup "gfx/oneup.png" BEST
 
