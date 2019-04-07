@@ -23,17 +23,19 @@ static const Platform FLOOR = { .xPos = 4, .yPos = 25, .length = 32 };
 static u16 palette[64];
 static u16 idx_tile_first_available;
 
+static u16 idx_tile_oneup;
+static u16 idx_tile_platform;
 static u16 idx_tile_floor;
 static u16 idx_tile_platform;
 
-static void loadScreen();
-static void loadPlatform(const TileSet * tileset, u16 * idx_tile);
+static void loadLevel();
+static void loadTile(const TileSet * tileset, u16 * idx_tile);
 
-static void drawPlatform(const Platform * platform, u16 idx_tile);
+static void drawPlatform(VDPPlan plan, const Platform * platform, u16 idx_tile);
 
 void runGame() {
 
-	loadScreen();
+	loadLevel();
 
 	while (TRUE) {
 
@@ -41,7 +43,7 @@ void runGame() {
 	}
 }
 
-static void loadScreen() {
+static void loadLevel() {
 
 	SYS_disableInts();
 
@@ -56,19 +58,31 @@ static void loadScreen() {
 	// load background
 	idx_tile_first_available = TILE_USERINDEX;
 
-	VDP_drawText("Ready Player One", 11, 2);
+	// info panel
+	loadTile(oneup.tileset, &idx_tile_oneup);
+	VDP_setTextPalette(PAL3);
+	VDP_setTextPlan(PLAN_A);
+
+	VDP_drawText("1UP", 7, 2);
+	VDP_drawText("3", 12, 2);
+	VDP_setTileMapXY(PLAN_A, TILE_ATTR_FULL(PAL3, TRUE, FALSE, FALSE, idx_tile_oneup), 13, 2);
+	VDP_drawText("HI", 19, 2);
+	VDP_drawText("2UP", 31, 2);
+	VDP_drawText("000000", 5, 3);
+	VDP_drawText("000000", 17, 3);
+	VDP_drawText("000000", 29, 3);
 
 	// load floor & platform
-	loadPlatform(&floor, &idx_tile_floor);
-	loadPlatform(&platform, &idx_tile_platform);
+	loadTile(&floor, &idx_tile_floor);
+	loadTile(&platform, &idx_tile_platform);
 
 	// draw floor
-	drawPlatform(&FLOOR, idx_tile_floor);
+	drawPlatform(PLAN_B, &FLOOR, idx_tile_floor);
 
 	// draw platforms
-	drawPlatform(&PLATFORM_LEFT, idx_tile_platform);
-	drawPlatform(&PLATFORM_MIDDLE, idx_tile_platform);
-	drawPlatform(&PLATFORM_RIGHT, idx_tile_platform);
+	drawPlatform(PLAN_B, &PLATFORM_LEFT, idx_tile_platform);
+	drawPlatform(PLAN_B, &PLATFORM_MIDDLE, idx_tile_platform);
+	drawPlatform(PLAN_B, &PLATFORM_RIGHT, idx_tile_platform);
 
 	SYS_enableInts();
 
@@ -79,18 +93,18 @@ static void loadScreen() {
 	VDP_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
 }
 
-static void loadPlatform(const TileSet * tileset, u16 * idx_tile) {
+static void loadTile(const TileSet * tileset, u16 * idx_tile) {
 
 	*idx_tile = idx_tile_first_available;
 	VDP_loadTileSet(tileset, *idx_tile, CPU);
 	idx_tile_first_available += tileset->numTile;
 }
 
-void drawPlatform(const Platform * platform, u16 idx_tile) {
+void drawPlatform(VDPPlan plan, const Platform * platform, u16 idx_tile) {
 
-	VDP_setTileMapXY(PLAN_A, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->xPos, platform->yPos);
-	VDP_fillTileMapRect(PLAN_A, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->xPos + 1,
+	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->xPos, platform->yPos);
+	VDP_fillTileMapRect(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->xPos + 1,
 			platform->yPos, platform->length - 2, 1);
-	VDP_setTileMapXY(PLAN_A, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 2),
+	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 2),
 			platform->xPos + platform->length - 1, platform->yPos);
 }
