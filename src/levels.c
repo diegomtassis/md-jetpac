@@ -27,7 +27,9 @@ static u16 idx_tile_floor;
 static u16 idx_tile_platform;
 
 static void loadScreen();
-static void drawPlatform(Platform platform, u16 idx_tile);
+static void loadPlatform(const TileSet * tileset, u16 * idx_tile);
+
+static void drawPlatform(const Platform * platform, u16 idx_tile);
 
 void runGame() {
 
@@ -56,23 +58,17 @@ static void loadScreen() {
 
 	VDP_drawText("Ready Player One", 11, 2);
 
-	// load floor
-	idx_tile_floor = idx_tile_first_available;
-	VDP_loadTileSet(&floor, idx_tile_floor, CPU);
-	idx_tile_first_available += floor.numTile;
+	// load floor & platform
+	loadPlatform(&floor, &idx_tile_floor);
+	loadPlatform(&platform, &idx_tile_platform);
 
 	// draw floor
-	drawPlatform(FLOOR, idx_tile_floor);
-
-	// load platform
-	idx_tile_platform = idx_tile_first_available;
-	VDP_loadTileSet(&platform, idx_tile_platform, CPU);
-	idx_tile_first_available += platform.numTile;
+	drawPlatform(&FLOOR, idx_tile_floor);
 
 	// draw platforms
-	drawPlatform(PLATFORM_LEFT, idx_tile_platform);
-	drawPlatform(PLATFORM_MIDDLE, idx_tile_platform);
-	drawPlatform(PLATFORM_RIGHT, idx_tile_platform);
+	drawPlatform(&PLATFORM_LEFT, idx_tile_platform);
+	drawPlatform(&PLATFORM_MIDDLE, idx_tile_platform);
+	drawPlatform(&PLATFORM_RIGHT, idx_tile_platform);
 
 	SYS_enableInts();
 
@@ -83,11 +79,18 @@ static void loadScreen() {
 	VDP_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
 }
 
-void drawPlatform(Platform platform, u16 idx_tile) {
+static void loadPlatform(const TileSet * tileset, u16 * idx_tile) {
 
-	VDP_setTileMapXY(PLAN_A, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform.xPos, platform.yPos);
-	VDP_fillTileMapRect(PLAN_A, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform.xPos + 1,
-			platform.yPos, platform.length - 2, 1);
+	*idx_tile = idx_tile_first_available;
+	VDP_loadTileSet(tileset, *idx_tile, CPU);
+	idx_tile_first_available += tileset->numTile;
+}
+
+void drawPlatform(const Platform * platform, u16 idx_tile) {
+
+	VDP_setTileMapXY(PLAN_A, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->xPos, platform->yPos);
+	VDP_fillTileMapRect(PLAN_A, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->xPos + 1,
+			platform->yPos, platform->length - 2, 1);
 	VDP_setTileMapXY(PLAN_A, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 2),
-			platform.xPos + platform.length - 1, platform.yPos);
+			platform->xPos + platform->length - 1, platform->yPos);
 }
