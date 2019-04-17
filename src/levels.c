@@ -7,6 +7,7 @@
 
 #include <genesis.h>
 
+#include "../inc/jetman.h"
 #include "../res/gfx.h"
 
 typedef struct {
@@ -36,6 +37,8 @@ static void drawPlatform(VDPPlan plan, const Platform * platform, u16 idx_tile);
 void runGame() {
 
 	loadLevel();
+
+	startJetman();
 
 	while (TRUE) {
 
