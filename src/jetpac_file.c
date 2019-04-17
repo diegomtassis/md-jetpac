@@ -12,8 +12,8 @@ void showDisclaimer() {
 
 	VDP_setTextPalette(PAL2);
 
-	u16 xPos = 1;
-	u16 yPos = 1;
+	u16 xPos = 0;
+	u16 yPos = 3;
 
 	VDP_drawText("Video Game Program: JetPac MD", xPos, yPos++);
 
@@ -23,13 +23,13 @@ void showDisclaimer() {
 
 	yPos++;
 
-	VDP_drawText("Original program written by Tim and", xPos, yPos++);
-	VDP_drawText("Chris Stamper, 1983", xPos, yPos++);
+	VDP_drawText("Original program written by Tim", xPos, yPos++);
+	VDP_drawText("and Chris Stamper, 1983", xPos, yPos++);
 
 	yPos++;
 
-	VDP_drawText("JetPac is a Ultimate Play the Game", xPos, yPos++);
-	VDP_drawText("/ RARE property", xPos, yPos++);
+	VDP_drawText("JetPac is a Ultimate Play the", xPos, yPos++);
+	VDP_drawText("Game / RARE property", xPos, yPos++);
 
 	yPos++;
 

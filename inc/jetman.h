@@ -8,6 +8,6 @@
 #ifndef INC_JETMAN_H_
 #define INC_JETMAN_H_
 
-int startJetman();
+int startJetman(const Level* level);
 
 #endif /* INC_JETMAN_H_ */
