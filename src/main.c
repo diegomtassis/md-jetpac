@@ -14,6 +14,11 @@
 
 int main() {
 
+	// Default resolution
+	VDP_setScreenWidth256();
+	VDP_setScreenHeight224();
+
+	// Jetpac file
 	showDisclaimer();
 
 	JOY_waitPress(JOY_1, BUTTON_START);

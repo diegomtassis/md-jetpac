@@ -20,8 +20,8 @@
 #define V_SPEED_UP    	FIX32(-1.5)
 #define V_SPEED_DOWN    FIX32(1.5)
 
-#define MIN_H_POS        FIX32(32)
-#define MAX_H_POS        FIX32(272)
+#define MIN_H_POS        FIX32(-8)
+#define MAX_H_POS        FIX32(248)
 #define FLOOR_JETMAN_V_POS 		FIX32(200 - 8*3)
 #define TOP_V_POS 		FIX32(32)
 
@@ -41,7 +41,7 @@ s16 v_order;
 
 s16 walk_anim[4] = { ANIM_STAND, ANIM_STEP_SHORT, ANIM_STEP_LONG, ANIM_STEP_SHORT };
 s16 walk_idx = 0;
-u8 	walk_step_counter = 0;
+u8 walk_step_counter = 0;
 
 int startJetman() {
 
@@ -89,12 +89,10 @@ static void updateJetmanPhysics() {
 	h_pos += h_mov;
 
 	if (h_pos >= MAX_H_POS) {
-		h_pos = MAX_H_POS;
-		h_mov = 0;
+		h_pos = MIN_H_POS;
 
 	} else if (h_pos <= MIN_H_POS) {
-		h_pos = MIN_H_POS;
-		h_mov = 0;
+		h_pos = MAX_H_POS;
 	}
 
 	// Vertical movement
