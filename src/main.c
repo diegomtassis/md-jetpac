@@ -7,9 +7,9 @@
 
 #include <genesis.h>
 
-#include "../inc/input_handling.h"
 #include "../inc/jetpac_file.h"
 #include "../inc/levels.h"
+#include "../inc/printer.h"
 #include "../inc/splash_screen.h"
 
 int main() {
@@ -18,8 +18,12 @@ int main() {
 	VDP_setScreenWidth256();
 	VDP_setScreenHeight224();
 
+	// Initializing area
+	SPR_init(16, 256, 256);
+
 	// Jetpac file
 	showDisclaimer();
+	printerOff();
 
 	JOY_waitPress(JOY_1, BUTTON_START);
 

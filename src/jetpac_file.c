@@ -7,35 +7,32 @@
 
 #include <genesis.h>
 
+#include "../inc/printer.h"
 
 void showDisclaimer() {
 
 	VDP_setTextPalette(PAL2);
 
-	u16 xPos = 0;
-	u16 yPos = 3;
+	Vect2D_u16 pos = { .x = 0, .y = 3 };
 
-	VDP_drawText("Video Game Program: JetPac MD", xPos, yPos++);
+	printerOn();
 
-	yPos++;
+	println("Video Game Program: JetPac MD", &pos);
+	println("", &pos);
 
-	VDP_drawText("Port by Diego Martin, 2019", xPos, yPos++);
+	println("Port by Diego Martin, 2019", &pos);
+	println("", &pos);
 
-	yPos++;
+	println("Original program written by Tim and Chris Stamper, 1983", &pos);
+	println("", &pos);
 
-	VDP_drawText("Original program written by Tim", xPos, yPos++);
-	VDP_drawText("and Chris Stamper, 1983", xPos, yPos++);
+	println("JetPac is a Ultimate Play the Game / RARE property", &pos);
+	println("", &pos);
 
-	yPos++;
+	println("This information priority one", &pos);
+	println("", &pos);
 
-	VDP_drawText("JetPac is a Ultimate Play the", xPos, yPos++);
-	VDP_drawText("Game / RARE property", xPos, yPos++);
+	println("End of Line", &pos);
 
-	yPos++;
 
-	VDP_drawText("This information priority one", xPos, yPos++);
-
-	yPos++;
-
-	VDP_drawText("End of Line", xPos, yPos++);
 }

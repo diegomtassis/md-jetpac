@@ -55,8 +55,6 @@ s16 walk_anim[4] = { ANIM_STAND, ANIM_STEP_SHORT, ANIM_STEP_LONG, ANIM_STEP_SHOR
 
 int startJetman(const Level * level) {
 
-	SPR_init(16, 256, 256);
-
 	initJetmanPhysics(&p1_physics);
 	sprites[0] = SPR_addSprite(&jetman_sprite, fix32ToInt(p1_physics.h_pos), fix32ToInt(p1_physics.v_pos),
 			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
