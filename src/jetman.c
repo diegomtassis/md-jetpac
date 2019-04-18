@@ -53,7 +53,7 @@ JetmanAnimation p1_anim;
 
 s16 walk_anim[4] = { ANIM_STAND, ANIM_STEP_SHORT, ANIM_STEP_LONG, ANIM_STEP_SHORT };
 
-int startJetman(const Level * level) {
+void startJetman(const Level* level) {
 
 	initJetmanPhysics(&p1_physics);
 	sprites[0] = SPR_addSprite(&jetman_sprite, fix32ToInt(p1_physics.h_pos), fix32ToInt(p1_physics.v_pos),
@@ -71,13 +71,11 @@ int startJetman(const Level * level) {
 		SPR_update();
 		VDP_waitVSync();
 	}
-
-	return 0;
 }
 
 static void initJetmanPhysics(JetmanPhysics* jetman_physics) {
 
-	jetman_physics->h_pos = FIX32(145);
+	jetman_physics->h_pos = FIX32(124);
 	jetman_physics->v_pos = FLOOR_JETMAN_V_POS;
 	jetman_physics->h_mov = SPEED_ZERO;
 	jetman_physics->v_mov = SPEED_ZERO;

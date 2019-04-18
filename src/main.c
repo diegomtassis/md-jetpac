@@ -38,7 +38,6 @@ int main() {
 	while (TRUE) {
 
 		runGame();
-		VDP_waitVSync();
 	}
 
 	return 0;

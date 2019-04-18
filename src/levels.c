@@ -11,12 +11,9 @@
 #include "../inc/jetman.h"
 #include "../res/gfx.h"
 
-static const Platform PLATFORM_LEFT = { .xPos = 4, .yPos = 11, .length = 6 };
-static const Platform PLATFORM_MIDDLE = { .xPos = 15, .yPos = 14, .length = 4 };
-static const Platform PLATFORM_RIGHT = { .xPos = 24, .yPos = 8, .length = 6 };
-static const Platform FLOOR = { .xPos = 0, .yPos = 25, .length = 32 };
+static Platform FLOOR = { .xPos = 0, .yPos = 25, .length = 32 };
 
-static Level current_level;
+static Level* current_level;
 
 static u16 palette[64];
 static u16 idx_tile_malloc;
@@ -26,7 +23,7 @@ static u16 idx_tile_platform;
 static u16 idx_tile_floor;
 static u16 idx_tile_platform;
 
-static void createLevel(Level* level);
+static Level* createLevel();
 static void startLevel(const Level* level);
 
 static void loadLevelResources();
@@ -38,19 +35,34 @@ static void drawPlatform(VDPPlan plan, const Platform * platform, u16 idx_tile);
 
 void runGame() {
 
-	createLevel(&current_level);
-	startLevel(&current_level);
+	current_level = createLevel();
+	startLevel(current_level);
 
-	startJetman(&current_level);
+	startJetman(current_level);
 }
 
-static void createLevel(Level* level) {
+static Level* createLevel() {
+
+	Level* level = MEM_alloc(sizeof(Level));
 
 	level->floor = &FLOOR;
 
-	level->platforms[0] = &PLATFORM_LEFT;
-	level->platforms[1] = &PLATFORM_MIDDLE;
-	level->platforms[2] = &PLATFORM_RIGHT;
+	level->num_platforms = 3;
+	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform));
+
+	level->platforms[0].xPos = 4;
+	level->platforms[0].yPos = 11;
+	level->platforms[0].length = 6;
+
+	level->platforms[1].xPos = 15;
+	level->platforms[1].yPos = 14;
+	level->platforms[1].length = 4;
+
+	level->platforms[2].xPos = 24;
+	level->platforms[2].yPos = 8;
+	level->platforms[2].length = 6;
+
+	return level;
 }
 
 static void startLevel(const Level* level) {
@@ -110,12 +122,12 @@ static void drawLevel(VDPPlan plan, const Level * level) {
 	drawPlatform(PLAN_B, level->floor, idx_tile_floor);
 
 	// draw platforms
-	drawPlatform(PLAN_B, level->platforms[0], idx_tile_platform);
-	drawPlatform(PLAN_B, level->platforms[1], idx_tile_platform);
-	drawPlatform(PLAN_B, level->platforms[2], idx_tile_platform);
+	for (u8 i = 0; i < level->num_platforms; i++) {
+		drawPlatform(PLAN_B, &level->platforms[i], idx_tile_platform);
+	}
 }
 
-static void drawPlatform(VDPPlan plan, const Platform * platform, u16 idx_tile) {
+static void drawPlatform(VDPPlan plan, const Platform* platform, u16 idx_tile) {
 
 	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->xPos, platform->yPos);
 	VDP_fillTileMapRect(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->xPos + 1,

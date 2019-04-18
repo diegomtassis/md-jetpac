@@ -15,8 +15,9 @@ typedef struct {
 } Platform;
 
 typedef struct {
-	const Platform* floor;
-	const Platform* platforms[3];
+	Platform* floor;
+	Platform* platforms;
+	u8 num_platforms;
 } Level;
 
 void runGame();
