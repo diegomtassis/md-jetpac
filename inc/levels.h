@@ -8,10 +8,13 @@
 #ifndef INC_LEVELS_H_
 #define INC_LEVELS_H_
 
+#include <genesis.h>
+
 typedef struct {
 	u8 xPos;
 	u8 yPos;
 	u8 length;
+	Box* box;
 } Platform;
 
 typedef struct {

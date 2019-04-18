@@ -21,9 +21,13 @@
 #define V_SPEED_UP    	FIX16(-1.5)
 #define V_SPEED_DOWN    FIX16(1.5)
 
-#define MIN_H_POS       FIX16(-8)
-#define MAX_H_POS       FIX16(248)
-#define TOP_V_POS 		FIX16(32)
+#define MIN_H_POS_PX       -8
+#define MAX_H_POS_PX       248
+#define TOP_V_POS_PX 		32
+
+#define MIN_H_POS_PX_F16    FIX16(MIN_H_POS_PX)
+#define MAX_H_POS_PX_F16    FIX16(MAX_H_POS_PX)
+#define TOP_V_POS_PX_F16 	FIX16(TOP_V_POS_PX)
 
 static void handleInputJetman();
 
@@ -44,11 +48,13 @@ typedef struct {
 static void initJetman(JetmanPhysics*, const Level*);
 static void moveJetman(JetmanPhysics*, const Level*);
 static void calculateMovement(JetmanPhysics*);
-static u8 landed(Vect2D_s16, const Level*);
-static u8 reachedTop(Vect2D_s16, const Level*);
-static u8 blockedOnTheLeft(Vect2D_s16, const Level*);
-static u8 blockedOnTheRight(Vect2D_s16, const Level*);
 static void updatePosition(JetmanPhysics*, const Level*);
+static Vect2D_f16 targetPosition(const JetmanPhysics*);
+static Box targetBox(Vect2D_f16);
+static u8 landed(Box, const Level*);
+static u8 reachedTop(Box, const Level*);
+static u8 blockedByLeft(Box, const Level*);
+static u8 blockedByRight(Box, const Level*);
 
 static void updateJetmanAnim(const JetmanPhysics*, JetmanAnimation*);
 
@@ -59,7 +65,8 @@ JetmanAnimation p1_anim;
 
 s16 walk_anim[4] = { ANIM_STAND, ANIM_STEP_SHORT, ANIM_STEP_LONG, ANIM_STEP_SHORT };
 
-fix16 jetman_floor;
+s16 floor_v_pos_px;
+fix16 jetman_floor_f16;
 
 void startJetman(const Level* level) {
 
@@ -84,8 +91,9 @@ void startJetman(const Level* level) {
 static void initJetman(JetmanPhysics* jetman_physics, const Level* level) {
 
 	jetman_physics->h_pos = FIX16(124);
-	jetman_floor = FIX16((level->floor->yPos - 3) * 8);
-	jetman_physics->v_pos = jetman_floor;
+	floor_v_pos_px = level->floor->yPos * 8;
+	jetman_floor_f16 = FIX16(floor_v_pos_px - 24);
+	jetman_physics->v_pos = FIX16(floor_v_pos_px);
 	jetman_physics->h_mov = SPEED_ZERO;
 	jetman_physics->v_mov = SPEED_ZERO;
 	jetman_physics->h_order = 0;
@@ -122,7 +130,36 @@ static void calculateMovement(JetmanPhysics* jetman_physics) {
 	}
 }
 
-static Vect2D_f16 targetPosition(JetmanPhysics* jetman_physics) {
+static void updatePosition(JetmanPhysics* jetman_physics, const Level* level) {
+
+	Vect2D_f16 target_pos = targetPosition(jetman_physics);
+	Box target_box = targetBox(target_pos);
+
+	// horizontal position
+	if (target_pos.x > MAX_H_POS_PX_F16) {
+		jetman_physics->h_pos = MIN_H_POS_PX_F16;
+
+	} else if (target_pos.x < MIN_H_POS_PX_F16) {
+		jetman_physics->h_pos = MAX_H_POS_PX_F16;
+
+	} else if (!blockedByLeft(target_box, level) && !blockedByRight(target_box, level)) {
+		jetman_physics->h_pos = target_pos.x;
+	}
+
+	// vertical position
+	if (landed(target_box, level)) {
+		jetman_physics->v_pos = jetman_floor_f16;
+		jetman_physics->v_mov = SPEED_ZERO;
+
+	} else if (reachedTop(target_box, level)) {
+		jetman_physics->v_pos = TOP_V_POS_PX_F16;
+
+	} else {
+		jetman_physics->v_pos = target_pos.y;
+	}
+}
+
+static Vect2D_f16 targetPosition(const JetmanPhysics* jetman_physics) {
 
 	fix16 target_x = jetman_physics->h_pos + jetman_physics->h_mov;
 	fix16 target_y = jetman_physics->v_pos + jetman_physics->v_mov;
@@ -132,57 +169,52 @@ static Vect2D_f16 targetPosition(JetmanPhysics* jetman_physics) {
 	return newPos;
 }
 
-static void updatePosition(JetmanPhysics* jetman_physics, const Level* level) {
+static Box targetBox(Vect2D_f16 pos) {
 
-	Vect2D_f16 target = targetPosition(jetman_physics);
+	Box box;
 
-	// horizontal position
-	if (target.x > MAX_H_POS) {
-		jetman_physics->h_pos = MIN_H_POS;
+	box.x = fix16ToInt(pos.x);
+	box.y = fix16ToInt(pos.y);
+	box.w = 16;
+	box.h = 24;
 
-	} else if (target.x < MIN_H_POS) {
-		jetman_physics->h_pos = MAX_H_POS;
-
-	} else {
-		jetman_physics->h_pos = target.x;
-	}
-
-	// vertical position
-	if (target.y >= jetman_floor) {
-		jetman_physics->v_pos = jetman_floor;
-		jetman_physics->v_mov = SPEED_ZERO;
-
-	} else if (target.y < TOP_V_POS) {
-		jetman_physics->v_pos = TOP_V_POS;
-
-	} else {
-		jetman_physics->v_pos = target.y;
-	}
+	return box;
 }
 
-static u8 landed(Vect2D_s16 pos, const Level* level) {
+static u8 landed(Box box, const Level* level) {
 
-	if (pos.y >= jetman_floor) {
+	if (box.y + box.h >= floor_v_pos_px) {
 		return 1;
 	}
 
 	return 0;
 }
 
-static u8 reachedTop(Vect2D_s16 pos, const Level* level) {
+static u8 reachedTop(Box box, const Level* level) {
 
-	if (pos.y <= TOP_V_POS) {
+	if (box.y <= TOP_V_POS_PX) {
 		return 1;
 	}
 
 	return 0;
 }
 
-static u8 blockedOnTheLeft(Vect2D_s16 pos, const Level* level) {
+static u8 blockedByLeft(Box box, const Level* level) {
+
 	return 0;
 }
 
-static u8 blockedOnTheRight(Vect2D_s16 pos, const Level* level) {
+static u8 blockedByRight(Box box, const Level* level) {
+
+//	for (u8 i = 0; i < level->num_platforms; i++) {
+//		Platform* platform = level->platforms[i];
+//		fix16 platform_H_px = FIX16(platform->xPos * 8);
+//		fix16 platform_V_px = FIX16(platform->yPos * 8);
+//		if (platform_H_px <= pos.x && platform->yPos * 8) {
+//			return 1;
+//		}
+//	}
+
 	return 0;
 }
 

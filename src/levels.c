@@ -5,9 +5,10 @@
  *      Author: diegomtassis
  */
 
+#include "../inc/levels.h"
+
 #include <genesis.h>
 
-#include "../inc/levels.h"
 #include "../inc/jetman.h"
 #include "../res/gfx.h"
 
@@ -24,6 +25,7 @@ static u16 idx_tile_floor;
 static u16 idx_tile_platform;
 
 static Level* createLevel();
+static void fillInPlatformBox(Platform*);
 static void startLevel(const Level* level);
 
 static void loadLevelResources();
@@ -46,21 +48,30 @@ static Level* createLevel() {
 	Level* level = MEM_alloc(sizeof(Level));
 
 	level->floor = &FLOOR;
+	fillInPlatformBox(level->floor);
 
 	level->num_platforms = 3;
 	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform));
 
-	level->platforms[0].xPos = 4;
-	level->platforms[0].yPos = 11;
-	level->platforms[0].length = 6;
+	Platform* platform;
 
-	level->platforms[1].xPos = 15;
-	level->platforms[1].yPos = 14;
-	level->platforms[1].length = 4;
+	platform = &level->platforms[0];
+	platform->xPos = 4;
+	platform->yPos = 11;
+	platform->length = 6;
+	fillInPlatformBox(platform);
 
-	level->platforms[2].xPos = 24;
-	level->platforms[2].yPos = 8;
-	level->platforms[2].length = 6;
+	platform = &level->platforms[1];
+	platform->xPos = 15;
+	platform->yPos = 14;
+	platform->length = 4;
+	fillInPlatformBox(platform);
+
+	platform = &level->platforms[2];
+	platform->xPos = 24;
+	platform->yPos = 8;
+	platform->length = 6;
+	fillInPlatformBox(platform);
 
 	return level;
 }
@@ -88,6 +99,16 @@ static void startLevel(const Level* level) {
 
 	// fade in
 	VDP_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
+}
+
+static void fillInPlatformBox(Platform* platform) {
+
+	platform->box = MEM_alloc(sizeof(Box));
+
+	platform->box->x = 0;
+	platform->box->y = 0;
+	platform->box->w = 0;
+	platform->box->h = 0;
 }
 
 static void loadLevelResources() {
