@@ -36,7 +36,7 @@ void printDisclaimer() {
 
 	println("", &pos);
 	println("", &pos);
-	print("JetPac is a Ultimate Play the Game / RARE property", &pos);
+	print("JetPac is an Ultimate Play the Game / RARE property", &pos);
 	waitMs(WAIT_MS_BETWEEN);
 
 	println("", &pos);

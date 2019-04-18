@@ -38,8 +38,7 @@ void printerOn() {
 
 void printerOff() {
 
-	cursorOff();
-	SPR_releaseSprite(cursor);
+	SPR_reset();
 	SPR_update();
 }
 

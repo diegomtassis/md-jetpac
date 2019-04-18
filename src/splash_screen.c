@@ -16,7 +16,7 @@ void showSplashScreen() {
 
 	SYS_disableInts();
 
-	// initialization
+	// clear screen
 	VDP_clearPlan(PLAN_A, TRUE);
 	VDP_clearPlan(PLAN_B, TRUE);
 

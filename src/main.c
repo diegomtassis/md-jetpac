@@ -12,25 +12,29 @@
 #include "../inc/printer.h"
 #include "../inc/splash_screen.h"
 
+#define LOADING_TIME	3000
+
 int main() {
 
-	// Default resolution
+	// default resolution
 	VDP_setScreenWidth256();
 	VDP_setScreenHeight224();
 
-	// Initializing area
+	// initialization area
 	SPR_init(16, 256, 256);
 
-	// Jetpac file
+	// jetpac file
 	printDisclaimer();
 
-	JOY_waitPress(JOY_1, BUTTON_START);
+	JOY_waitPress(JOY_1, BUTTON_BTN);
 	printerOff();
+	waitMs(75);
 
+	// jetpac loading...
 	showSplashScreen();
+	waitMs(LOADING_TIME);
 
-	JOY_waitPress(JOY_1, BUTTON_START);
-
+	// start game
 	while (TRUE) {
 
 		runGame();
