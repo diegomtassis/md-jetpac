@@ -22,10 +22,10 @@ int main() {
 	SPR_init(16, 256, 256);
 
 	// Jetpac file
-	showDisclaimer();
-	printerOff();
+	printDisclaimer();
 
 	JOY_waitPress(JOY_1, BUTTON_START);
+	printerOff();
 
 	showSplashScreen();
 

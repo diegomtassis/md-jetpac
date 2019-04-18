@@ -12,23 +12,33 @@
 
 #define WAIT_MS	50
 
-static const Vect2D_u16 MIN_PRT_AREA = { .x = 0, .y = 0 };
+static const Vect2D_u16 MIN_PRT_AREA = { .x = 0, .y = 3 };
 static const Vect2D_u16 MAX_PRT_AREA = { .x = 31, .y = 27 };
 
 static void printChar(const char* text, u16 pos, int is_last, Vect2D_u16* offset);
+
 static void moveForward(Vect2D_u16* offset);
 static void moveToNextLine(Vect2D_u16* offset);
 static void normalizeOffset(Vect2D_u16* offset);
+
+static void cursorOn();
+static void cursorOnAt(Vect2D_u16* offset);
+static void cursorOff();
+
+static u16 tilesToPx(u8);
 
 static Sprite* cursor;
 
 void printerOn() {
 
-	cursor = SPR_addSprite(&cursor_sprite, -1, -1, TILE_ATTR(VDP_getTextPalette(), TRUE, FALSE, FALSE));
+	cursor = SPR_addSprite(&cursor_sprite, tilesToPx(MIN_PRT_AREA.x), tilesToPx(MIN_PRT_AREA.y),
+			TILE_ATTR(VDP_getTextPalette(), TRUE, FALSE, FALSE));
+	cursorOn();
 }
 
 void printerOff() {
 
+	cursorOff();
 	SPR_releaseSprite(cursor);
 	SPR_update();
 }
@@ -40,6 +50,8 @@ void println(const char* text, Vect2D_u16* offset) {
 		moveToNextLine(offset);
 	}
 	moveToNextLine(offset);
+
+	cursorOnAt(offset);
 }
 
 void print(const char* text, Vect2D_u16* offset) {
@@ -49,11 +61,15 @@ void print(const char* text, Vect2D_u16* offset) {
 	u16 rest = strlen(text);
 	u16 current = 0;
 
+	cursorOff();
+
 	while (rest--) {
 
 		printChar(text, current++, rest == 1, offset);
 		waitMs(WAIT_MS);
 	}
+
+	cursorOnAt(offset);
 }
 
 static void printChar(const char* text, u16 pos, int is_last, Vect2D_u16* offset) {
@@ -111,14 +127,39 @@ static void moveForward(Vect2D_u16* offset) {
 	if (eol) {
 		moveToNextLine(offset);
 		moveToNextLine(offset);
-		return;
+	} else {
+		offset->x++;
 	}
 
-	offset->x++;
+	SPR_setPosition(cursor, offset->x, offset->y);
 }
 
 static void moveToNextLine(Vect2D_u16* offset) {
 
 	offset->x = MIN_PRT_AREA.x;
 	offset->y++;
+
+	SPR_setPosition(cursor, offset->x, offset->y);
+}
+
+static void cursorOn() {
+
+	SPR_setVisibility(cursor, VISIBLE);
+	SPR_update();
+}
+
+static void cursorOnAt(Vect2D_u16* offset) {
+
+	SPR_setPosition(cursor, tilesToPx(offset->x), tilesToPx(offset->y));
+	cursorOn();
+}
+
+static void cursorOff() {
+
+	SPR_setVisibility(cursor, HIDDEN);
+	SPR_update();
+}
+
+static u16 tilesToPx(u8 tiles) {
+	return tiles * 8;
 }

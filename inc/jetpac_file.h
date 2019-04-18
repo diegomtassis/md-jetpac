@@ -8,6 +8,6 @@
 #ifndef INC_JETPAC_FILE_H_
 #define INC_JETPAC_FILE_H_
 
-void showDisclaimer();
+void printDisclaimer();
 
 #endif /* INC_JETPAC_FILE_H_ */

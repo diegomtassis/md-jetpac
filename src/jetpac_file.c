@@ -9,30 +9,42 @@
 
 #include "../inc/printer.h"
 
-void showDisclaimer() {
+#define WAIT_MS_BEFORE 	1100
+#define WAIT_MS_BETWEEN	750
+
+void printDisclaimer() {
 
 	VDP_setTextPalette(PAL2);
 
 	Vect2D_u16 pos = { .x = 0, .y = 3 };
 
 	printerOn();
+	waitMs(WAIT_MS_BEFORE);
 
-	println("Video Game Program: JetPac MD", &pos);
+	print("Video Game Program: JetPac MD", &pos);
+	waitMs(WAIT_MS_BETWEEN);
+
 	println("", &pos);
-
-	println("Port by Diego Martin, 2019", &pos);
 	println("", &pos);
+	print("Port by Diego Martin, 2019", &pos);
+	waitMs(WAIT_MS_BETWEEN);
 
-	println("Original program written by Tim and Chris Stamper, 1983", &pos);
 	println("", &pos);
-
-	println("JetPac is a Ultimate Play the Game / RARE property", &pos);
 	println("", &pos);
+	print("Original program written by Tim and Chris Stamper, 1983", &pos);
+	waitMs(WAIT_MS_BETWEEN);
 
-	println("This information priority one", &pos);
 	println("", &pos);
+	println("", &pos);
+	print("JetPac is a Ultimate Play the Game / RARE property", &pos);
+	waitMs(WAIT_MS_BETWEEN);
 
-	println("End of Line", &pos);
+	println("", &pos);
+	println("", &pos);
+	print("This information priority one", &pos);
+	waitMs(WAIT_MS_BETWEEN);
 
-
+	println("", &pos);
+	println("", &pos);
+	print("End of Line", &pos);
 }
