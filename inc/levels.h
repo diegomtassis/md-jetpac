@@ -10,10 +10,14 @@
 
 #include <genesis.h>
 
+#include "physics.h"
+
 typedef struct {
-	u8 xPos;
-	u8 yPos;
-	u8 length;
+
+	u8 pos_h_t;
+	u8 pos_v_t;
+	u8 length_t;
+	u8 height_t;
 	Box* box;
 } Platform;
 

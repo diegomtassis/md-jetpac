@@ -12,7 +12,7 @@
 #include "../inc/jetman.h"
 #include "../res/gfx.h"
 
-static Platform FLOOR = { .xPos = 0, .yPos = 25, .length = 32 };
+static Platform FLOOR = { .pos_h_t = 0, .pos_v_t = 25, .length_t = 32 };
 
 static Level* current_level;
 
@@ -56,21 +56,21 @@ static Level* createLevel() {
 	Platform* platform;
 
 	platform = &level->platforms[0];
-	platform->xPos = 4;
-	platform->yPos = 11;
-	platform->length = 6;
+	platform->pos_h_t = 4;
+	platform->pos_v_t = 11;
+	platform->length_t = 6;
 	fillInPlatformBox(platform);
 
 	platform = &level->platforms[1];
-	platform->xPos = 15;
-	platform->yPos = 14;
-	platform->length = 4;
+	platform->pos_h_t = 15;
+	platform->pos_v_t = 14;
+	platform->length_t = 4;
 	fillInPlatformBox(platform);
 
 	platform = &level->platforms[2];
-	platform->xPos = 24;
-	platform->yPos = 8;
-	platform->length = 6;
+	platform->pos_h_t = 24;
+	platform->pos_v_t = 8;
+	platform->length_t = 6;
 	fillInPlatformBox(platform);
 
 	return level;
@@ -150,11 +150,11 @@ static void drawLevel(VDPPlan plan, const Level * level) {
 
 static void drawPlatform(VDPPlan plan, const Platform* platform, u16 idx_tile) {
 
-	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->xPos, platform->yPos);
-	VDP_fillTileMapRect(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->xPos + 1,
-			platform->yPos, platform->length - 2, 1);
+	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->pos_h_t, platform->pos_v_t);
+	VDP_fillTileMapRect(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->pos_h_t + 1,
+			platform->pos_v_t, platform->length_t - 2, 1);
 	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 2),
-			platform->xPos + platform->length - 1, platform->yPos);
+			platform->pos_h_t + platform->length_t - 1, platform->pos_v_t);
 }
 
 static void loadTile(const TileSet * tileset, u16 * idx_tile) {
