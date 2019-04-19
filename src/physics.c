@@ -13,22 +13,22 @@ void updateBox(Object_f16* object) {
 	object->box->y = object->pos.y;
 }
 
-u8 reachedBottonF16(Box_f16 subject, Box_f16 object) {
+fix16 reachedBottonF16(Box_f16 subject, Box_f16 object) {
 
 	return 0;
 }
 
-u8 reachedTopF16(Box_f16 subject, Box_f16 object) {
+fix16 reachedTopF16(Box_f16 subject, Box_f16 object) {
 
 	return 0;
 }
 
-u8 blockedByLeftF16(Box_f16 subject, Box_f16 object) {
+fix16 blockedByLeftF16(Box_f16 subject, Box_f16 object) {
 
 	return 0;
 }
 
-u8 blockedByRightF16(Box_f16 subject, Box_f16 object) {
+fix16 blockedByRightF16(Box_f16 subject, Box_f16 object) {
 
 	return 0;
 }

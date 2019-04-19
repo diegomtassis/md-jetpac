@@ -43,9 +43,9 @@ typedef struct {
 
 void updateBox(Object_f16*);
 
-u8 reachedBottonF16(Box_f16, Box_f16);
-u8 reachedTopF16(Box_f16, Box_f16);
-u8 blockedByLeftF16(Box_f16, Box_f16);
-u8 blockedByRightF16(Box_f16, Box_f16);
+fix16 reachedBottonF16(Box_f16, Box_f16);
+fix16 reachedTopF16(Box_f16, Box_f16);
+fix16 blockedByLeftF16(Box_f16, Box_f16);
+fix16 blockedByRightF16(Box_f16, Box_f16);
 
 #endif /* INC_PHYSICS_H_ */
