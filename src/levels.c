@@ -82,14 +82,14 @@ static void startLevel(const Level* level) {
 	VDP_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
 }
 
-static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length){
+static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length) {
 
 	Platform* platform = MEM_alloc(sizeof(Platform));
 
 	Vect2D_u16 pos = { .x = pos_x_t, .y = pos_y_t };
 	platform->pos_t = pos;
 
-	Vect2D_u16 size = { .x = length };
+	Vect2D_u16 size = { .x = length, .y = 1 };
 	platform->size_t = size;
 
 	Vect2D_f16 pos_px = { .x = pos_x_t * 8, .y = pos_y_t * 8 };
@@ -98,12 +98,11 @@ static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length){
 	Vect2D_u16 size_px = { .x = length * 8, .y = 8 };
 	platform->object.size = size_px;
 
-	BoxF16 box = { .x = pos_px.x, .y = pos_px.y, .w = size_px.x, .h = size_px.y };
+	Box_f16 box = { .x = pos_px.x, .y = pos_px.y, .w = size_px.x, .h = size_px.y };
 	platform->object.box = &box;
 
 	return platform;
 }
-
 
 static void loadLevelResources() {
 

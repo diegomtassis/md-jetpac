@@ -5,25 +5,30 @@
  *      Author: diegomtassis
  */
 
-
 #include "../inc/physics.h"
 
-u8 reachedBottonF16(BoxF16 subject, BoxF16 object) {
+void updateBox(Object_f16* object) {
+
+	object->box->x = object->pos.x;
+	object->box->y = object->pos.y;
+}
+
+u8 reachedBottonF16(Box_f16 subject, Box_f16 object) {
 
 	return 0;
 }
 
-u8 reachedTopF16(BoxF16 subject, BoxF16 object) {
+u8 reachedTopF16(Box_f16 subject, Box_f16 object) {
 
 	return 0;
 }
 
-u8 blockedByLeftF16(BoxF16 subject, BoxF16 object) {
+u8 blockedByLeftF16(Box_f16 subject, Box_f16 object) {
 
 	return 0;
 }
 
-u8 blockedByRightF16(BoxF16 subject, BoxF16 object) {
+u8 blockedByRightF16(Box_f16 subject, Box_f16 object) {
 
 	return 0;
 }

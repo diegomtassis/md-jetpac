@@ -15,19 +15,37 @@ typedef struct {
 	fix16 y;
 	u16 w;
 	u16 h;
-} BoxF16;
+} Box_f16;
 
 typedef struct {
 	Vect2D_f16 pos;
 	Vect2D_u16 size;
 	Vect2D_f16 mov;
-	BoxF16* box;
-} ObjectF16;
+	Box_f16* box;
+} Object_f16;
 
+typedef struct {
+	Object_f16 object;
+	Vect2D_s16 order;
+} Jetman;
 
-u8 reachedBottonF16(BoxF16, BoxF16);
-u8 reachedTopF16(BoxF16, BoxF16);
-u8 blockedByLeftF16(BoxF16, BoxF16);
-u8 blockedByRightF16(BoxF16, BoxF16);
+typedef struct {
+	Vect2D_u16 pos_t;
+	Vect2D_u16 size_t;
+	Object_f16 object;
+} Platform;
+
+typedef struct {
+	Platform* floor;
+	Platform** platforms;
+	u8 num_platforms;
+} Level;
+
+void updateBox(Object_f16*);
+
+u8 reachedBottonF16(Box_f16, Box_f16);
+u8 reachedTopF16(Box_f16, Box_f16);
+u8 blockedByLeftF16(Box_f16, Box_f16);
+u8 blockedByRightF16(Box_f16, Box_f16);
 
 #endif /* INC_PHYSICS_H_ */
