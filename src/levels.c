@@ -12,8 +12,6 @@
 #include "../inc/jetman.h"
 #include "../res/gfx.h"
 
-static Platform FLOOR = { .pos_h_t = 0, .pos_v_t = 25, .length_t = 32 };
-
 static Level* current_level;
 
 static u16 palette[64];
@@ -25,7 +23,7 @@ static u16 idx_tile_floor;
 static u16 idx_tile_platform;
 
 static Level* createLevel();
-static void fillInPlatformBox(Platform*);
+static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length);
 static void startLevel(const Level* level);
 
 static void loadLevelResources();
@@ -47,31 +45,14 @@ static Level* createLevel() {
 
 	Level* level = MEM_alloc(sizeof(Level));
 
-	level->floor = &FLOOR;
-	fillInPlatformBox(level->floor);
+	level->floor = createPlatform(0, 25, 32);
 
 	level->num_platforms = 3;
-	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform));
+	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform*));
 
-	Platform* platform;
-
-	platform = &level->platforms[0];
-	platform->pos_h_t = 4;
-	platform->pos_v_t = 11;
-	platform->length_t = 6;
-	fillInPlatformBox(platform);
-
-	platform = &level->platforms[1];
-	platform->pos_h_t = 15;
-	platform->pos_v_t = 14;
-	platform->length_t = 4;
-	fillInPlatformBox(platform);
-
-	platform = &level->platforms[2];
-	platform->pos_h_t = 24;
-	platform->pos_v_t = 8;
-	platform->length_t = 6;
-	fillInPlatformBox(platform);
+	level->platforms[0] = createPlatform(4, 11, 6);
+	level->platforms[1] = createPlatform(15, 14, 4);
+	level->platforms[2] = createPlatform(24, 8, 6);
 
 	return level;
 }
@@ -101,15 +82,28 @@ static void startLevel(const Level* level) {
 	VDP_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
 }
 
-static void fillInPlatformBox(Platform* platform) {
+static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length){
 
-	platform->box = MEM_alloc(sizeof(Box));
+	Platform* platform = MEM_alloc(sizeof(Platform));
 
-	platform->box->x = 0;
-	platform->box->y = 0;
-	platform->box->w = 0;
-	platform->box->h = 0;
+	Vect2D_u16 pos = { .x = pos_x_t, .y = pos_y_t };
+	platform->pos_t = pos;
+
+	Vect2D_u16 size = { .x = length };
+	platform->size_t = size;
+
+	Vect2D_f16 pos_px = { .x = pos_x_t * 8, .y = pos_y_t * 8 };
+	platform->object.pos = pos_px;
+
+	Vect2D_u16 size_px = { .x = length * 8, .y = 8 };
+	platform->object.size = size_px;
+
+	BoxF16 box = { .x = pos_px.x, .y = pos_px.y, .w = size_px.x, .h = size_px.y };
+	platform->object.box = &box;
+
+	return platform;
 }
+
 
 static void loadLevelResources() {
 
@@ -144,17 +138,17 @@ static void drawLevel(VDPPlan plan, const Level * level) {
 
 	// draw platforms
 	for (u8 i = 0; i < level->num_platforms; i++) {
-		drawPlatform(PLAN_B, &level->platforms[i], idx_tile_platform);
+		drawPlatform(PLAN_B, level->platforms[i], idx_tile_platform);
 	}
 }
 
 static void drawPlatform(VDPPlan plan, const Platform* platform, u16 idx_tile) {
 
-	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->pos_h_t, platform->pos_v_t);
-	VDP_fillTileMapRect(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->pos_h_t + 1,
-			platform->pos_v_t, platform->length_t - 2, 1);
+	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->pos_t.x, platform->pos_t.y);
+	VDP_fillTileMapRect(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->pos_t.x + 1,
+			platform->pos_t.y, platform->size_t.x - 2, 1);
 	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 2),
-			platform->pos_h_t + platform->length_t - 1, platform->pos_v_t);
+			platform->pos_t.x + platform->size_t.x - 1, platform->pos_t.y);
 }
 
 static void loadTile(const TileSet * tileset, u16 * idx_tile) {

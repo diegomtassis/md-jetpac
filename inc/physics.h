@@ -21,7 +21,7 @@ typedef struct {
 	Vect2D_f16 pos;
 	Vect2D_u16 size;
 	Vect2D_f16 mov;
-	BoxF16 box;
+	BoxF16* box;
 } ObjectF16;
 
 

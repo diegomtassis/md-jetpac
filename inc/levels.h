@@ -14,16 +14,15 @@
 
 typedef struct {
 
-	u8 pos_h_t;
-	u8 pos_v_t;
-	u8 length_t;
-	u8 height_t;
-	Box* box;
+	Vect2D_u16 pos_t;
+	Vect2D_u16 size_t;
+	ObjectF16 object;
+
 } Platform;
 
 typedef struct {
 	Platform* floor;
-	Platform* platforms;
+	Platform** platforms;
 	u8 num_platforms;
 } Level;
 
