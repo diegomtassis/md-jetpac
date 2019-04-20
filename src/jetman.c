@@ -47,11 +47,7 @@ Sprite* sprites[1];
 Jetman* player1;
 JetmanAnimation p1_anim;
 
-fix16 floor_px_f16;
-
 void startJetman(const Level* level) {
-
-	floor_px_f16 = FIX16(level->floor->pos_t.y * 8);
 
 	player1 = createPlayer1(level);
 	sprites[0] = SPR_addSprite(&jetman_sprite, fix16ToInt(player1->object.pos.x), fix16ToInt(player1->object.pos.y),
@@ -74,7 +70,7 @@ static Jetman* createPlayer1(const Level* level) {
 	Jetman* p1 = MEM_alloc(sizeof(Jetman));
 
 	p1->object.pos.x = FIX16(124);
-	p1->object.pos.y = fix16Sub(floor_px_f16, FIX16(8*3));
+	p1->object.pos.y = fix16Sub(level->floor->object.pos.y, FIX16(8*3));
 
 	p1->object.mov.x = SPEED_ZERO;
 	p1->object.mov.y = SPEED_ZERO;
