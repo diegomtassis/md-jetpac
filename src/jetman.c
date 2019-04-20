@@ -21,13 +21,9 @@
 #define SPEED_V_UP		FIX16(-1.5)
 #define SPEED_V_DOWN	FIX16(1.5)
 
-#define MIN_POS_H_PX	-8
-#define MAX_POS_H_PX	248
-#define MAX_POS_V_PX	32
-
-#define MIN_POS_H_PX_F16    FIX16(MIN_POS_H_PX)
-#define MAX_POS_H_PX_F16    FIX16(MAX_POS_H_PX)
-#define MAX_POS_V_PX_F16 	FIX16(MAX_POS_V_PX)
+#define MIN_POS_H_PX_F16    FIX16(-8)
+#define MAX_POS_H_PX_F16    FIX16(248)
+#define MAX_POS_V_PX_F16 	FIX16(32)
 
 typedef struct {
 	u8 walk_step_counter;
@@ -147,9 +143,9 @@ static void updatePosition(Jetman* player, const Level* level) {
 		player->object.mov.y = SPEED_ZERO;
 
 	} else {
-		fix16 reachedTop_pos_y = reachedTop(target_box, level);
-		if (reachedTop_pos_y) {
-			player->object.pos.y = MAX_POS_V_PX_F16;
+		fix16 top_pos_y = reachedTop(target_box, level);
+		if (top_pos_y) {
+			player->object.pos.y = top_pos_y;
 
 		} else {
 			player->object.pos.y = target_pos.y;
@@ -179,20 +175,40 @@ static Box_f16 targetBox(Vect2D_f16 pos) {
 	return box;
 }
 
-static fix16 landed(Box_f16 box, const Level* level) {
+static fix16 landed(Box_f16 subject_box, const Level* level) {
 
-	fix16 max_y = fix16Sub(floor_px_f16, FIX16(box.h));
-	if (box.y >= max_y) {
-		return max_y;
+	fix16 landedInPlatform = hitAbove(subject_box, *level->floor->object.box);
+	if (landedInPlatform) {
+		return landedInPlatform;
+	}
+
+	for (u8 i = 0; i < level->num_platforms; i++) {
+		landedInPlatform = hitAbove(subject_box, *level->platforms[i]->object.box);
+		if (landedInPlatform) {
+			return landedInPlatform;
+		}
 	}
 
 	return 0;
 }
 
-static fix16 reachedTop(Box_f16 box, const Level* level) {
+static fix16 reachedTop(Box_f16 subject_box, const Level* level) {
 
-	if (box.y <= MAX_POS_V_PX_F16) {
+	if (subject_box.y <= MAX_POS_V_PX_F16) {
 		return MAX_POS_V_PX_F16;
+	}
+
+	fix16 reachedPlatformTop;
+	for (u8 i = 0; i < level->num_platforms; i++) {
+		reachedPlatformTop = hitUnder(subject_box, *level->platforms[i]->object.box);
+		if (reachedPlatformTop) {
+			return reachedPlatformTop;
+		}
+	}
+
+	reachedPlatformTop = hitUnder(subject_box, *level->floor->object.box);
+	if (reachedPlatformTop) {
+		return reachedPlatformTop;
 	}
 
 	return 0;
@@ -227,7 +243,11 @@ static void animateJetman(const Jetman* player, JetmanAnimation* p_anim, Sprite*
 		}
 	}
 
-	SPR_setHFlip(sprite, player->object.mov.x < 0);
+	if (player->object.mov.x < 0) {
+		SPR_setHFlip(sprite, TRUE);
+	} else if (player->object.mov.x > 0) {
+		SPR_setHFlip(sprite, FALSE);
+	}
 }
 
 static void handleInputJetman() {

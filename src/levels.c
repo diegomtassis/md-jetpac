@@ -20,7 +20,7 @@ static u16 idx_tile_platform;
 static u16 idx_tile_floor;
 static u16 idx_tile_platform;
 
-static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length);
+static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
 
 static void loadLevelResources();
 
@@ -69,24 +69,27 @@ void startLevel(const Level* level) {
 	VDP_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
 }
 
-static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length) {
+static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 
 	Platform* platform = MEM_alloc(sizeof(Platform));
 
-	Vect2D_u16 pos = { .x = pos_x_t, .y = pos_y_t };
-	platform->pos_t = pos;
+	Vect2D_u16 pos_t = { .x = pos_x_t, .y = pos_y_t };
+	platform->pos_t = pos_t;
 
-	Vect2D_u16 size = { .x = length, .y = 1 };
+	Vect2D_u16 size = { .x = length_t, .y = 1 };
 	platform->size_t = size;
 
-	Vect2D_f16 pos_px = { .x = pos_x_t * 8, .y = pos_y_t * 8 };
+	Vect2D_f16 pos_px = { .x = FIX16(pos_x_t * 8), .y = FIX16(pos_y_t * 8) };
 	platform->object.pos = pos_px;
 
-	Vect2D_u16 size_px = { .x = length * 8, .y = 8 };
+	Vect2D_u16 size_px = { .x = length_t * 8, .y = 8 };
 	platform->object.size = size_px;
 
-	Box_f16 box = { .x = pos_px.x, .y = pos_px.y, .w = size_px.x, .h = size_px.y };
-	platform->object.box = &box;
+	Box_f16* box = MEM_alloc(sizeof(Box_f16));
+	box->w = size_px.x;
+	box->h = size_px.y;
+	platform->object.box = box;
+	updateBox(&platform->object);
 
 	return platform;
 }
