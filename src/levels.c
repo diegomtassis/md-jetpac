@@ -9,10 +9,8 @@
 
 #include <genesis.h>
 
-#include "../inc/jetman.h"
+#include "../inc/vdp_utils.h"
 #include "../res/gfx.h"
-
-static Level* current_level;
 
 static u16 palette[64];
 static u16 idx_tile_malloc;
@@ -22,26 +20,15 @@ static u16 idx_tile_platform;
 static u16 idx_tile_floor;
 static u16 idx_tile_platform;
 
-static Level* createLevel();
 static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length);
-static void startLevel(const Level* level);
 
 static void loadLevelResources();
-static void loadTile(const TileSet * tileset, u16 * idx_tile);
 
 static void drawInfoPanel();
-static void drawLevel(VDPPlan plan, const Level * level);
+static void drawPlatforms(VDPPlan plan, const Level * level);
 static void drawPlatform(VDPPlan plan, const Platform * platform, u16 idx_tile);
 
-void runGame() {
-
-	current_level = createLevel();
-	startLevel(current_level);
-
-	startJetman(current_level);
-}
-
-static Level* createLevel() {
+Level* createLevel() {
 
 	Level* level = MEM_alloc(sizeof(Level));
 
@@ -57,7 +44,7 @@ static Level* createLevel() {
 	return level;
 }
 
-static void startLevel(const Level* level) {
+void startLevel(const Level* level) {
 
 	SYS_disableInts();
 
@@ -71,7 +58,7 @@ static void startLevel(const Level* level) {
 
 	drawInfoPanel();
 
-	drawLevel(PLAN_B, level);
+	drawPlatforms(PLAN_B, level);
 
 	SYS_enableInts();
 
@@ -110,13 +97,13 @@ static void loadLevelResources() {
 	idx_tile_malloc = TILE_USERINDEX;
 
 	// load floor & platform
-	loadTile(&floor, &idx_tile_floor);
-	loadTile(&platform, &idx_tile_platform);
+	idx_tile_floor = loadTile(&floor, &idx_tile_malloc);
+	idx_tile_platform = loadTile(&platform, &idx_tile_malloc);
 }
 
 static void drawInfoPanel() {
 
-	loadTile(oneup.tileset, &idx_tile_oneup);
+	idx_tile_oneup = loadTile(oneup.tileset, &idx_tile_malloc);
 	VDP_setTextPalette(PAL3);
 	VDP_setTextPlan(PLAN_A);
 
@@ -130,7 +117,7 @@ static void drawInfoPanel() {
 	VDP_drawText("000000", 25, 3);
 }
 
-static void drawLevel(VDPPlan plan, const Level * level) {
+static void drawPlatforms(VDPPlan plan, const Level * level) {
 
 	// draw floor
 	drawPlatform(PLAN_B, level->floor, idx_tile_floor);
@@ -143,16 +130,14 @@ static void drawLevel(VDPPlan plan, const Level * level) {
 
 static void drawPlatform(VDPPlan plan, const Platform* platform, u16 idx_tile) {
 
+	// left edge
 	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->pos_t.x, platform->pos_t.y);
+
+	// middle section
 	VDP_fillTileMapRect(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->pos_t.x + 1,
 			platform->pos_t.y, platform->size_t.x - 2, 1);
+
+	// right edge
 	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 2),
 			platform->pos_t.x + platform->size_t.x - 1, platform->pos_t.y);
-}
-
-static void loadTile(const TileSet * tileset, u16 * idx_tile) {
-
-	*idx_tile = idx_tile_malloc;
-	VDP_loadTileSet(tileset, *idx_tile, CPU);
-	idx_tile_malloc += tileset->numTile;
 }

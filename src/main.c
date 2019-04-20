@@ -8,7 +8,7 @@
 #include <genesis.h>
 
 #include "../inc/jetpac_file.h"
-#include "../inc/levels.h"
+#include "../inc/game.h"
 #include "../inc/printer.h"
 #include "../inc/splash_screen.h"
 
@@ -34,11 +34,8 @@ int main() {
 	showSplashScreen();
 	waitMs(LOADING_TIME);
 
-	// start game
-	while (TRUE) {
-
-		runGame();
-	}
+	// run game
+	startGame();
 
 	return 0;
 }

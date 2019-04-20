@@ -12,6 +12,8 @@
 
 #include "physics.h"
 
-void runGame();
+Level* createLevel();
+
+void startLevel(const Level* level);
 
 #endif /* INC_LEVELS_H_ */
