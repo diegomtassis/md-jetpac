@@ -5,34 +5,35 @@
  *      Author: diegomtassis
  */
 
+#include "../inc/jetman.h"
+
 #include <genesis.h>
 
-#include "../inc/levels.h"
+#include "../inc/physics.h"
 #include "../res/sprite.h"
 
 #define ANIM_WALK		0
 #define ANIM_FLY		1
-#define STEPPING_SPEED    	6	// 0 Maximum
+#define STEPPING_SPEED	6 // 0 Maximum
 
-#define SPEED_ZERO    	FIX16(0)
-#define SPEED_H_NORMAL  FIX16(1.5)
-#define SPEED_V_UP    	FIX16(-1.5)
-#define SPEED_V_DOWN    FIX16(1.5)
+#define SPEED_ZERO		FIX16(0)
+#define SPEED_H_NORMAL	FIX16(1.5)
+#define SPEED_V_UP		FIX16(-1.5)
+#define SPEED_V_DOWN	FIX16(1.5)
 
-#define MIN_POS_H_PX       -8
-#define MAX_POS_H_PX       248
-#define MAX_POS_V_PX 		32
+#define MIN_POS_H_PX	-8
+#define MAX_POS_H_PX	248
+#define MAX_POS_V_PX	32
 
 #define MIN_POS_H_PX_F16    FIX16(MIN_POS_H_PX)
 #define MAX_POS_H_PX_F16    FIX16(MAX_POS_H_PX)
 #define MAX_POS_V_PX_F16 	FIX16(MAX_POS_V_PX)
 
-static void handleInputJetman();
-
 typedef struct {
 	u8 walk_step_counter;
 } JetmanAnimation;
 
+static void handleInputJetman();
 static Jetman* createPlayer1(const Level*);
 static void moveJetman(Jetman*, const Level*);
 static void calculateNextMovement(Jetman*);
@@ -43,7 +44,6 @@ static fix16 landed(Box_f16, const Level*);
 static fix16 reachedTop(Box_f16, const Level*);
 static fix16 blockedByLeft(Box_f16, const Level*);
 static fix16 blockedByRight(Box_f16, const Level*);
-
 static void animateJetman(const Jetman*, JetmanAnimation*, Sprite*);
 
 Sprite* sprites[1];
