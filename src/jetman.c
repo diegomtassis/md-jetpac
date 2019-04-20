@@ -34,8 +34,8 @@ static Jetman* createPlayer1(const Level*);
 static void moveJetman(Jetman*, const Level*);
 static void calculateNextMovement(Jetman*);
 static void updatePosition(Jetman*, const Level*);
-static Vect2D_f16 targetPosition(const Jetman*);
-static Box_f16 targetBox(Vect2D_f16);
+static Box_f16 targetHBox(const Jetman*);
+static Box_f16 targetVBox(const Jetman*);
 static fix16 landed(Box_f16, const Level*);
 static fix16 reachedTop(Box_f16, const Level*);
 static fix16 blockedByLeft(Box_f16, const Level*);
@@ -122,66 +122,60 @@ static void calculateNextMovement(Jetman* player) {
 
 static void updatePosition(Jetman* player, const Level* level) {
 
-	Vect2D_f16 target_pos = targetPosition(player);
-	Box_f16 target_box = targetBox(target_pos);
-
 	// horizontal position
-	if (target_pos.x > MAX_POS_H_PX_F16) {
+	Box_f16 target_h = targetHBox(player);
+	if (target_h.x > MAX_POS_H_PX_F16) {
 		player->object.pos.x = MIN_POS_H_PX_F16;
 
-	} else if (target_pos.x < MIN_POS_H_PX_F16) {
+	} else if (target_h.x < MIN_POS_H_PX_F16) {
 		player->object.pos.x = MAX_POS_H_PX_F16;
 
 	} else {
 
-		fix16 blockedHorizontally = blockedByLeft(target_box, level);
+		fix16 blockedHorizontally = blockedByLeft(target_h, level);
 		if (!blockedHorizontally) {
-			blockedHorizontally = blockedByRight(target_box, level);
+			blockedHorizontally = blockedByRight(target_h, level);
 		}
 
 		if (blockedHorizontally) {
 			player->object.pos.x = blockedHorizontally;
 
 		} else {
-			player->object.pos.x = target_pos.x;
+			player->object.pos.x = target_h.x;
 		}
 	}
 
 	// vertical position
-	fix16 landed_pos_y = landed(target_box, level);
+	Box_f16 target_v = targetVBox(player);
+	fix16 landed_pos_y = landed(target_v, level);
 	if (landed_pos_y) {
 		player->object.pos.y = landed_pos_y;
 		player->object.mov.y = SPEED_ZERO;
 
 	} else {
-		fix16 top_pos_y = reachedTop(target_box, level);
+		fix16 top_pos_y = reachedTop(target_v, level);
 		if (top_pos_y) {
 			player->object.pos.y = top_pos_y;
 
 		} else {
-			player->object.pos.y = target_pos.y;
+			player->object.pos.y = target_v.y;
 		}
 	}
+
 }
 
-static Vect2D_f16 targetPosition(const Jetman* player) {
+static Box_f16 targetHBox(const Jetman* player) {
 
 	fix16 target_x = fix16Add(player->object.pos.x, player->object.mov.x);
-	fix16 target_y = fix16Add(player->object.pos.y, player->object.mov.y);
+	Box_f16 box = { .x = target_x, .y = player->object.pos.y, .w = 16, .h = 24 };
 
-	Vect2D_f16 newPos = { .x = target_x, .y = target_y };
-
-	return newPos;
+	return box;
 }
 
-static Box_f16 targetBox(Vect2D_f16 pos) {
+static Box_f16 targetVBox(const Jetman* player) {
 
-	Box_f16 box;
-
-	box.x = pos.x;
-	box.y = pos.y;
-	box.w = 16;
-	box.h = 24;
+	fix16 target_y = fix16Add(player->object.pos.y, player->object.mov.y);
+	Box_f16 box = { .x = player->object.pos.x, .y = target_y, .w = 16, .h = 24 };
 
 	return box;
 }
@@ -225,42 +219,34 @@ static fix16 reachedTop(Box_f16 subject_box, const Level* level) {
 	return 0;
 }
 
-static fix16 blockedByLeft(Box_f16 subject_box, const Level* level) {
+static fix16 blockedByLeft(Box_f16 target_box, const Level* level) {
 
-	return 0;
-
-	// Ignore for the moment
-
-	fix16 blockedByPlatform = hitLeft(subject_box, *level->floor->object.box);
-	if (blockedByPlatform) {
-		return blockedByPlatform;
+	fix16 blocked = hitLeft(target_box, *level->floor->object.box);
+	if (blocked) {
+		return blocked;
 	}
 
 	for (u8 i = 0; i < level->num_platforms; i++) {
-		blockedByPlatform = hitLeft(subject_box, *level->platforms[i]->object.box);
-		if (blockedByPlatform) {
-			return blockedByPlatform;
+		blocked = hitLeft(target_box, *level->platforms[i]->object.box);
+		if (blocked) {
+			return blocked;
 		}
 	}
 
 	return 0;
 }
 
-static fix16 blockedByRight(Box_f16 subject_box, const Level* level) {
+static fix16 blockedByRight(Box_f16 target_box, const Level* level) {
 
-	return 0;
-
-	// Ignore for the moment
-
-	fix16 blockedByPlatform = hitRight(subject_box, *level->floor->object.box);
-	if (blockedByPlatform) {
-		return blockedByPlatform;
+	fix16 blocked = hitRight(target_box, *level->floor->object.box);
+	if (blocked) {
+		return blocked;
 	}
 
 	for (u8 i = 0; i < level->num_platforms; i++) {
-		blockedByPlatform = hitRight(subject_box, *level->platforms[i]->object.box);
-		if (blockedByPlatform) {
-			return blockedByPlatform;
+		blocked = hitRight(target_box, *level->platforms[i]->object.box);
+		if (blocked) {
+			return blocked;
 		}
 	}
 

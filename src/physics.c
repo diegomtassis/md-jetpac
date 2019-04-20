@@ -57,10 +57,10 @@ fix16 hitLeft(Box_f16 subject, Box_f16 object) {
 	if (OVERLAPPED & axisYBoxRelativePos(subject, object)) {
 
 		fix16 subject_w_f16 = FIX16(subject.w);
-		fix16 subject_right_edge = subject.x + subject_w_f16;
+		fix16 subject_right_edge = fix16Add(subject.x, subject_w_f16);
 
-		if (IN_BETWEEN & axisYPxRelativePos(subject_right_edge, object)) {
-			return object.x - subject_w_f16;
+		if (IN_BETWEEN & axisXPxRelativePos(subject_right_edge, object)) {
+			return fix16Sub(object.x, subject_w_f16);
 		}
 	}
 
@@ -92,10 +92,6 @@ static u8 axisXBoxRelativePos(Box_f16 subject, Box_f16 object) {
 }
 
 static u8 axisYBoxRelativePos(Box_f16 subject, Box_f16 object) {
-
-	int x = 2;
-	int y = 2;
-	VDP_clearText(x, y, 15);
 
 	if (UNDER & axisYPxRelativePos(subject.y, object)) {
 		return UNDER;
