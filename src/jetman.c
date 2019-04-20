@@ -132,8 +132,19 @@ static void updatePosition(Jetman* player, const Level* level) {
 	} else if (target_pos.x < MIN_POS_H_PX_F16) {
 		player->object.pos.x = MAX_POS_H_PX_F16;
 
-	} else if (!blockedByLeft(target_box, level) && !blockedByRight(target_box, level)) {
-		player->object.pos.x = target_pos.x;
+	} else {
+
+		fix16 blockedHorizontally = blockedByLeft(target_box, level);
+		if (!blockedHorizontally) {
+			blockedHorizontally = blockedByRight(target_box, level);
+		}
+
+		if (blockedHorizontally) {
+			player->object.pos.x = blockedHorizontally;
+
+		} else {
+			player->object.pos.x = target_pos.x;
+		}
 	}
 
 	// vertical position
@@ -214,12 +225,44 @@ static fix16 reachedTop(Box_f16 subject_box, const Level* level) {
 	return 0;
 }
 
-static fix16 blockedByLeft(Box_f16 box, const Level* level) {
+static fix16 blockedByLeft(Box_f16 subject_box, const Level* level) {
+
+	return 0;
+
+	// Ignore for the moment
+
+	fix16 blockedByPlatform = hitLeft(subject_box, *level->floor->object.box);
+	if (blockedByPlatform) {
+		return blockedByPlatform;
+	}
+
+	for (u8 i = 0; i < level->num_platforms; i++) {
+		blockedByPlatform = hitLeft(subject_box, *level->platforms[i]->object.box);
+		if (blockedByPlatform) {
+			return blockedByPlatform;
+		}
+	}
 
 	return 0;
 }
 
-static fix16 blockedByRight(Box_f16 box, const Level* level) {
+static fix16 blockedByRight(Box_f16 subject_box, const Level* level) {
+
+	return 0;
+
+	// Ignore for the moment
+
+	fix16 blockedByPlatform = hitRight(subject_box, *level->floor->object.box);
+	if (blockedByPlatform) {
+		return blockedByPlatform;
+	}
+
+	for (u8 i = 0; i < level->num_platforms; i++) {
+		blockedByPlatform = hitRight(subject_box, *level->platforms[i]->object.box);
+		if (blockedByPlatform) {
+			return blockedByPlatform;
+		}
+	}
 
 	return 0;
 }

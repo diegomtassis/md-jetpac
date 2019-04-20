@@ -9,11 +9,11 @@
 
 // relative position
 #define IN_BETWEEN		0x01
-#define OVERLAPPED			0x01
-#define TO_THE_LEFT		0x02
-#define TO_THE_RIGHT	0x04
-#define ABOVE			0x08
-#define UNDER			0x10
+#define OVERLAPPED		0x02
+#define TO_THE_LEFT		0x04
+#define TO_THE_RIGHT	0x08
+#define ABOVE			0x10
+#define UNDER			0x20
 
 static u8 axisXBoxRelativePos(Box_f16, Box_f16);
 static u8 axisYBoxRelativePos(Box_f16, Box_f16);
@@ -54,24 +54,37 @@ fix16 hitUnder(Box_f16 subject, Box_f16 object) {
 
 fix16 hitLeft(Box_f16 subject, Box_f16 object) {
 
+	if (OVERLAPPED & axisYBoxRelativePos(subject, object)) {
+
+		fix16 subject_w_f16 = FIX16(subject.w);
+		fix16 subject_right_edge = subject.x + subject_w_f16;
+
+		if (IN_BETWEEN & axisYPxRelativePos(subject_right_edge, object)) {
+			return object.x - subject_w_f16;
+		}
+	}
+
 	return 0;
 }
 
 fix16 hitRight(Box_f16 subject, Box_f16 object) {
+
+	if (OVERLAPPED & axisYBoxRelativePos(subject, object)) {
+		if (IN_BETWEEN & axisXPxRelativePos(subject.x, object)) {
+			return object.x + FIX16(object.w);
+		}
+	}
 
 	return 0;
 }
 
 static u8 axisXBoxRelativePos(Box_f16 subject, Box_f16 object) {
 
-	u8 leftEdgePos = axisXPxRelativePos(subject.x, object);
-	u8 rightEdgePos = axisXPxRelativePos(subject.x + FIX16(subject.w), object);
-
-	if (leftEdgePos & TO_THE_RIGHT) {
+	if (TO_THE_RIGHT & axisXPxRelativePos(subject.x, object)) {
 		return TO_THE_RIGHT;
 	}
 
-	if (rightEdgePos & TO_THE_LEFT) {
+	if (TO_THE_LEFT & axisXPxRelativePos(subject.x + FIX16(subject.w), object)) {
 		return TO_THE_LEFT;
 	}
 
@@ -80,14 +93,15 @@ static u8 axisXBoxRelativePos(Box_f16 subject, Box_f16 object) {
 
 static u8 axisYBoxRelativePos(Box_f16 subject, Box_f16 object) {
 
-	u8 topEdgePos = axisYPxRelativePos(subject.y, object);
-	u8 bottomEdgePos = axisYPxRelativePos(subject.y + FIX16(subject.h), object);
+	int x = 2;
+	int y = 2;
+	VDP_clearText(x, y, 15);
 
-	if (topEdgePos & UNDER) {
+	if (UNDER & axisYPxRelativePos(subject.y, object)) {
 		return UNDER;
 	}
 
-	if (bottomEdgePos & ABOVE) {
+	if (ABOVE & axisYPxRelativePos(subject.y + FIX16(subject.h), object)) {
 		return ABOVE;
 	}
 
@@ -96,11 +110,11 @@ static u8 axisYBoxRelativePos(Box_f16 subject, Box_f16 object) {
 
 static u8 axisXPxRelativePos(fix16 x_px, Box_f16 object) {
 
-	if (x_px < object.x) {
+	if (object.x >= x_px) {
 		return TO_THE_LEFT;
 	}
 
-	if (x_px > object.x + FIX16(object.w)) {
+	if (x_px >= object.x + FIX16(object.w)) {
 		return TO_THE_RIGHT;
 	}
 
@@ -109,11 +123,11 @@ static u8 axisXPxRelativePos(fix16 x_px, Box_f16 object) {
 
 static u8 axisYPxRelativePos(fix16 y_px, Box_f16 object) {
 
-	if (y_px < object.y) {
+	if (object.y >= y_px) {
 		return ABOVE;
 	}
 
-	if (y_px > object.y + FIX16(object.h)) {
+	if (object.y + FIX16(object.h) <= y_px) {
 		return UNDER;
 	}
 
