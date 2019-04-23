@@ -1,5 +1,7 @@
 # Mega Drive SGDK JetPac
 
+![JetPac MD](Jetpac_MD.png?raw=true "Cover")
+
 JetPac port to Sega Mega Drive / Genesis by diegomtassis.  
 
 https://github.com/diegomtassis/md-jetpac
