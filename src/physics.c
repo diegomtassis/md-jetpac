@@ -31,10 +31,10 @@ fix16 hitAbove(Box_f16 subject, Box_f16 object) {
 	if (OVERLAPPED & axisXBoxRelativePos(subject, object)) {
 
 		fix16 subject_h_f16 = FIX16(subject.h);
-		fix16 subject_bottom = subject.y + subject_h_f16;
+		fix16 subject_bottom = fix16Add(subject.y, subject_h_f16);
 
 		if (IN_BETWEEN & axisYPxRelativePos(subject_bottom, object)) {
-			return object.y - subject_h_f16;
+			return fix16Sub(object.y, subject_h_f16);
 		}
 	}
 
@@ -45,7 +45,7 @@ fix16 hitUnder(Box_f16 subject, Box_f16 object) {
 
 	if (OVERLAPPED & axisXBoxRelativePos(subject, object)) {
 		if (IN_BETWEEN & axisYPxRelativePos(subject.y, object)) {
-			return object.y + FIX16(object.h);
+			return fix16Add(object.y, FIX16(object.h));
 		}
 	}
 
@@ -71,7 +71,7 @@ fix16 hitRight(Box_f16 subject, Box_f16 object) {
 
 	if (OVERLAPPED & axisYBoxRelativePos(subject, object)) {
 		if (IN_BETWEEN & axisXPxRelativePos(subject.x, object)) {
-			return object.x + FIX16(object.w);
+			return fix16Add(object.x, FIX16(object.w));
 		}
 	}
 
@@ -110,7 +110,7 @@ static u8 axisXPxRelativePos(fix16 x_px, Box_f16 object) {
 		return TO_THE_LEFT;
 	}
 
-	if (x_px >= object.x + FIX16(object.w)) {
+	if (x_px >= fix16Add(object.x, FIX16(object.w))) {
 		return TO_THE_RIGHT;
 	}
 
@@ -123,7 +123,7 @@ static u8 axisYPxRelativePos(fix16 y_px, Box_f16 object) {
 		return ABOVE;
 	}
 
-	if (object.y + FIX16(object.h) <= y_px) {
+	if (fix16Add(object.y, FIX16(object.h)) <= y_px) {
 		return UNDER;
 	}
 

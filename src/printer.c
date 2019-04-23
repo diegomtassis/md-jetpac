@@ -122,8 +122,7 @@ static void normalizeOffset(Vect2D_u16* offset) {
 
 static void moveForward(Vect2D_u16* offset) {
 
-	int eol = offset->x == MAX_PRT_AREA.x;
-	if (eol) {
+	if (offset->x == MAX_PRT_AREA.x) {
 		moveToNextLine(offset);
 		moveToNextLine(offset);
 	} else {
@@ -160,5 +159,5 @@ static void cursorOff() {
 }
 
 static u16 tilesToPx(u8 tiles) {
-	return tiles * 8;
+	return  tiles * 8;
 }
