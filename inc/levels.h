@@ -12,6 +12,6 @@
 
 Level* createLevel();
 
-void startLevel(const Level* level);
+void startLevel(Level* level);
 
 #endif /* INC_LEVELS_H_ */

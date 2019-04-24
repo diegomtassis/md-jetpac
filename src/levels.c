@@ -22,6 +22,8 @@ static u16 idx_tile_platform;
 
 static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
 
+static Enemies* defineEnemies(Level * level);
+
 static void loadLevelResources();
 
 static void drawInfoPanel();
@@ -32,6 +34,7 @@ Level* createLevel() {
 
 	Level* level = MEM_alloc(sizeof(Level));
 
+	// level static elements
 	level->floor = createPlatform(0, 25, 32);
 
 	level->num_platforms = 3;
@@ -41,10 +44,13 @@ Level* createLevel() {
 	level->platforms[1] = createPlatform(15, 14, 4);
 	level->platforms[2] = createPlatform(24, 8, 6);
 
+	// define enemies
+	level->enemies = defineEnemies(level);
+
 	return level;
 }
 
-void startLevel(const Level* level) {
+void startLevel(Level* level) {
 
 	SYS_disableInts();
 
@@ -92,6 +98,15 @@ static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 	updateBox(&platform->object);
 
 	return platform;
+}
+
+static Enemies* defineEnemies(Level * level) {
+
+	Enemies* enemies = MEM_alloc(sizeof(Enemies));
+	enemies->current_num_enemies = 0;
+	enemies->max_num_enemies = 3;
+
+	return enemies;
 }
 
 static void loadLevelResources() {

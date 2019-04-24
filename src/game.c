@@ -7,8 +7,12 @@
 
 #include "../inc/game.h"
 
-#include "../inc/levels.h"
+#include <genesis.h>
+
+#include "../inc/elements.h"
+#include "../inc/enemies.h"
 #include "../inc/jetman.h"
+#include "../inc/levels.h"
 
 static Level* current_level;
 
@@ -20,14 +24,14 @@ void startGame() {
 	startLevel(current_level);
 
 	startJetman(current_level);
-	startEnemies(current_level);
+//	startEnemies(current_level);
 
 	while (1) {
 
 		handleInput();
 
 		handleJetman(current_level);
-		handleEnemies(current_level);
+//		handleEnemies(current_level);
 
 		SPR_update();
 		VDP_waitVSync();

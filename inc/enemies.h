@@ -8,11 +8,11 @@
 #ifndef INC_ENEMIES_H_
 #define INC_ENEMIES_H_
 
-#include "physics.h"
+#include "elements.h"
 
-void startEnemies(const Level* level);
+void startEnemies(Level* level);
 
-void handleEnemies(const Level* level);
+void handleEnemies(Level* level);
 
 
 #endif /* INC_ENEMIES_H_ */

@@ -34,8 +34,6 @@ static Jetman* createPlayer1(const Level*);
 static void moveJetman(Jetman*, const Level*);
 static void calculateNextMovement(Jetman*);
 static void updatePosition(Jetman*, const Level*);
-static Box_f16 targetHBox(const Jetman*);
-static Box_f16 targetVBox(const Jetman*);
 static fix16 landed(Box_f16, const Level*);
 static fix16 reachedTop(Box_f16, const Level*);
 static fix16 blockedByLeft(Box_f16, const Level*);
@@ -116,7 +114,7 @@ static void calculateNextMovement(Jetman* player) {
 static void updatePosition(Jetman* player, const Level* level) {
 
 	// horizontal position
-	Box_f16 target_h = targetHBox(player);
+	Box_f16 target_h = targetHBox(&player->object, 16, 24);
 	if (target_h.x > MAX_POS_H_PX_F16) {
 		player->object.pos.x = MIN_POS_H_PX_F16;
 
@@ -139,7 +137,7 @@ static void updatePosition(Jetman* player, const Level* level) {
 	}
 
 	// vertical position
-	Box_f16 target_v = targetVBox(player);
+	Box_f16 target_v = targetVBox(&player->object, 16, 24);
 	fix16 landed_pos_y = landed(target_v, level);
 	if (landed_pos_y) {
 		player->object.pos.y = landed_pos_y;
@@ -155,22 +153,6 @@ static void updatePosition(Jetman* player, const Level* level) {
 		}
 	}
 
-}
-
-static Box_f16 targetHBox(const Jetman* player) {
-
-	fix16 target_x = fix16Add(player->object.pos.x, player->object.mov.x);
-	Box_f16 box = { .x = target_x, .y = player->object.pos.y, .w = 16, .h = 24 };
-
-	return box;
-}
-
-static Box_f16 targetVBox(const Jetman* player) {
-
-	fix16 target_y = fix16Add(player->object.pos.y, player->object.mov.y);
-	Box_f16 box = { .x = player->object.pos.x, .y = target_y, .w = 16, .h = 24 };
-
-	return box;
 }
 
 static fix16 landed(Box_f16 subject_box, const Level* level) {

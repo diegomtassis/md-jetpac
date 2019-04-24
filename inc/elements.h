@@ -13,20 +13,31 @@
 #include <genesis.h>
 
 typedef struct {
-	Object_f16 object;
-	Vect2D_s16 order;
-} Jetman;
-
-typedef struct {
 	Vect2D_u16 pos_t;
 	Vect2D_u16 size_t;
 	Object_f16 object;
 } Platform;
 
 typedef struct {
+	Object_f16 object;
+	Vect2D_s16 order;
+} Jetman;
+
+typedef struct {
+	Object_f16 object;
+	u8 alive;
+} Enemy;
+
+typedef struct {
+	u8 current_num_enemies;
+	u8 max_num_enemies;
+} Enemies;
+
+typedef struct {
 	Platform* floor;
 	Platform** platforms;
 	u8 num_platforms;
+	Enemies* enemies;
 } Level;
 
 #endif /* INC_ELEMENTS_H_ */

@@ -26,6 +26,22 @@ void updateBox(Object_f16* object) {
 	object->box->y = object->pos.y;
 }
 
+Box_f16 targetHBox(const Object_f16* object, u8 width, u8 height) {
+
+	fix16 target_x = fix16Add(object->pos.x, object->mov.x);
+	Box_f16 box = { .x = target_x, .y = object->pos.y, .w = width, .h = height };
+
+	return box;
+}
+
+Box_f16 targetVBox(const Object_f16* object, u8 width, u8 height) {
+
+	fix16 target_y = fix16Add(object->pos.y, object->mov.y);
+	Box_f16 box = { .x = object->pos.x, .y = target_y, .w = width, .h = height };
+
+	return box;
+}
+
 fix16 hitAbove(Box_f16 subject, Box_f16 object) {
 
 	if (OVERLAPPED & axisXBoxRelativePos(subject, object)) {
