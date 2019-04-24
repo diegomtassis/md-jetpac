@@ -8,9 +8,7 @@
 #ifndef INC_LEVELS_H_
 #define INC_LEVELS_H_
 
-#include <genesis.h>
-
-#include "physics.h"
+#include "elements.h"
 
 Level* createLevel();
 

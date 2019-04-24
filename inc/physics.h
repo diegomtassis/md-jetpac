@@ -24,23 +24,6 @@ typedef struct {
 	Box_f16* box;
 } Object_f16;
 
-typedef struct {
-	Object_f16 object;
-	Vect2D_s16 order;
-} Jetman;
-
-typedef struct {
-	Vect2D_u16 pos_t;
-	Vect2D_u16 size_t;
-	Object_f16 object;
-} Platform;
-
-typedef struct {
-	Platform* floor;
-	Platform** platforms;
-	u8 num_platforms;
-} Level;
-
 void updateBox(Object_f16*);
 
 fix16 hitAbove(Box_f16, Box_f16);

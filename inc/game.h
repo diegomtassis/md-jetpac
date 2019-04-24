@@ -8,9 +8,6 @@
 #ifndef INC_GAME_H_
 #define INC_GAME_H_
 
-#include <genesis.h>
-
-#include "physics.h"
 
 void startGame();
 

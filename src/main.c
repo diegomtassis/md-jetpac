@@ -21,7 +21,7 @@ int main() {
 	VDP_setScreenHeight224();
 
 	// initialization area
-	SPR_init(16, 256, 256);
+	SPR_init(32, 256, 256);
 
 	// jetpac file
 	printDisclaimer();

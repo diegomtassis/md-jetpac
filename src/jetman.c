@@ -52,17 +52,14 @@ void startJetman(const Level* level) {
 	player1 = createPlayer1(level);
 	sprites[0] = SPR_addSprite(&jetman_sprite, fix16ToInt(player1->object.pos.x), fix16ToInt(player1->object.pos.y),
 			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+}
 
-	while (TRUE) {
+void handleJetman(const Level* level) {
 
-		handleInputJetman();
+	handleInputJetman();
 
-		moveJetman(player1, level);
-		animateJetman(player1, &p1_anim, sprites[0]);
-
-		SPR_update();
-		VDP_waitVSync();
-	}
+	moveJetman(player1, level);
+	animateJetman(player1, &p1_anim, sprites[0]);
 }
 
 static Jetman* createPlayer1(const Level* level) {
