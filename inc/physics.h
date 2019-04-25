@@ -10,6 +10,10 @@
 
 #include <genesis.h>
 
+#define LEFT_POS_H_PX_F16    	FIX16(0)
+#define RIGHT_POS_H_PX_F16  	FIX16(256)
+#define TOP_POS_V_PX_F16 		FIX16(32)
+
 typedef struct {
 	fix16 x;
 	fix16 y;

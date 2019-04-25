@@ -21,9 +21,12 @@
 #define SPEED_V_UP		FIX16(-1.5)
 #define SPEED_V_DOWN	FIX16(1.5)
 
-#define MIN_POS_H_PX_F16    FIX16(-8)
-#define MAX_POS_H_PX_F16    FIX16(248)
-#define MAX_POS_V_PX_F16 	FIX16(32)
+#define JETMAN_HEIGHT 24
+#define JETMAN_WIDTH 16
+
+#define MIN_POS_H_PX_F16	LEFT_POS_H_PX_F16 - FIX16(-8)
+#define MAX_POS_H_PX_F16	RIGHT_POS_H_PX_F16 - FIX16(8)
+#define MAX_POS_V_PX_F16	TOP_POS_V_PX_F16
 
 typedef struct {
 	u8 walk_step_counter;
@@ -69,8 +72,10 @@ static Jetman* createPlayer1(const Level* level) {
 
 	p1->object.mov.x = SPEED_ZERO;
 	p1->object.mov.y = SPEED_ZERO;
-	p1->object.size.x = 16;
-	p1->object.size.y = 24;
+	p1->object.size.x = JETMAN_WIDTH
+	;
+	p1->object.size.y = JETMAN_HEIGHT
+	;
 
 	Box_f16 box = { .x = p1->object.pos.x, //
 			.y = p1->object.pos.y, //
@@ -114,7 +119,8 @@ static void calculateNextMovement(Jetman* player) {
 static void updatePosition(Jetman* player, const Level* level) {
 
 	// horizontal position
-	Box_f16 target_h = targetHBox(&player->object, 16, 24);
+	Box_f16
+	target_h = targetHBox(&player->object, JETMAN_WIDTH, JETMAN_HEIGHT);
 	if (target_h.x > MAX_POS_H_PX_F16) {
 		player->object.pos.x = MIN_POS_H_PX_F16;
 
@@ -137,7 +143,8 @@ static void updatePosition(Jetman* player, const Level* level) {
 	}
 
 	// vertical position
-	Box_f16 target_v = targetVBox(&player->object, 16, 24);
+	Box_f16
+	target_v = targetVBox(&player->object, JETMAN_WIDTH, JETMAN_HEIGHT);
 	fix16 landed_pos_y = landed(target_v, level);
 	if (landed_pos_y) {
 		player->object.pos.y = landed_pos_y;
@@ -152,7 +159,6 @@ static void updatePosition(Jetman* player, const Level* level) {
 			player->object.pos.y = target_v.y;
 		}
 	}
-
 }
 
 static fix16 landed(Box_f16 subject_box, const Level* level) {
