@@ -14,8 +14,8 @@
 #include "../res/sprite.h"
 
 #define SPEED_ZERO		FIX16(0)
-#define SPEED_H_NORMAL	FIX16(1.1)
-#define SPEED_V_NORMAL	FIX16(0.2)
+#define SPEED_H_NORMAL	FIX16(1)
+#define SPEED_V_NORMAL	FIX16(0.3)
 
 #define ENEMY_HEIGHT	16
 #define ENEMY_WIDTH		16
@@ -25,21 +25,21 @@
 #define MIN_POS_V_PX_F16	TOP_POS_V_PX_F16
 #define MAX_POS_V_PX_F16	BOTTOM_POS_V_PX_F16 - FIX16(16)
 
+#define LAST_ENEMY_CREATION_TIMER 0
+
 static Enemy* createEnemy();
 static void moveEnemy(Enemy*, Sprite*, const Level*);
 static void calculateNextMovement(Enemy*);
 static void updatePosition(Enemy*, const Level*);
 static fix16 crashedHIntoPlatform(Box_f16 subject_box, const Level* level);
 static fix16 crashedVIntoPlatform(Box_f16 subject_box, const Level* level);
+static Sprite* createSprite(Enemy* enemy);
 static void updateSprite(Enemy* enemy, Sprite* sprite);
 
 static void detectExplosion();
 
-Sprite** enemiesSprites;
-
 Enemy** enemies;
-
-u32 lastCreatedEnemy;
+Sprite** enemiesSprites;
 
 u8 explode_all;
 
@@ -49,22 +49,17 @@ void startEnemies(Level* level) {
 	enemiesSprites = MEM_alloc(sizeof(Sprite*) * level->enemies->max_num_enemies);
 	u8 num_enemies = level->enemies->max_num_enemies / 2; // start with half the maximum enemies
 
-	Sprite* enemySprite;
 	u32 tick = getTick();
 	setRandomSeed(tick);
 
+	Enemy* enemy;
 	while (num_enemies--) {
-
 		// enemy object
-		enemies[num_enemies] = createEnemy();
+		enemy = createEnemy();
+		enemies[num_enemies] = enemy;
 
 		// sprite
-		enemySprite = SPR_addSprite(&enemy_02_sprite, 0, 0, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-		SPR_setAnim(enemySprite, (tick + abs(random())) % 4);
-		SPR_setFrame(enemySprite, (tick + abs(random())) % 2);
-		SPR_setVisibility(enemySprite, VISIBLE);
-		enemiesSprites[num_enemies] = enemySprite;
-
+		enemiesSprites[num_enemies] = createSprite(enemy);
 		level->enemies->current_num_enemies++;
 	}
 }
@@ -98,19 +93,41 @@ void handleEnemies(Level* level) {
 		}
 	}
 
+	if (level->enemies->current_num_enemies < level->enemies->max_num_enemies
+			&& getTimer(LAST_ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND * 2) {
+
+		u8 num_enemies = level->enemies->max_num_enemies;
+		u8 idx;
+		while (num_enemies--) {
+			// find the first empty slot
+			Enemy* enemy = enemies[num_enemies];
+			if (!enemy) {
+				idx = num_enemies;
+				break;
+			}
+		}
+
+		Enemy* enemy = createEnemy();
+		enemies[idx] = enemy;
+		enemiesSprites[idx] = createSprite(enemy);
+		level->enemies->current_num_enemies++;
+	}
+
 	explode_all = FALSE;
 }
 
 static Enemy* createEnemy() {
 
 	Enemy* enemy = MEM_alloc(sizeof(Enemy));
-	enemy->object.pos.x = MIN_POS_H_PX_F16;
+	enemy->alive = TRUE;
 	enemy->object.pos.y = randomInRangeFix16(MIN_POS_V_PX_F16, MAX_POS_V_PX_F16);
 
-	// direction
+	// horizontal position & direction
 	if (random() % 2) {
+		enemy->object.pos.x = MIN_POS_H_PX_F16;
 		enemy->object.mov.x = SPEED_H_NORMAL;
 	} else {
+		enemy->object.pos.x = MAX_POS_H_PX_F16;
 		enemy->object.mov.x = -SPEED_H_NORMAL;
 	}
 
@@ -121,10 +138,7 @@ static Enemy* createEnemy() {
 		enemy->object.mov.y = SPEED_V_NORMAL;
 	}
 
-	lastCreatedEnemy = getTick();
-
-	enemy->alive = TRUE;
-
+	startTimer(LAST_ENEMY_CREATION_TIMER);
 	return enemy;
 }
 
@@ -195,6 +209,17 @@ static fix16 crashedVIntoPlatform(Box_f16 subject_box, const Level* level) {
 	}
 
 	return 0;
+}
+
+static Sprite* createSprite(Enemy* enemy) {
+
+	Sprite* enemySprite = SPR_addSprite(&enemy_02_sprite, fix16ToInt(enemy->object.pos.x),
+			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	SPR_setAnim(enemySprite, (abs(random())) % 4);
+	SPR_setFrame(enemySprite, (abs(random())) % 2);
+	SPR_setVisibility(enemySprite, VISIBLE);
+
+	return enemySprite;
 }
 
 static void updateSprite(Enemy* enemy, Sprite* sprite) {
