@@ -26,7 +26,7 @@
 
 #define MIN_POS_H_PX_F16	LEFT_POS_H_PX_F16 - FIX16(-8)
 #define MAX_POS_H_PX_F16	RIGHT_POS_H_PX_F16 - FIX16(8)
-#define MAX_POS_V_PX_F16	TOP_POS_V_PX_F16
+#define MIN_POS_V_PX_F16	TOP_POS_V_PX_F16
 
 typedef struct {
 	u8 walk_step_counter;
@@ -119,8 +119,7 @@ static void calculateNextMovement(Jetman* player) {
 static void updatePosition(Jetman* player, const Level* level) {
 
 	// horizontal position
-	Box_f16
-	target_h = targetHBox(&player->object, JETMAN_WIDTH, JETMAN_HEIGHT);
+	Box_f16 target_h = targetHBox(&player->object, JETMAN_WIDTH, JETMAN_HEIGHT);
 	if (target_h.x > MAX_POS_H_PX_F16) {
 		player->object.pos.x = MIN_POS_H_PX_F16;
 
@@ -143,8 +142,7 @@ static void updatePosition(Jetman* player, const Level* level) {
 	}
 
 	// vertical position
-	Box_f16
-	target_v = targetVBox(&player->object, JETMAN_WIDTH, JETMAN_HEIGHT);
+	Box_f16 target_v = targetVBox(&player->object, JETMAN_WIDTH, JETMAN_HEIGHT);
 	fix16 landed_pos_y = landed(target_v, level);
 	if (landed_pos_y) {
 		player->object.pos.y = landed_pos_y;
@@ -180,8 +178,8 @@ static fix16 landed(Box_f16 subject_box, const Level* level) {
 
 static fix16 reachedTop(Box_f16 subject_box, const Level* level) {
 
-	if (subject_box.y <= MAX_POS_V_PX_F16) {
-		return MAX_POS_V_PX_F16;
+	if (subject_box.y <= MIN_POS_V_PX_F16) {
+		return MIN_POS_V_PX_F16;
 	}
 
 	fix16 reachedPlatformTop;

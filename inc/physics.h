@@ -13,6 +13,7 @@
 #define LEFT_POS_H_PX_F16    	FIX16(0)
 #define RIGHT_POS_H_PX_F16  	FIX16(256)
 #define TOP_POS_V_PX_F16 		FIX16(32)
+#define BOTTOM_POS_V_PX_F16 	FIX16(224 - 32)
 
 typedef struct {
 	fix16 x;

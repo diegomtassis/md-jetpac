@@ -25,7 +25,7 @@ typedef struct {
 
 typedef struct {
 	Object_f16 object;
-	u8 idx;
+	u8 alive;
 } Enemy;
 
 typedef struct {

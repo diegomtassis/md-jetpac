@@ -104,7 +104,7 @@ static Enemies* defineEnemies(Level * level) {
 
 	Enemies* enemies = MEM_alloc(sizeof(Enemies));
 	enemies->current_num_enemies = 0;
-	enemies->max_num_enemies = 4;
+	enemies->max_num_enemies = 10;
 
 	return enemies;
 }
