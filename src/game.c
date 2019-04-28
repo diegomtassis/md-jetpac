@@ -14,8 +14,8 @@
 #include "../inc/jetman.h"
 #include "../inc/levels.h"
 
-static Level* current_level;
-
+static void handleCollisionsInterElements(Level*);
+static u8 hasJetmanDied(Level*);
 static void updateInfoPanel(Game*);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
@@ -24,7 +24,7 @@ vu8 paused = FALSE;
 
 void startGame(Game* game) {
 
-	current_level = createLevel();
+	Level* current_level = createLevel();
 	startLevel(current_level);
 
 	startJetman(current_level);
@@ -35,10 +35,21 @@ void startGame(Game* game) {
 	while (game->lives >= 0) {
 
 		if (!paused) {
-			handleJetman(current_level);
-			handleEnemies(current_level);
+			jetmanActs(current_level);
+			enemiesAct(current_level);
+
+			handleCollisionsInterElements(current_level);
 
 			clearDeadEnemies(current_level);
+
+			if (hasJetmanDied(current_level)) {
+
+				u8 keepPlaying = game->lives-- > 0;
+				killJetman(current_level->jetman, !keepPlaying);
+				if (keepPlaying) {
+					resetJetman(current_level);
+				}
+			}
 
 			game->score++;
 			updateInfoPanel(game);
@@ -49,7 +60,19 @@ void startGame(Game* game) {
 		VDP_waitVSync();
 	}
 
+	VDP_drawText("Game Over", 15, 15);
+	waitMs(5000);
+
 	return;
+}
+
+static void handleCollisionsInterElements(Level* level) {
+
+}
+
+static u8 hasJetmanDied(Level* level) {
+
+	return FALSE;
 }
 
 static void updateInfoPanel(Game* game) {

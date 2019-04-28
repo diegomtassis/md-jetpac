@@ -55,7 +55,7 @@ void startEnemies(Level* level) {
 	}
 }
 
-void handleEnemies(Level* level) {
+void enemiesAct(Level* level) {
 
 	detectExplosion();
 

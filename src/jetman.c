@@ -31,6 +31,7 @@
 static Jetman* createPlayer1(const Level*);
 static void handleInputJetman(Jetman*);
 
+static void moveToStart(Jetman* jetman, const Level* level);
 static void moveJetman(Jetman*, const Level*);
 static void calculateNextMovement(Jetman*);
 static void updatePosition(Jetman*, const Level*);
@@ -48,7 +49,20 @@ void startJetman(Level* level) {
 			fix16ToInt(level->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 }
 
-void handleJetman(const Level* level) {
+void killJetman(Jetman* jetman, u8 release) {
+
+	if (release) {
+		SPR_releaseSprite(jetman->sprite);
+		MEM_free(jetman->sprite);
+		MEM_free(jetman);
+	}
+}
+
+void resetJetman(Level* level) {
+	moveToStart(level->jetman, level);
+}
+
+void jetmanActs(const Level* level) {
 
 	handleInputJetman(level->jetman);
 
@@ -58,25 +72,28 @@ void handleJetman(const Level* level) {
 
 static Jetman* createPlayer1(const Level* level) {
 
-	Jetman* p1 = MEM_alloc(sizeof(Jetman));
+	Jetman* jetman = MEM_alloc(sizeof(Jetman));
 
-	p1->object.pos.x = FIX16(124);
-	p1->object.pos.y = fix16Sub(level->floor->object.pos.y, FIX16(8*3));
+	jetman->object.size.x = JETMAN_WIDTH;
+	jetman->object.size.y = JETMAN_HEIGHT;
 
-	p1->object.mov.x = SPEED_ZERO;
-	p1->object.mov.y = SPEED_ZERO;
-	p1->object.size.x = JETMAN_WIDTH
-	;
-	p1->object.size.y = JETMAN_HEIGHT
-	;
+	moveToStart(jetman, level);
 
-	Box_f16 box = { .x = p1->object.pos.x, //
-			.y = p1->object.pos.y, //
-			.w = p1->object.size.x, //
-			.h = p1->object.size.y };
-	p1->object.box = &box;
+	return jetman;
+}
 
-	return p1;
+static void moveToStart(Jetman* jetman, const Level* level) {
+
+	jetman->object.pos.x = FIX16(124);
+	jetman->object.pos.y = fix16Sub(level->floor->object.pos.y, FIX16(8*3));
+	jetman->object.mov.x = SPEED_ZERO;
+	jetman->object.mov.y = SPEED_ZERO;
+
+	Box_f16 box = { .x = jetman->object.pos.x, //
+			.y = jetman->object.pos.y, //
+			.w = jetman->object.size.x, //
+			.h = jetman->object.size.y };
+	jetman->object.box = &box;
 }
 
 static void moveJetman(Jetman* jetman, const Level* level) {

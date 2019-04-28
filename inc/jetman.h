@@ -11,7 +11,9 @@
 #include "elements.h"
 
 void startJetman(Level* level);
+void killJetman(Jetman* jetman, u8 release);
+void resetJetman(Level* level);
 
-void handleJetman(const Level* level);
+void jetmanActs(const Level* level);
 
 #endif /* INC_JETMAN_H_ */
