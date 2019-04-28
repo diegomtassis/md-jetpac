@@ -8,6 +8,14 @@
 #ifndef INC_GAME_H_
 #define INC_GAME_H_
 
-void startGame();
+#include <genesis.h>
+
+typedef struct {
+	u8 lives;
+	u8 level;
+	u16 score;
+} Game;
+
+void startGame(Game*);
 
 #endif /* INC_GAME_H_ */

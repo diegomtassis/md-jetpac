@@ -16,9 +16,13 @@
 
 static Level* current_level;
 
-static void handleInput();
+static void updateInfoPanel(Game*);
 
-void startGame() {
+static void joyEvent(u16 joy, u16 changed, u16 state);
+
+vu8 paused = FALSE;
+
+void startGame(Game* game) {
 
 	current_level = createLevel();
 	startLevel(current_level);
@@ -26,20 +30,42 @@ void startGame() {
 	startJetman(current_level);
 	startEnemies(current_level);
 
-	while (1) {
+	JOY_setEventHandler(joyEvent);
 
-		handleInput();
+	while (game->lives >= 0) {
 
-		handleJetman(current_level);
-		handleEnemies(current_level);
+		if (!paused) {
+			handleJetman(current_level);
+			handleEnemies(current_level);
 
-		SPR_update();
+			game->score++;
+			updateInfoPanel(game);
+
+			SPR_update();
+		}
+
 		VDP_waitVSync();
 	}
 
 	return;
 }
 
-static void handleInput() {
+static void updateInfoPanel(Game* game) {
 
+	// lives
+	char lives[2];
+	uint16ToStr(game->lives, lives, 1);
+	VDP_drawText(lives, 8, 2);
+
+	// score
+	char score[6];
+	sprintf(score, "%06d", game->score);
+	VDP_drawText(score, 1, 3);
+}
+
+static void joyEvent(u16 joy, u16 changed, u16 state) {
+
+	if (BUTTON_START & changed & ~state) {
+		paused ^= 1;
+	}
 }
