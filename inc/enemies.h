@@ -14,5 +14,7 @@ void startEnemies(Level* level);
 
 void handleEnemies(Level* level);
 
+void clearDeadEnemies(Level* level);
+
 
 #endif /* INC_ENEMIES_H_ */

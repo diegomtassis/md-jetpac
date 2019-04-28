@@ -21,11 +21,14 @@ typedef struct {
 typedef struct {
 	Object_f16 object;
 	Vect2D_s16 order;
+	u8 walk_step_counter;
+	Sprite* sprite;
 } Jetman;
 
 typedef struct {
 	Object_f16 object;
 	u8 alive;
+	Sprite* sprite;
 } Enemy;
 
 typedef struct {

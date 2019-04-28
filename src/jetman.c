@@ -28,12 +28,9 @@
 #define MAX_POS_H_PX_F16	RIGHT_POS_H_PX_F16 - FIX16(8)
 #define MIN_POS_V_PX_F16	TOP_POS_V_PX_F16
 
-typedef struct {
-	u8 walk_step_counter;
-} JetmanAnimation;
-
-static void handleInputJetman(Jetman*);
 static Jetman* createPlayer1(const Level*);
+static void handleInputJetman(Jetman*);
+
 static void moveJetman(Jetman*, const Level*);
 static void calculateNextMovement(Jetman*);
 static void updatePosition(Jetman*, const Level*);
@@ -41,17 +38,14 @@ static fix16 landed(Box_f16, const Level*);
 static fix16 reachedTop(Box_f16, const Level*);
 static fix16 blockedByLeft(Box_f16, const Level*);
 static fix16 blockedByRight(Box_f16, const Level*);
-static void animateJetman(const Jetman*, JetmanAnimation*, Sprite*);
 
-Sprite* sprites[1];
-
-JetmanAnimation p1_anim;
+static void drawJetman(Jetman*);
 
 void startJetman(Level* level) {
 
 	level->jetman = createPlayer1(level);
-	sprites[0] = SPR_addSprite(&jetman_sprite, fix16ToInt(level->jetman->object.pos.x), fix16ToInt(level->jetman->object.pos.y),
-			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	level->jetman->sprite = SPR_addSprite(&jetman_sprite, fix16ToInt(level->jetman->object.pos.x),
+			fix16ToInt(level->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 }
 
 void handleJetman(const Level* level) {
@@ -59,7 +53,7 @@ void handleJetman(const Level* level) {
 	handleInputJetman(level->jetman);
 
 	moveJetman(level->jetman, level);
-	animateJetman(level->jetman, &p1_anim, sprites[0]);
+	drawJetman(level->jetman);
 }
 
 static Jetman* createPlayer1(const Level* level) {
@@ -85,33 +79,33 @@ static Jetman* createPlayer1(const Level* level) {
 	return p1;
 }
 
-static void moveJetman(Jetman* player, const Level* level) {
+static void moveJetman(Jetman* jetman, const Level* level) {
 
-	calculateNextMovement(player);
-	updatePosition(player, level);
+	calculateNextMovement(jetman);
+	updatePosition(jetman, level);
 
-	SPR_setPosition(sprites[0], fix16ToInt(player->object.pos.x), fix16ToInt(player->object.pos.y));
+	SPR_setPosition(jetman->sprite, fix16ToInt(jetman->object.pos.x), fix16ToInt(jetman->object.pos.y));
 }
 
-static void calculateNextMovement(Jetman* player) {
+static void calculateNextMovement(Jetman* jetman) {
 
 	// horizontal movement
-	if (player->order.x > 0) {
-		player->object.mov.x = SPEED_H_NORMAL;
+	if (jetman->order.x > 0) {
+		jetman->object.mov.x = SPEED_H_NORMAL;
 
-	} else if (player->order.x < 0) {
-		player->object.mov.x = -SPEED_H_NORMAL;
+	} else if (jetman->order.x < 0) {
+		jetman->object.mov.x = -SPEED_H_NORMAL;
 
 	} else {
-		player->object.mov.x = SPEED_ZERO;
+		jetman->object.mov.x = SPEED_ZERO;
 	}
 
 	// vertical movement
-	if (player->order.y < 0) {
-		player->object.mov.y = SPEED_V_UP;
+	if (jetman->order.y < 0) {
+		jetman->object.mov.y = SPEED_V_UP;
 
 	} else {
-		player->object.mov.y = SPEED_V_DOWN;
+		jetman->object.mov.y = SPEED_V_DOWN;
 	}
 }
 
@@ -231,28 +225,30 @@ static fix16 blockedByRight(Box_f16 target_box, const Level* level) {
 	return 0;
 }
 
-static void animateJetman(const Jetman* player, JetmanAnimation* p_anim, Sprite* sprite) {
+static void drawJetman(Jetman* jetman) {
 
-	if (player->object.mov.y) {
+	Sprite* sprite = jetman->sprite;
+
+	if (jetman->object.mov.y) {
 		// somewhere in the air
 		SPR_setAnim(sprite, ANIM_FLY);
 
 	} else {
-		SPR_setAnim(sprites[0], ANIM_WALK);
-		if (player->object.mov.x) {
+		SPR_setAnim(sprite, ANIM_WALK);
+		if (jetman->object.mov.x) {
 			// walking
-			p_anim->walk_step_counter++;
-			p_anim->walk_step_counter %= STEPPING_SPEED;
-			if (!p_anim->walk_step_counter) {
+			jetman->walk_step_counter++;
+			jetman->walk_step_counter %= STEPPING_SPEED;
+			if (!jetman->walk_step_counter) {
 				// controlling the animation speed
 				SPR_nextFrame(sprite);
 			}
 		}
 	}
 
-	if (player->object.mov.x < 0) {
+	if (jetman->object.mov.x < 0) {
 		SPR_setHFlip(sprite, TRUE);
-	} else if (player->object.mov.x > 0) {
+	} else if (jetman->object.mov.x > 0) {
 		SPR_setHFlip(sprite, FALSE);
 	}
 }

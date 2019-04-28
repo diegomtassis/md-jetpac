@@ -26,38 +26,32 @@
 
 #define LAST_ENEMY_CREATION_TIMER 0
 
+static void addEnemy(Level*, u8 pos);
 static Enemy* createEnemy();
-static void moveEnemy(Enemy*, Sprite*, const Level*);
+static void enemiesJoin(Level* level);
+
+static void moveEnemy(Enemy*, const Level*);
 static void calculateNextMovement(Enemy*);
 static void updatePosition(Enemy*, const Level*);
 static fix16 crashedHIntoPlatform(Box_f16 subject_box, const Level* level);
 static fix16 crashedVIntoPlatform(Box_f16 subject_box, const Level* level);
 static Sprite* createSprite(Enemy* enemy);
-static void updateSprite(Enemy* enemy, Sprite* sprite);
+
+static void updateSprite(Enemy* enemy);
 
 static void detectExplosion();
-
-Sprite** enemiesSprites;
 
 u8 explode_all;
 
 void startEnemies(Level* level) {
 
 	level->enemies->objects = MEM_alloc(sizeof(Enemy*) * level->enemies->max_num_enemies);
-	enemiesSprites = MEM_alloc(sizeof(Sprite*) * level->enemies->max_num_enemies);
 	u8 num_enemies = level->enemies->max_num_enemies / 2; // start with half the maximum enemies
 
 	setRandomSeed(getTick());
 
-	Enemy* enemy;
 	while (num_enemies--) {
-		// enemy object
-		enemy = createEnemy();
-		level->enemies->objects[num_enemies] = enemy;
-
-		// sprite
-		enemiesSprites[num_enemies] = createSprite(enemy);
-		level->enemies->current_num_enemies++;
+		addEnemy(level, num_enemies);
 	}
 }
 
@@ -72,45 +66,45 @@ void handleEnemies(Level* level) {
 		Enemy* enemy = level->enemies->objects[num_enemies];
 		if (enemy) {
 
-			Sprite* sprite = enemiesSprites[num_enemies];
 			if (explode_all) {
 				enemy->alive = FALSE;
 			} else {
-				moveEnemy(enemy, sprite, level);
+				moveEnemy(enemy, level);
 			}
 
-			updateSprite(enemy, sprite);
-
-			// get rid of dead bodies
-			if (!enemy->alive) {
-				MEM_free(enemy);
-				level->enemies->objects[num_enemies] = NULL;
-				level->enemies->current_num_enemies--;
-			}
+			updateSprite(enemy);
 		}
 	}
 
-	if (level->enemies->current_num_enemies < level->enemies->max_num_enemies
-			&& getTimer(LAST_ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND * 2) {
-
-		u8 num_enemies = level->enemies->max_num_enemies;
-		u8 idx;
-		while (num_enemies--) {
-			// find the first empty slot
-			Enemy* enemy = level->enemies->objects[num_enemies];
-			if (!enemy) {
-				idx = num_enemies;
-				break;
-			}
-		}
-
-		Enemy* enemy = createEnemy();
-		level->enemies->objects[idx] = enemy;
-		enemiesSprites[idx] = createSprite(enemy);
-		level->enemies->current_num_enemies++;
-	}
+	// New enemies joining the party?
+	enemiesJoin(level);
 
 	explode_all = FALSE;
+}
+
+void clearDeadEnemies(Level* level) {
+
+	u8 num_enemies = level->enemies->max_num_enemies;
+	while (num_enemies--) {
+
+		Enemy* enemy = level->enemies->objects[num_enemies];
+		if (enemy && !enemy->alive) {
+
+			SPR_releaseSprite(enemy->sprite);
+			MEM_free(enemy->sprite);
+			MEM_free(enemy);
+			level->enemies->objects[num_enemies] = NULL;
+			level->enemies->current_num_enemies--;
+		}
+	}
+}
+
+static void addEnemy(Level* level, u8 pos) {
+
+	Enemy* enemy = createEnemy();
+	level->enemies->objects[pos] = enemy;
+	enemy->sprite = createSprite(enemy);
+	level->enemies->current_num_enemies++;
 }
 
 static Enemy* createEnemy() {
@@ -139,7 +133,27 @@ static Enemy* createEnemy() {
 	return enemy;
 }
 
-static void moveEnemy(Enemy* enemy, Sprite* sprite, const Level* level) {
+static void enemiesJoin(Level* level) {
+
+	if (level->enemies->current_num_enemies < level->enemies->max_num_enemies
+			&& getTimer(LAST_ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND * 2) {
+
+		u8 num_enemies = level->enemies->max_num_enemies;
+		u8 idx;
+		while (num_enemies--) {
+			// find the first empty slot
+			Enemy* enemy = level->enemies->objects[num_enemies];
+			if (!enemy) {
+				idx = num_enemies;
+				break;
+			}
+		}
+
+		addEnemy(level, idx);
+	}
+}
+
+static void moveEnemy(Enemy* enemy, const Level* level) {
 
 	calculateNextMovement(enemy);
 	updatePosition(enemy, level);
@@ -222,12 +236,10 @@ static Sprite* createSprite(Enemy* enemy) {
 	return enemySprite;
 }
 
-static void updateSprite(Enemy* enemy, Sprite* sprite) {
+static void updateSprite(Enemy* enemy) {
 
 	if (enemy->alive) {
-		SPR_setPosition(sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y));
-	} else {
-		SPR_releaseSprite(sprite);
+		SPR_setPosition(enemy->sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y));
 	}
 }
 

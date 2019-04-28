@@ -35,8 +35,10 @@ void startGame(Game* game) {
 	while (game->lives >= 0) {
 
 		if (!paused) {
-			handleEnemies(current_level);
 			handleJetman(current_level);
+			handleEnemies(current_level);
+
+			clearDeadEnemies(current_level);
 
 			game->score++;
 			updateInfoPanel(game);
