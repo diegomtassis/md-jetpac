@@ -13,12 +13,11 @@
 #include "../inc/physics.h"
 #include "../res/sprite.h"
 
+#include "../inc/enemy_01.h"
+
 #define SPEED_ZERO		FIX16(0)
 #define SPEED_H_NORMAL	FIX16(1)
 #define SPEED_V_NORMAL	FIX16(0.3)
-
-#define ENEMY_HEIGHT	16
-#define ENEMY_WIDTH		16
 
 #define MIN_POS_H_PX_F16	LEFT_POS_H_PX_F16 - FIX16(-8)
 #define MAX_POS_H_PX_F16	RIGHT_POS_H_PX_F16 - FIX16(8)
@@ -49,8 +48,7 @@ void startEnemies(Level* level) {
 	enemiesSprites = MEM_alloc(sizeof(Sprite*) * level->enemies->max_num_enemies);
 	u8 num_enemies = level->enemies->max_num_enemies / 2; // start with half the maximum enemies
 
-	u32 tick = getTick();
-	setRandomSeed(tick);
+	setRandomSeed(getTick());
 
 	Enemy* enemy;
 	while (num_enemies--) {
@@ -120,9 +118,8 @@ static Enemy* createEnemy() {
 
 	Enemy* enemy = MEM_alloc(sizeof(Enemy));
 	enemy->alive = TRUE;
-	enemy->object.pos.y = randomInRangeFix16(MIN_POS_V_PX_F16, MAX_POS_V_PX_F16);
 
-	// horizontal position & direction
+	// position & direction
 	if (random() % 2) {
 		enemy->object.pos.x = MIN_POS_H_PX_F16;
 		enemy->object.mov.x = SPEED_H_NORMAL;
@@ -130,6 +127,7 @@ static Enemy* createEnemy() {
 		enemy->object.pos.x = MAX_POS_H_PX_F16;
 		enemy->object.mov.x = -SPEED_H_NORMAL;
 	}
+	enemy->object.pos.y = randomInRangeFix16(MIN_POS_V_PX_F16, MAX_POS_V_PX_F16);
 
 	// V speed
 	if (random() % 2) {
@@ -155,7 +153,7 @@ static void calculateNextMovement(Enemy* enemy) {
 static void updatePosition(Enemy* enemy, const Level* level) {
 
 	// horizontal position
-	Box_f16 target_h = targetHBox(&enemy->object, ENEMY_WIDTH, ENEMY_HEIGHT);
+	Box_f16 target_h = targetHBox(&enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
 	if (target_h.x > MAX_POS_H_PX_F16) {
 		enemy->object.pos.x = MIN_POS_H_PX_F16;
 
@@ -169,7 +167,7 @@ static void updatePosition(Enemy* enemy, const Level* level) {
 	}
 
 	// vertical position
-	Box_f16 target_v = targetVBox(&enemy->object, ENEMY_WIDTH, ENEMY_HEIGHT);
+	Box_f16 target_v = targetVBox(&enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
 	if (crashedVIntoPlatform(target_v, level)) {
 		enemy->alive = FALSE;
 	} else {
@@ -213,11 +211,14 @@ static fix16 crashedVIntoPlatform(Box_f16 subject_box, const Level* level) {
 
 static Sprite* createSprite(Enemy* enemy) {
 
-	Sprite* enemySprite = SPR_addSprite(&enemy_02_sprite, fix16ToInt(enemy->object.pos.x),
+	Sprite* enemySprite = SPR_addSprite(&enemy_01_sprite, fix16ToInt(enemy->object.pos.x),
 			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	SPR_setAnim(enemySprite, (abs(random())) % 4);
 	SPR_setFrame(enemySprite, (abs(random())) % 2);
-	SPR_setVisibility(enemySprite, VISIBLE);
+
+	if (enemy->object.mov.x > 0) {
+		SPR_setHFlip(enemySprite, TRUE);
+	}
 
 	return enemySprite;
 }
