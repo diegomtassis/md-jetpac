@@ -21,6 +21,7 @@ static u16 idx_tile_floor;
 static u16 idx_tile_platform;
 
 static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
+static void releasePlatform(Platform*);
 
 static Enemies* defineEnemies(Level * level);
 
@@ -75,6 +76,21 @@ void startLevel(Level* level) {
 	VDP_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
 }
 
+void releaseLevel(Level* level) {
+
+	// release floor
+	releasePlatform(level->floor);
+	level->floor = NULL;
+
+	// release platforms
+	for (u8 i = 0; i < level->num_platforms; i++) {
+		releasePlatform(level->platforms[i]);
+		level->platforms[i] = NULL;
+	}
+
+	MEM_free(level);
+}
+
 static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 
 	Platform* platform = MEM_alloc(sizeof(Platform));
@@ -100,11 +116,17 @@ static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 	return platform;
 }
 
+static void releasePlatform(Platform* platform) {
+
+	MEM_free(platform->object.box);
+	MEM_free(platform);
+}
+
 static Enemies* defineEnemies(Level * level) {
 
 	Enemies* enemies = MEM_alloc(sizeof(Enemies));
 	enemies->current_num_enemies = 0;
-	enemies->max_num_enemies = 10;
+	enemies->max_num_enemies = 12;
 
 	return enemies;
 }

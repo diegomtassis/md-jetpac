@@ -11,10 +11,9 @@
 #include "elements.h"
 
 void startEnemies(Level* level);
+void releaseDeadEnemies(Level* level);
+void releaseAllEnemies(Level* level);
 
 void enemiesAct(Level* level);
-
-void clearDeadEnemies(Level* level);
-
 
 #endif /* INC_ENEMIES_H_ */

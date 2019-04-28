@@ -42,6 +42,14 @@ Box_f16 targetVBox(const Object_f16* object, u8 width, u8 height) {
 	return box;
 }
 
+fix16 hit(Box_f16 subject, Box_f16 object) {
+
+	return hitAbove(subject, object) //
+	|| hitUnder(subject, object) //
+			|| hitLeft(subject, object) //
+			|| hitRight(subject, object);
+}
+
 fix16 hitAbove(Box_f16 subject, Box_f16 object) {
 
 	if (OVERLAPPED & axisXBoxRelativePos(subject, object)) {

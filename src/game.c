@@ -14,7 +14,7 @@
 #include "../inc/jetman.h"
 #include "../inc/levels.h"
 
-static void handleCollisionsInterElements(Level*);
+static void handleCollisionsBetweenElementsAlive(Level*);
 static u8 hasJetmanDied(Level*);
 static void updateInfoPanel(Game*);
 
@@ -32,23 +32,26 @@ void startGame(Game* game) {
 
 	JOY_setEventHandler(joyEvent);
 
-	while (game->lives >= 0) {
+	while (game->lives > 0) {
 
 		if (!paused) {
+
 			jetmanActs(current_level);
 			enemiesAct(current_level);
 
-			handleCollisionsInterElements(current_level);
-
-			clearDeadEnemies(current_level);
+			handleCollisionsBetweenElementsAlive(current_level);
 
 			if (hasJetmanDied(current_level)) {
 
-				u8 keepPlaying = game->lives-- > 0;
-				killJetman(current_level->jetman, !keepPlaying);
-				if (keepPlaying) {
+				releaseAllEnemies(current_level);
+				if (--game->lives > 0) {
 					resetJetman(current_level);
+					startEnemies(current_level);
+				} else {
+					releaseJetman(current_level->jetman);
 				}
+			} else {
+				releaseDeadEnemies(current_level);
 			}
 
 			game->score++;
@@ -60,19 +63,32 @@ void startGame(Game* game) {
 		VDP_waitVSync();
 	}
 
-	VDP_drawText("Game Over", 15, 15);
+	VDP_drawText("Game Over", 12, 5);
 	waitMs(5000);
+
+	releaseLevel(current_level);
+	current_level = NULL;
+	SPR_reset();
 
 	return;
 }
 
-static void handleCollisionsInterElements(Level* level) {
+static void handleCollisionsBetweenElementsAlive(Level* level) {
 
+	u8 num_enemies = level->enemies->max_num_enemies;
+	while (num_enemies--) {
+
+		Enemy* enemy = level->enemies->objects[num_enemies];
+		if (enemy && enemy->alive && hit(*(level->jetman->object.box), *(enemy->object.box))) {
+			level->jetman->alive = FALSE;
+			break;
+		}
+	}
 }
 
 static u8 hasJetmanDied(Level* level) {
 
-	return FALSE;
+	return !level->jetman->alive;
 }
 
 static void updateInfoPanel(Game* game) {

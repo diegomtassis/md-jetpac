@@ -34,6 +34,8 @@ void updateBox(Object_f16*);
 Box_f16 targetHBox(const Object_f16*, u8, u8);
 Box_f16 targetVBox(const Object_f16*, u8, u8);
 
+fix16 hit(Box_f16, Box_f16);
+
 fix16 hitAbove(Box_f16, Box_f16);
 fix16 hitUnder(Box_f16, Box_f16);
 fix16 hitLeft(Box_f16, Box_f16);

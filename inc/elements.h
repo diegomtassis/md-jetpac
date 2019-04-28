@@ -22,6 +22,7 @@ typedef struct {
 	Object_f16 object;
 	Vect2D_s16 order;
 	u8 walk_step_counter;
+	u8 alive;
 	Sprite* sprite;
 } Jetman;
 

@@ -11,6 +11,7 @@
 #include "elements.h"
 
 Level* createLevel();
+void releaseLevel(Level*);
 
 void startLevel(Level* level);
 
