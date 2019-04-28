@@ -10,7 +10,7 @@
 
 #include "elements.h"
 
-void startJetman(const Level* level);
+void startJetman(Level* level);
 
 void handleJetman(const Level* level);
 

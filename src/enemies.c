@@ -37,14 +37,13 @@ static void updateSprite(Enemy* enemy, Sprite* sprite);
 
 static void detectExplosion();
 
-Enemy** enemies;
 Sprite** enemiesSprites;
 
 u8 explode_all;
 
 void startEnemies(Level* level) {
 
-	enemies = MEM_alloc(sizeof(Enemy*) * level->enemies->max_num_enemies);
+	level->enemies->objects = MEM_alloc(sizeof(Enemy*) * level->enemies->max_num_enemies);
 	enemiesSprites = MEM_alloc(sizeof(Sprite*) * level->enemies->max_num_enemies);
 	u8 num_enemies = level->enemies->max_num_enemies / 2; // start with half the maximum enemies
 
@@ -54,7 +53,7 @@ void startEnemies(Level* level) {
 	while (num_enemies--) {
 		// enemy object
 		enemy = createEnemy();
-		enemies[num_enemies] = enemy;
+		level->enemies->objects[num_enemies] = enemy;
 
 		// sprite
 		enemiesSprites[num_enemies] = createSprite(enemy);
@@ -70,7 +69,7 @@ void handleEnemies(Level* level) {
 
 	while (num_enemies--) {
 
-		Enemy* enemy = enemies[num_enemies];
+		Enemy* enemy = level->enemies->objects[num_enemies];
 		if (enemy) {
 
 			Sprite* sprite = enemiesSprites[num_enemies];
@@ -85,7 +84,7 @@ void handleEnemies(Level* level) {
 			// get rid of dead bodies
 			if (!enemy->alive) {
 				MEM_free(enemy);
-				enemies[num_enemies] = NULL;
+				level->enemies->objects[num_enemies] = NULL;
 				level->enemies->current_num_enemies--;
 			}
 		}
@@ -98,7 +97,7 @@ void handleEnemies(Level* level) {
 		u8 idx;
 		while (num_enemies--) {
 			// find the first empty slot
-			Enemy* enemy = enemies[num_enemies];
+			Enemy* enemy = level->enemies->objects[num_enemies];
 			if (!enemy) {
 				idx = num_enemies;
 				break;
@@ -106,7 +105,7 @@ void handleEnemies(Level* level) {
 		}
 
 		Enemy* enemy = createEnemy();
-		enemies[idx] = enemy;
+		level->enemies->objects[idx] = enemy;
 		enemiesSprites[idx] = createSprite(enemy);
 		level->enemies->current_num_enemies++;
 	}

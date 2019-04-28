@@ -31,12 +31,14 @@ typedef struct {
 typedef struct {
 	u8 current_num_enemies;
 	u8 max_num_enemies;
+	Enemy** objects;
 } Enemies;
 
 typedef struct {
 	Platform* floor;
 	Platform** platforms;
 	u8 num_platforms;
+	Jetman* jetman;
 	Enemies* enemies;
 } Level;
 

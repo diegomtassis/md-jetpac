@@ -32,7 +32,7 @@ typedef struct {
 	u8 walk_step_counter;
 } JetmanAnimation;
 
-static void handleInputJetman();
+static void handleInputJetman(Jetman*);
 static Jetman* createPlayer1(const Level*);
 static void moveJetman(Jetman*, const Level*);
 static void calculateNextMovement(Jetman*);
@@ -45,22 +45,21 @@ static void animateJetman(const Jetman*, JetmanAnimation*, Sprite*);
 
 Sprite* sprites[1];
 
-Jetman* player1;
 JetmanAnimation p1_anim;
 
-void startJetman(const Level* level) {
+void startJetman(Level* level) {
 
-	player1 = createPlayer1(level);
-	sprites[0] = SPR_addSprite(&jetman_sprite, fix16ToInt(player1->object.pos.x), fix16ToInt(player1->object.pos.y),
+	level->jetman = createPlayer1(level);
+	sprites[0] = SPR_addSprite(&jetman_sprite, fix16ToInt(level->jetman->object.pos.x), fix16ToInt(level->jetman->object.pos.y),
 			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 }
 
 void handleJetman(const Level* level) {
 
-	handleInputJetman();
+	handleInputJetman(level->jetman);
 
-	moveJetman(player1, level);
-	animateJetman(player1, &p1_anim, sprites[0]);
+	moveJetman(level->jetman, level);
+	animateJetman(level->jetman, &p1_anim, sprites[0]);
 }
 
 static Jetman* createPlayer1(const Level* level) {
@@ -258,21 +257,21 @@ static void animateJetman(const Jetman* player, JetmanAnimation* p_anim, Sprite*
 	}
 }
 
-static void handleInputJetman() {
+static void handleInputJetman(Jetman* jetman) {
 
 	u16 value = JOY_readJoypad(JOY_1);
 
 	if (value & BUTTON_B) {
-		player1->order.y = -1;
+		jetman->order.y = -1;
 	} else {
-		player1->order.y = 0;
+		jetman->order.y = 0;
 	}
 
 	if (value & BUTTON_LEFT) {
-		player1->order.x = -1;
+		jetman->order.x = -1;
 	} else if (value & BUTTON_RIGHT) {
-		player1->order.x = +1;
+		jetman->order.x = +1;
 	} else {
-		player1->order.x = 0;
+		jetman->order.x = 0;
 	}
 }
