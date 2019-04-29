@@ -26,6 +26,15 @@ void updateBox(Object_f16* object) {
 	object->box->y = object->pos.y;
 }
 
+Box_f16 targetBox(const Object_f16* object, u8 width, u8 height) {
+
+	fix16 target_x = fix16Add(object->pos.x, object->mov.x);
+	fix16 target_y = fix16Add(object->pos.y, object->mov.y);
+	Box_f16 box = { .x = target_x, .y = target_y, .w = width, .h = height };
+
+	return box;
+}
+
 Box_f16 targetHBox(const Object_f16* object, u8 width, u8 height) {
 
 	fix16 target_x = fix16Add(object->pos.x, object->mov.x);
@@ -42,12 +51,31 @@ Box_f16 targetVBox(const Object_f16* object, u8 width, u8 height) {
 	return box;
 }
 
-fix16 hit(Box_f16 subject, Box_f16 object) {
+u8 overlap(Box_f16 subject, Box_f16 object) {
 
-	return hitAbove(subject, object) //
-	|| hitUnder(subject, object) //
-			|| hitLeft(subject, object) //
-			|| hitRight(subject, object);
+	if (OVERLAPPED & axisXBoxRelativePos(subject, object)) {
+		if (IN_BETWEEN & axisYPxRelativePos(subject.y, object)) {
+			return TRUE;
+		}
+
+		fix16 subject_bottom = fix16Add(subject.y, FIX16(subject.h));
+		if (IN_BETWEEN & axisYPxRelativePos(subject_bottom, object)) {
+			return TRUE;
+		}
+	}
+
+	if (OVERLAPPED & axisYBoxRelativePos(subject, object)) {
+		if (IN_BETWEEN & axisXPxRelativePos(subject.x, object)) {
+			return TRUE;
+		}
+
+		fix16 subject_right_edge = fix16Add(subject.x, FIX16(subject.w));
+		if (IN_BETWEEN & axisXPxRelativePos(subject_right_edge, object)) {
+			return TRUE;
+		}
+	}
+
+	return FALSE;
 }
 
 fix16 hitAbove(Box_f16 subject, Box_f16 object) {

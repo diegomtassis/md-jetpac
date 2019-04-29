@@ -34,6 +34,8 @@ void startGame(Game* game) {
 
 	while (game->lives > 0) {
 
+		VDP_clearText(15, 15, 10);
+
 		if (!paused) {
 
 			jetmanActs(current_level);
@@ -44,7 +46,8 @@ void startGame(Game* game) {
 			if (hasJetmanDied(current_level)) {
 
 				releaseAllEnemies(current_level);
-				if (--game->lives > 0) {
+				game->lives--;
+				if (game->lives > 0) {
 					resetJetman(current_level);
 					startEnemies(current_level);
 				} else {
@@ -79,7 +82,7 @@ static void handleCollisionsBetweenElementsAlive(Level* level) {
 	while (num_enemies--) {
 
 		Enemy* enemy = level->enemies->objects[num_enemies];
-		if (enemy && enemy->alive && hit(*(level->jetman->object.box), *(enemy->object.box))) {
+		if (enemy && enemy->alive && overlap(*(level->jetman->object.box), *(enemy->object.box))) {
 			level->jetman->alive = FALSE;
 			break;
 		}

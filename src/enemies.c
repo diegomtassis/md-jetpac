@@ -34,8 +34,7 @@ static void enemiesJoin(Level* level);
 static void moveEnemy(Enemy*, const Level*);
 static void calculateNextMovement(Enemy*);
 static void updatePosition(Enemy*, const Level*);
-static fix16 crashedHIntoPlatform(Box_f16 subject_box, const Level* level);
-static fix16 crashedVIntoPlatform(Box_f16 subject_box, const Level* level);
+static u8 crashedIntoPlatform(Box_f16 subject_box, const Level* level);
 static Sprite* createSprite(Enemy* enemy);
 
 static void updateSprite(Enemy* enemy);
@@ -95,9 +94,17 @@ void releaseAllEnemies(Level* level) {
 
 			releaseEnemy(enemy);
 			level->enemies->objects[num_enemies] = NULL;
-			level->enemies->current_num_enemies--;
 		}
 	}
+
+	level->enemies->current_num_enemies = 0;
+
+	char number[2];
+	sprintf(number, "%2d", level->enemies->current_num_enemies);
+	VDP_drawText(number, 15, 10);
+
+	MEM_free(level->enemies->objects);
+	level->enemies->objects = NULL;
 }
 
 void releaseDeadEnemies(Level* level) {
@@ -113,6 +120,10 @@ void releaseDeadEnemies(Level* level) {
 			level->enemies->current_num_enemies--;
 		}
 	}
+
+	char number[2];
+	sprintf(number, "%2d", level->enemies->current_num_enemies);
+	VDP_drawText(number, 15, 10);
 }
 
 static void releaseEnemy(Enemy* enemy) {
@@ -129,6 +140,10 @@ static void addEnemy(Level* level, u8 pos) {
 	level->enemies->objects[pos] = enemy;
 	enemy->sprite = createSprite(enemy);
 	level->enemies->current_num_enemies++;
+
+	char number[2];
+	sprintf(number, "%2d", level->enemies->current_num_enemies);
+	VDP_drawText(number, 15, 10);
 }
 
 static Enemy* createEnemy() {
@@ -197,64 +212,44 @@ static void calculateNextMovement(Enemy* enemy) {
 static void updatePosition(Enemy* enemy, const Level* level) {
 
 	// horizontal position
-	Box_f16 target_h = targetHBox(&enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
-	if (target_h.x > MAX_POS_H_PX_F16) {
+	Box_f16 target = targetBox(&enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
+	if (crashedIntoPlatform(target, level)) {
+		enemy->alive = FALSE;
+		return;
+	}
+
+	if (target.x > MAX_POS_H_PX_F16) {
 		enemy->object.pos.x = MIN_POS_H_PX_F16;
 
-	} else if (target_h.x < MIN_POS_H_PX_F16) {
+	} else if (target.x < MIN_POS_H_PX_F16) {
 		enemy->object.pos.x = MAX_POS_H_PX_F16;
-
-	} else if (crashedHIntoPlatform(target_h, level)) {
-		enemy->alive = FALSE;
 	} else {
-		enemy->object.pos.x = target_h.x;
+		enemy->object.pos.x = target.x;
 	}
 
-	// vertical position
-	Box_f16 target_v = targetVBox(&enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
-	if (crashedVIntoPlatform(target_v, level)) {
-		enemy->alive = FALSE;
-	} else {
-		enemy->object.pos.y = target_v.y;
-	}
+	enemy->object.pos.y = target.y;
 
 	// update box
-	enemy->object.box->x = enemy->object.pos.x;
-	enemy->object.box->y = enemy->object.pos.y;
+	updateBox(&enemy->object);
 }
 
-static fix16 crashedHIntoPlatform(Box_f16 subject_box, const Level* level) {
+static u8 crashedIntoPlatform(Box_f16 subject_box, const Level* level) {
 
-	fix16 crashed;
-	for (u8 i = 0; i < level->num_platforms; i++) {
-		Box_f16 platform_box = *level->platforms[i]->object.box;
-		crashed = hitLeft(subject_box, platform_box) //
-		|| hitRight(subject_box, platform_box);
-		if (crashed) {
-			return crashed;
-		}
-	}
-
-	return 0;
-}
-
-static fix16 crashedVIntoPlatform(Box_f16 subject_box, const Level* level) {
-
-	fix16 crashed = hitAbove(subject_box, *level->floor->object.box);
+	u8 crashed = overlap(subject_box, *level->floor->object.box);
 	if (crashed) {
-		return crashed;
+//		VDP_drawText("crashed into floor", 15, 14);
+		return TRUE;
 	}
 
 	for (u8 i = 0; i < level->num_platforms; i++) {
-		Box_f16 platform_box = *level->platforms[i]->object.box;
-		crashed = hitAbove(subject_box, platform_box) //
-		|| hitUnder(subject_box, platform_box);
+		crashed = overlap(subject_box, *level->platforms[i]->object.box);
 		if (crashed) {
-			return crashed;
+//			VDP_drawText("crashed into platform", 15, 15);
+			return TRUE;
 		}
 	}
 
-	return 0;
+	return FALSE;
 }
 
 static Sprite* createSprite(Enemy* enemy) {

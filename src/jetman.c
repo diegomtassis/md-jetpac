@@ -54,7 +54,9 @@ void releaseJetman(Jetman* jetman) {
 	SPR_setVisibility(jetman->sprite, FALSE);
 	SPR_releaseSprite(jetman->sprite);
 	MEM_free(jetman->sprite);
+	jetman->sprite = NULL;
 	MEM_free(jetman->object.box);
+	jetman->object.box = NULL;
 	MEM_free(jetman);
 }
 
@@ -96,8 +98,7 @@ static void moveToStart(Jetman* jetman, const Level* level) {
 	jetman->object.mov.x = SPEED_ZERO;
 	jetman->object.mov.y = SPEED_ZERO;
 
-	jetman->object.box->x = jetman->object.pos.x;
-	jetman->object.box->y = jetman->object.pos.y;
+	updateBox(&jetman->object);
 }
 
 static void moveJetman(Jetman* jetman, const Level* level) {
@@ -173,8 +174,7 @@ static void updatePosition(Jetman* jetman, const Level* level) {
 	}
 
 	// update box
-	jetman->object.box->x = jetman->object.pos.x;
-	jetman->object.box->y = jetman->object.pos.y;
+	updateBox(&jetman->object);
 }
 
 static fix16 landed(Box_f16 subject_box, const Level* level) {

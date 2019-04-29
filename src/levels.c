@@ -38,12 +38,14 @@ Level* createLevel() {
 	// level static elements
 	level->floor = createPlatform(0, 25, 32);
 
-	level->num_platforms = 3;
-	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform*));
+	level->num_platforms = 0;
 
-	level->platforms[0] = createPlatform(4, 11, 6);
-	level->platforms[1] = createPlatform(15, 14, 4);
-	level->platforms[2] = createPlatform(24, 8, 6);
+//	level->num_platforms = 3;
+//	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform*));
+//
+//	level->platforms[0] = createPlatform(4, 11, 6);
+//	level->platforms[1] = createPlatform(15, 14, 4);
+//	level->platforms[2] = createPlatform(24, 8, 6);
 
 	// define enemies
 	level->enemies = defineEnemies(level);
@@ -88,6 +90,9 @@ void releaseLevel(Level* level) {
 		level->platforms[i] = NULL;
 	}
 
+	MEM_free(level->enemies);
+	level->enemies = NULL;
+
 	MEM_free(level);
 }
 
@@ -126,7 +131,7 @@ static Enemies* defineEnemies(Level * level) {
 
 	Enemies* enemies = MEM_alloc(sizeof(Enemies));
 	enemies->current_num_enemies = 0;
-	enemies->max_num_enemies = 12;
+	enemies->max_num_enemies = 1;
 
 	return enemies;
 }
