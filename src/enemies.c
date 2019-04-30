@@ -45,13 +45,11 @@ u8 nuclear_bomb;
 
 void startEnemies(Level* level) {
 
-	if (!level->enemies->objects) {
-		// First time
-		level->enemies->objects = MEM_alloc(sizeof(Enemy*) * level->enemies->max_num_enemies);
-		setRandomSeed(getTick());
-	}
+	// First time
+	level->enemies.objects = MEM_alloc(sizeof(Enemy*) * level->enemies.max_num_enemies);
+	setRandomSeed(getTick());
 
-	u8 num_enemies = level->enemies->max_num_enemies / 2; // start with half the maximum enemies
+	u8 num_enemies = level->enemies.max_num_enemies / 2; // start with half the maximum enemies
 	while (num_enemies--) {
 		addEnemy(level, num_enemies);
 	}
@@ -61,11 +59,13 @@ void enemiesAct(Level* level) {
 
 	detectNuclearBomb();
 
-	u8 num_enemies = level->enemies->max_num_enemies;
+	u8 num_enemies = level->enemies.current_num_enemies;
+	u8 current_enemy = 0;
+	u8 idx = 0;
 
-	while (num_enemies--) {
+	while (current_enemy < num_enemies) {
 
-		Enemy* enemy = level->enemies->objects[num_enemies];
+		Enemy* enemy = level->enemies.objects[idx++];
 		if (enemy) {
 
 			if (nuclear_bomb) {
@@ -75,6 +75,7 @@ void enemiesAct(Level* level) {
 			}
 
 			updateSprite(enemy);
+			current_enemy++;
 		}
 	}
 
@@ -86,43 +87,43 @@ void enemiesAct(Level* level) {
 
 void releaseAllEnemies(Level* level) {
 
-	u8 num_enemies = level->enemies->max_num_enemies;
+	u8 num_enemies = level->enemies.max_num_enemies;
 	while (num_enemies--) {
 
-		Enemy* enemy = level->enemies->objects[num_enemies];
+		Enemy* enemy = level->enemies.objects[num_enemies];
 		if (enemy) {
 
 			releaseEnemy(enemy);
-			level->enemies->objects[num_enemies] = NULL;
+			level->enemies.objects[num_enemies] = NULL;
 		}
 	}
 
-	level->enemies->current_num_enemies = 0;
+	level->enemies.current_num_enemies = 0;
 
 	char number[2];
-	sprintf(number, "%2d", level->enemies->current_num_enemies);
+	sprintf(number, "%2d", level->enemies.current_num_enemies);
 	VDP_drawText(number, 15, 10);
 
-	MEM_free(level->enemies->objects);
-	level->enemies->objects = NULL;
+	MEM_free(level->enemies.objects);
+	level->enemies.objects = NULL;
 }
 
 void releaseDeadEnemies(Level* level) {
 
-	u8 num_enemies = level->enemies->max_num_enemies;
+	u8 num_enemies = level->enemies.max_num_enemies;
 	while (num_enemies--) {
 
-		Enemy* enemy = level->enemies->objects[num_enemies];
+		Enemy* enemy = level->enemies.objects[num_enemies];
 		if (enemy && !enemy->alive) {
 
 			releaseEnemy(enemy);
-			level->enemies->objects[num_enemies] = NULL;
-			level->enemies->current_num_enemies--;
+			level->enemies.objects[num_enemies] = NULL;
+			level->enemies.current_num_enemies--;
 		}
 	}
 
 	char number[2];
-	sprintf(number, "%2d", level->enemies->current_num_enemies);
+	sprintf(number, "%2d", level->enemies.current_num_enemies);
 	VDP_drawText(number, 15, 10);
 }
 
@@ -130,19 +131,18 @@ static void releaseEnemy(Enemy* enemy) {
 
 	SPR_releaseSprite(enemy->sprite);
 	MEM_free(enemy->sprite);
-	MEM_free(enemy->object.box);
 	MEM_free(enemy);
 }
 
 static void addEnemy(Level* level, u8 pos) {
 
 	Enemy* enemy = createEnemy();
-	level->enemies->objects[pos] = enemy;
+	level->enemies.objects[pos] = enemy;
 	enemy->sprite = createSprite(enemy);
-	level->enemies->current_num_enemies++;
+	level->enemies.current_num_enemies++;
 
 	char number[2];
-	sprintf(number, "%2d", level->enemies->current_num_enemies);
+	sprintf(number, "%2d", level->enemies.current_num_enemies);
 	VDP_drawText(number, 15, 10);
 }
 
@@ -169,11 +169,10 @@ static Enemy* createEnemy() {
 	}
 
 	// box
-	enemy->object.box = MEM_alloc(sizeof(Box_f16));
-	enemy->object.box->w = ENEMY_01_WIDTH;
-	enemy->object.box->h = ENEMY_01_HEIGHT;
-	enemy->object.box->x = enemy->object.pos.x;
-	enemy->object.box->y = enemy->object.pos.y;
+	enemy->object.box.w = ENEMY_01_WIDTH;
+	enemy->object.box.h = ENEMY_01_HEIGHT;
+	enemy->object.box.x = enemy->object.pos.x;
+	enemy->object.box.y = enemy->object.pos.y;
 
 	startTimer(LAST_ENEMY_CREATION_TIMER);
 	return enemy;
@@ -181,14 +180,14 @@ static Enemy* createEnemy() {
 
 static void enemiesJoin(Level* level) {
 
-	if (level->enemies->current_num_enemies < level->enemies->max_num_enemies
+	if (level->enemies.current_num_enemies < level->enemies.max_num_enemies
 			&& getTimer(LAST_ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND * 2) {
 
-		u8 num_enemies = level->enemies->max_num_enemies;
+		u8 num_enemies = level->enemies.max_num_enemies;
 		u8 idx;
 		while (num_enemies--) {
 			// find the first empty slot
-			Enemy* enemy = level->enemies->objects[num_enemies];
+			Enemy* enemy = level->enemies.objects[num_enemies];
 			if (!enemy) {
 				idx = num_enemies;
 				break;
@@ -212,7 +211,7 @@ static void calculateNextMovement(Enemy* enemy) {
 static void updatePosition(Enemy* enemy, const Level* level) {
 
 	// horizontal position
-	Box_f16 target = targetBox(&enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
+	Box_f16 target = targetBox(enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
 	if (crashedIntoPlatform(target, level)) {
 		enemy->alive = FALSE;
 		return;
@@ -235,14 +234,14 @@ static void updatePosition(Enemy* enemy, const Level* level) {
 
 static u8 crashedIntoPlatform(Box_f16 subject_box, const Level* level) {
 
-	u8 crashed = overlap(subject_box, *level->floor->object.box);
+	u8 crashed = overlap(subject_box, level->floor->object.box);
 	if (crashed) {
 //		VDP_drawText("crashed into floor", 15, 14);
 		return TRUE;
 	}
 
 	for (u8 i = 0; i < level->num_platforms; i++) {
-		crashed = overlap(subject_box, *level->platforms[i]->object.box);
+		crashed = overlap(subject_box, level->platforms[i]->object.box);
 		if (crashed) {
 //			VDP_drawText("crashed into platform", 15, 15);
 			return TRUE;

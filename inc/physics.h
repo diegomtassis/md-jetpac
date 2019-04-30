@@ -26,14 +26,14 @@ typedef struct {
 	Vect2D_f16 pos;
 	Vect2D_u16 size;
 	Vect2D_f16 mov;
-	Box_f16* box;
+	Box_f16 box;
 } Object_f16;
 
 void updateBox(Object_f16*);
 
-Box_f16 targetBox(const Object_f16*, u8, u8);
-Box_f16 targetHBox(const Object_f16*, u8, u8);
-Box_f16 targetVBox(const Object_f16*, u8, u8);
+Box_f16 targetBox(Object_f16, u8, u8);
+Box_f16 targetHBox(Object_f16, u8, u8);
+Box_f16 targetVBox(Object_f16, u8, u8);
 
 u8 overlap(Box_f16, Box_f16);
 

@@ -45,11 +45,11 @@ void startGame(Game* game) {
 
 			if (hasJetmanDied(current_level)) {
 
-				releaseAllEnemies(current_level);
+//				releaseAllEnemies(current_level);
 				game->lives--;
 				if (game->lives > 0) {
 					resetJetman(current_level);
-					startEnemies(current_level);
+//					startEnemies(current_level);
 				} else {
 					releaseJetman(current_level->jetman);
 				}
@@ -67,10 +67,13 @@ void startGame(Game* game) {
 	}
 
 	VDP_drawText("Game Over", 12, 5);
-	waitMs(5000);
-
+	releaseAllEnemies(current_level);
 	releaseLevel(current_level);
 	current_level = NULL;
+	SPR_update();
+
+	waitMs(5000);
+
 	SPR_reset();
 
 	return;
@@ -78,13 +81,19 @@ void startGame(Game* game) {
 
 static void handleCollisionsBetweenElementsAlive(Level* level) {
 
-	u8 num_enemies = level->enemies->max_num_enemies;
-	while (num_enemies--) {
+	u8 num_enemies = level->enemies.current_num_enemies;
+	u8 current_enemy = 0;
+	u8 idx = 0;
 
-		Enemy* enemy = level->enemies->objects[num_enemies];
-		if (enemy && enemy->alive && overlap(*(level->jetman->object.box), *(enemy->object.box))) {
-			level->jetman->alive = FALSE;
-			break;
+	while (current_enemy < num_enemies) {
+
+		Enemy* enemy = level->enemies.objects[idx++];
+		if (enemy) {
+			current_enemy++;
+			if (enemy->alive && overlap(level->jetman->object.box, enemy->object.box)) {
+				level->jetman->alive = FALSE;
+				break;
+			}
 		}
 	}
 }
@@ -96,12 +105,12 @@ static u8 hasJetmanDied(Level* level) {
 
 static void updateInfoPanel(Game* game) {
 
-	// lives
+// lives
 	char lives[2];
 	uint16ToStr(game->lives, lives, 1);
 	VDP_drawText(lives, 8, 2);
 
-	// score
+// score
 	char score[6];
 	sprintf(score, "%06d", game->score);
 	VDP_drawText(score, 1, 3);

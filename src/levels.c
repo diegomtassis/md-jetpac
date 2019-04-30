@@ -23,7 +23,7 @@ static u16 idx_tile_platform;
 static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
 static void releasePlatform(Platform*);
 
-static Enemies* defineEnemies(Level * level);
+static void defineEnemies(Enemies* enemies);
 
 static void loadLevelResources();
 
@@ -38,17 +38,17 @@ Level* createLevel() {
 	// level static elements
 	level->floor = createPlatform(0, 25, 32);
 
-	level->num_platforms = 0;
+//	level->num_platforms = 0;
 
-//	level->num_platforms = 3;
-//	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform*));
-//
-//	level->platforms[0] = createPlatform(4, 11, 6);
-//	level->platforms[1] = createPlatform(15, 14, 4);
-//	level->platforms[2] = createPlatform(24, 8, 6);
+	level->num_platforms = 3;
+	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform*));
+
+	level->platforms[0] = createPlatform(4, 11, 6);
+	level->platforms[1] = createPlatform(15, 14, 4);
+	level->platforms[2] = createPlatform(24, 8, 6);
 
 	// define enemies
-	level->enemies = defineEnemies(level);
+	defineEnemies(&level->enemies);
 
 	return level;
 }
@@ -90,9 +90,6 @@ void releaseLevel(Level* level) {
 		level->platforms[i] = NULL;
 	}
 
-	MEM_free(level->enemies);
-	level->enemies = NULL;
-
 	MEM_free(level);
 }
 
@@ -112,10 +109,8 @@ static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 	Vect2D_u16 size_px = { .x = length_t * 8, .y = 8 };
 	platform->object.size = size_px;
 
-	Box_f16* box = MEM_alloc(sizeof(Box_f16));
-	box->w = size_px.x;
-	box->h = size_px.y;
-	platform->object.box = box;
+	platform->object.box.w = size_px.x;
+	platform->object.box.h = size_px.y;
 	updateBox(&platform->object);
 
 	return platform;
@@ -123,17 +118,13 @@ static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 
 static void releasePlatform(Platform* platform) {
 
-	MEM_free(platform->object.box);
 	MEM_free(platform);
 }
 
-static Enemies* defineEnemies(Level * level) {
+static void defineEnemies(Enemies* enemies) {
 
-	Enemies* enemies = MEM_alloc(sizeof(Enemies));
 	enemies->current_num_enemies = 0;
-	enemies->max_num_enemies = 1;
-
-	return enemies;
+	enemies->max_num_enemies = 10;
 }
 
 static void loadLevelResources() {

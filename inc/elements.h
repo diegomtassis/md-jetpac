@@ -42,8 +42,8 @@ typedef struct {
 	Platform* floor;
 	Platform** platforms;
 	u8 num_platforms;
+	Enemies enemies;
 	Jetman* jetman;
-	Enemies* enemies;
 } Level;
 
 #endif /* INC_ELEMENTS_H_ */
