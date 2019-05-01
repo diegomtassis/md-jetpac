@@ -176,15 +176,14 @@ static void updatePosition(Jetman* jetman, const Level* level) {
 
 static fix16 landed(Box_f16 subject_box, const Level* level) {
 
-	fix16 landedInPlatform = hitAbove(subject_box, level->floor->object.box);
-	if (landedInPlatform) {
-		return landedInPlatform;
+	if (hitAbove(subject_box, level->floor->object.box)) {
+		return adjacentYAbove(subject_box, level->floor->object.box);
 	}
 
 	for (u8 i = 0; i < level->num_platforms; i++) {
-		landedInPlatform = hitAbove(subject_box, level->platforms[i]->object.box);
-		if (landedInPlatform) {
-			return landedInPlatform;
+		Box_f16 object_box = level->platforms[i]->object.box;
+		if (hitAbove(subject_box, object_box)) {
+			return adjacentYAbove(subject_box, object_box);
 		}
 	}
 
@@ -197,17 +196,15 @@ static fix16 reachedTop(Box_f16 subject_box, const Level* level) {
 		return MIN_POS_V_PX_F16;
 	}
 
-	fix16 reachedPlatformTop;
 	for (u8 i = 0; i < level->num_platforms; i++) {
-		reachedPlatformTop = hitUnder(subject_box, level->platforms[i]->object.box);
-		if (reachedPlatformTop) {
-			return reachedPlatformTop;
+		Box_f16 object_box = level->platforms[i]->object.box;
+		if (hitUnder(subject_box, object_box)) {
+			return adjacentYUnder(subject_box, object_box);
 		}
 	}
 
-	reachedPlatformTop = hitUnder(subject_box, level->floor->object.box);
-	if (reachedPlatformTop) {
-		return reachedPlatformTop;
+	if (hitUnder(subject_box, level->floor->object.box)) {
+		return adjacentYUnder(subject_box, level->floor->object.box);
 	}
 
 	return 0;
@@ -215,15 +212,14 @@ static fix16 reachedTop(Box_f16 subject_box, const Level* level) {
 
 static fix16 blockedByLeft(Box_f16 target_box, const Level* level) {
 
-	fix16 blocked = hitLeft(target_box, level->floor->object.box);
-	if (blocked) {
-		return blocked;
+	if (hitLeft(target_box, level->floor->object.box)) {
+		return adjacentXOnTheLeft(target_box, level->floor->object.box);
 	}
 
 	for (u8 i = 0; i < level->num_platforms; i++) {
-		blocked = hitLeft(target_box, level->platforms[i]->object.box);
-		if (blocked) {
-			return blocked;
+		Box_f16 object_box = level->platforms[i]->object.box;
+		if (hitLeft(target_box, object_box)) {
+			return adjacentXOnTheLeft(target_box, object_box);
 		}
 	}
 
@@ -232,15 +228,14 @@ static fix16 blockedByLeft(Box_f16 target_box, const Level* level) {
 
 static fix16 blockedByRight(Box_f16 target_box, const Level* level) {
 
-	fix16 blocked = hitRight(target_box, level->floor->object.box);
-	if (blocked) {
-		return blocked;
+	if (hitRight(target_box, level->floor->object.box)) {
+		return adjacentXOnTheRight(target_box, level->floor->object.box);
 	}
 
 	for (u8 i = 0; i < level->num_platforms; i++) {
-		blocked = hitRight(target_box, level->platforms[i]->object.box);
-		if (blocked) {
-			return blocked;
+		Box_f16 object_box = level->platforms[i]->object.box;
+		if (hitRight(target_box, object_box)) {
+			return adjacentXOnTheRight(target_box, object_box);
 		}
 	}
 

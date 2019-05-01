@@ -76,52 +76,68 @@ u8 overlap(Box_f16 subject, Box_f16 object) {
 	return FALSE;
 }
 
-fix16 hitAbove(Box_f16 subject, Box_f16 object) {
+u8 hitAbove(Box_f16 subject, Box_f16 object) {
 
 	if (OVERLAPPED & axisXBoxRelativePos(subject, object)) {
 
 		if (IN_BETWEEN & axisYPxRelativePos(fix16ToInt(subject.y) + subject.h, object)) {
-			return fix16Sub(object.y, FIX16(subject.h));
+			return TRUE;
 		}
 	}
 
-	return 0;
+	return FALSE;
 }
 
-fix16 hitUnder(Box_f16 subject, Box_f16 object) {
+u8 hitUnder(Box_f16 subject, Box_f16 object) {
 
 	if (OVERLAPPED & axisXBoxRelativePos(subject, object)) {
 		if (IN_BETWEEN & axisYPxRelativePos(fix16ToInt(subject.y), object)) {
-			return fix16Add(object.y, FIX16(object.h));
+			return TRUE;
 		}
 	}
 
-	return 0;
+	return FALSE;
 }
 
-fix16 hitLeft(Box_f16 subject, Box_f16 object) {
+u8 hitLeft(Box_f16 subject, Box_f16 object) {
 
 	if (OVERLAPPED & axisYBoxRelativePos(subject, object)) {
 
 		s16 subject_right_edge = fix16ToInt(subject.x) + subject.w;
 
 		if (IN_BETWEEN & axisXPxRelativePos(subject_right_edge, object)) {
-			return fix16Sub(object.x, intToFix16(subject.w));
+			return TRUE;
 		}
 	}
 
-	return 0;
+	return FALSE;
 }
 
-fix16 hitRight(Box_f16 subject, Box_f16 object) {
+u8 hitRight(Box_f16 subject, Box_f16 object) {
 
 	if (OVERLAPPED & axisYBoxRelativePos(subject, object)) {
 		if (IN_BETWEEN & axisXPxRelativePos(fix16ToInt(subject.x), object)) {
-			return fix16Add(object.x, FIX16(object.w));
+			return TRUE;
 		}
 	}
 
-	return 0;
+	return FALSE;
+}
+
+fix16 adjacentYAbove(Box_f16 subject, Box_f16 object) {
+	return fix16Sub(object.y, FIX16(subject.h));
+}
+
+fix16 adjacentYUnder(Box_f16 subject, Box_f16 object) {
+	return fix16Add(object.y, FIX16(object.h));
+}
+
+fix16 adjacentXOnTheLeft(Box_f16 subject, Box_f16 object) {
+	return fix16Sub(object.x, intToFix16(subject.w));
+}
+
+fix16 adjacentXOnTheRight(Box_f16 subject, Box_f16 object) {
+	return fix16Add(object.x, FIX16(object.w));
 }
 
 static u8 axisXBoxRelativePos(Box_f16 subject, Box_f16 object) {
