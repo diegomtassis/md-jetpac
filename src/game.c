@@ -15,20 +15,25 @@
 #include "../inc/levels.h"
 
 static void handleCollisionsBetweenElementsAlive(Level*);
-static u8 hasJetmanDied(Level*);
+static u8 isJetmanAlive(Level*);
 static void updateInfoPanel(Game*);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
 vu8 paused = FALSE;
+vu8 killJetman = FALSE;
 
 void startGame(Game* game) {
+
+	SPR_init(50, 256, 256);
 
 	Level* current_level = createLevel();
 	startLevel(current_level);
 
 	startJetman(current_level);
 	startEnemies(current_level);
+
+	SPR_update();
 
 	JOY_setEventHandler(joyEvent);
 
@@ -43,13 +48,18 @@ void startGame(Game* game) {
 
 			handleCollisionsBetweenElementsAlive(current_level);
 
-			if (hasJetmanDied(current_level)) {
+			if (killJetman) {
+				current_level->jetman->alive = FALSE;
+				killJetman = FALSE;
+			}
 
-//				releaseAllEnemies(current_level);
+			if (!isJetmanAlive(current_level)) {
+
+				releaseAllEnemies(current_level);
 				game->lives--;
 				if (game->lives > 0) {
 					resetJetman(current_level);
-//					startEnemies(current_level);
+					startEnemies(current_level);
 				} else {
 					releaseJetman(current_level->jetman);
 				}
@@ -67,14 +77,12 @@ void startGame(Game* game) {
 	}
 
 	VDP_drawText("Game Over", 12, 5);
-	releaseAllEnemies(current_level);
 	releaseLevel(current_level);
 	current_level = NULL;
-	SPR_update();
+
+	SPR_end();
 
 	waitMs(5000);
-
-	SPR_reset();
 
 	return;
 }
@@ -98,9 +106,9 @@ static void handleCollisionsBetweenElementsAlive(Level* level) {
 	}
 }
 
-static u8 hasJetmanDied(Level* level) {
+static u8 isJetmanAlive(Level* level) {
 
-	return !level->jetman->alive;
+	return level->jetman->alive;
 }
 
 static void updateInfoPanel(Game* game) {
@@ -120,5 +128,9 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 
 	if (BUTTON_START & changed & ~state) {
 		paused ^= 1;
+	}
+
+	if (BUTTON_C & changed & ~state) {
+		killJetman = TRUE;
 	}
 }

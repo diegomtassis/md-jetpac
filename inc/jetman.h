@@ -14,6 +14,6 @@ void startJetman(Level* level);
 void releaseJetman(Jetman* jetman);
 void resetJetman(Level* level);
 
-void jetmanActs(const Level* level);
+void jetmanActs(Level* level);
 
 #endif /* INC_JETMAN_H_ */

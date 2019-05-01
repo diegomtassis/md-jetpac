@@ -28,7 +28,7 @@
 #define MAX_POS_H_PX_F16	RIGHT_POS_H_PX_F16 - FIX16(8)
 #define MIN_POS_V_PX_F16	TOP_POS_V_PX_F16
 
-static Jetman* createPlayer1(const Level*);
+static void createPlayer1(Level*);
 static void handleInputJetman(Jetman*);
 
 static void moveToStart(Jetman* jetman, const Level* level);
@@ -44,7 +44,7 @@ static void drawJetman(Jetman*);
 
 void startJetman(Level* level) {
 
-	level->jetman = createPlayer1(level);
+	createPlayer1(level);
 	level->jetman->sprite = SPR_addSprite(&jetman_sprite, fix16ToInt(level->jetman->object.pos.x),
 			fix16ToInt(level->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 }
@@ -64,7 +64,7 @@ void resetJetman(Level* level) {
 	level->jetman->alive = TRUE;
 }
 
-void jetmanActs(const Level* level) {
+void jetmanActs(Level* level) {
 
 	handleInputJetman(level->jetman);
 
@@ -72,7 +72,7 @@ void jetmanActs(const Level* level) {
 	drawJetman(level->jetman);
 }
 
-static Jetman* createPlayer1(const Level* level) {
+static void createPlayer1(Level* level) {
 
 	Jetman* jetman = MEM_alloc(sizeof(Jetman));
 
@@ -85,7 +85,7 @@ static Jetman* createPlayer1(const Level* level) {
 	moveToStart(jetman, level);
 	jetman->alive = TRUE;
 
-	return jetman;
+	level->jetman = jetman;
 }
 
 static void moveToStart(Jetman* jetman, const Level* level) {
