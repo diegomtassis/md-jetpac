@@ -24,7 +24,7 @@
 #define MIN_POS_V_PX_F16	TOP_POS_V_PX_F16
 #define MAX_POS_V_PX_F16	BOTTOM_POS_V_PX_F16 - FIX16(16)
 
-#define LAST_ENEMY_CREATION_TIMER 0
+#define ENEMY_CREATION_TIMER 0
 
 static void addEnemy(Level*, u8 pos);
 static Enemy* createEnemy();
@@ -53,7 +53,7 @@ void startEnemies(Level* level) {
 		level->enemies.objects[idx] = NULL;
 	}
 
-	u8 num_enemies = level->enemies.max_num_enemies / 2; // start with half the maximum enemies
+	u8 num_enemies = level->enemies.max_num_enemies / 3; // start with a portion of the maximum enemies
 	while (num_enemies--) {
 		addEnemy(level, num_enemies);
 	}
@@ -125,6 +125,8 @@ static void releaseEnemy(Enemy* enemy) {
 	SPR_releaseSprite(enemy->sprite);
 	MEM_free(enemy->sprite);
 	MEM_free(enemy);
+
+	startTimer(ENEMY_CREATION_TIMER);
 }
 
 static void addEnemy(Level* level, u8 pos) {
@@ -163,14 +165,14 @@ static Enemy* createEnemy() {
 	enemy->object.box.x = enemy->object.pos.x;
 	enemy->object.box.y = enemy->object.pos.y;
 
-	startTimer(LAST_ENEMY_CREATION_TIMER);
+	startTimer(ENEMY_CREATION_TIMER);
 	return enemy;
 }
 
 static void enemiesJoin(Level* level) {
 
-	if (level->enemies.current_num_enemies < level->enemies.max_num_enemies
-			&& getTimer(LAST_ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND * 2) {
+	if (level->enemies.current_num_enemies
+			< level->enemies.max_num_enemies && getTimer(ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND) {
 
 		u8 num_enemies = level->enemies.max_num_enemies;
 		u8 idx;

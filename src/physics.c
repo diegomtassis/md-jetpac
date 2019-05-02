@@ -149,11 +149,12 @@ static u8 axisYBoxRelativePos(Box_f16 subject_box, Box_f16 object_box) {
 
 static u8 axisXPxRelativePos(s16 x_px, Box_f16 object_box) {
 
-	if (fix16ToInt(object_box.x) >= x_px) {
+	s16 x_s16 = fix16ToInt(object_box.x);
+	if (x_px <= x_s16) {
 		return TO_THE_LEFT;
 	}
 
-	if (x_px >= fix16ToInt(object_box.x) + object_box.w) {
+	if (x_px >= x_s16 + object_box.w) {
 		return TO_THE_RIGHT;
 	}
 
@@ -162,11 +163,12 @@ static u8 axisXPxRelativePos(s16 x_px, Box_f16 object_box) {
 
 static u8 axisYPxRelativePos(s16 y_px, Box_f16 object_box) {
 
-	if (fix16ToInt(object_box.y) >= y_px) {
+	s16 y_s16 = fix16ToInt(object_box.y);
+	if (y_px <= y_s16) {
 		return ABOVE;
 	}
 
-	if ((fix16ToInt(object_box.y) + object_box.h) <= y_px) {
+	if (y_px >= y_s16 + object_box.h) {
 		return UNDER;
 	}
 

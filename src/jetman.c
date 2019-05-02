@@ -79,8 +79,8 @@ static void createPlayer1(Level* level) {
 	jetman->object.size.x = JETMAN_WIDTH;
 	jetman->object.size.y = JETMAN_HEIGHT;
 
-	jetman->object.box.x = JETMAN_WIDTH;
-	jetman->object.box.y = JETMAN_HEIGHT;
+	jetman->object.box.w = JETMAN_WIDTH;
+	jetman->object.box.h = JETMAN_HEIGHT;
 
 	moveToStart(jetman, level);
 	jetman->alive = TRUE;

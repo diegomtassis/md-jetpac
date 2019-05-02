@@ -29,7 +29,7 @@ void startGame(Game* game) {
 
 	SPR_init(50, 256, 256);
 
-	Level* current_level = createLevel00();
+	Level* current_level = createLevel01();
 	startLevel(current_level);
 
 	startJetman(current_level);
