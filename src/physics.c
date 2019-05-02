@@ -26,7 +26,7 @@ void updateBox(Object_f16* object) {
 	object->box.y = object->pos.y;
 }
 
-Box_f16 targetBox(const Object_f16 object, u8 width, u8 height) {
+Box_f16 targetBox(Object_f16 object, u8 width, u8 height) {
 
 	fix16 target_x = fix16Add(object.pos.x, object.mov.x);
 	fix16 target_y = fix16Add(object.pos.y, object.mov.y);
@@ -35,7 +35,7 @@ Box_f16 targetBox(const Object_f16 object, u8 width, u8 height) {
 	return box;
 }
 
-Box_f16 targetHBox(const Object_f16 object, u8 width, u8 height) {
+Box_f16 targetHBox(Object_f16 object, u8 width, u8 height) {
 
 	fix16 target_x = fix16Add(object.pos.x, object.mov.x);
 	Box_f16 box = { .x = target_x, .y = object.pos.y, .w = width, .h = height };
@@ -43,7 +43,7 @@ Box_f16 targetHBox(const Object_f16 object, u8 width, u8 height) {
 	return box;
 }
 
-Box_f16 targetVBox(const Object_f16 object, u8 width, u8 height) {
+Box_f16 targetVBox(Object_f16 object, u8 width, u8 height) {
 
 	fix16 target_y = fix16Add(object.pos.y, object.mov.y);
 	Box_f16 box = { .x = object.pos.x, .y = target_y, .w = width, .h = height };
@@ -51,24 +51,17 @@ Box_f16 targetVBox(const Object_f16 object, u8 width, u8 height) {
 	return box;
 }
 
-u8 overlap(Box_f16 subject, Box_f16 object) {
+u8 overlap(Box_f16 subject_box, Box_f16 object_box) {
 
-	if (OVERLAPPED & axisXBoxRelativePos(subject, object)) {
-		if (IN_BETWEEN & axisYPxRelativePos(fix16ToInt(subject.y), object)) {
-			return TRUE;
-		}
+	return (OVERLAPPED & axisXBoxRelativePos(subject_box, object_box))
+			&& (OVERLAPPED & axisYBoxRelativePos(subject_box, object_box));
+}
 
-		if (IN_BETWEEN & axisYPxRelativePos(fix16ToInt(subject.y) + subject.h, object)) {
-			return TRUE;
-		}
-	}
+u8 hitAbove(Box_f16 subject_box, Box_f16 object_box) {
 
-	if (OVERLAPPED & axisYBoxRelativePos(subject, object)) {
-		if (IN_BETWEEN & axisXPxRelativePos(fix16ToInt(subject.x), object)) {
-			return TRUE;
-		}
+	if (OVERLAPPED & axisXBoxRelativePos(subject_box, object_box)) {
 
-		if (IN_BETWEEN & axisXPxRelativePos(fix16ToInt(subject.x) + subject.w, object)) {
+		if (IN_BETWEEN & axisYPxRelativePos(fix16ToInt(subject_box.y) + subject_box.h, object_box)) {
 			return TRUE;
 		}
 	}
@@ -76,11 +69,10 @@ u8 overlap(Box_f16 subject, Box_f16 object) {
 	return FALSE;
 }
 
-u8 hitAbove(Box_f16 subject, Box_f16 object) {
+u8 hitUnder(Box_f16 subject_box, Box_f16 object_box) {
 
-	if (OVERLAPPED & axisXBoxRelativePos(subject, object)) {
-
-		if (IN_BETWEEN & axisYPxRelativePos(fix16ToInt(subject.y) + subject.h, object)) {
+	if (OVERLAPPED & axisXBoxRelativePos(subject_box, object_box)) {
+		if (IN_BETWEEN & axisYPxRelativePos(fix16ToInt(subject_box.y), object_box)) {
 			return TRUE;
 		}
 	}
@@ -88,10 +80,13 @@ u8 hitAbove(Box_f16 subject, Box_f16 object) {
 	return FALSE;
 }
 
-u8 hitUnder(Box_f16 subject, Box_f16 object) {
+u8 hitLeft(Box_f16 subject_box, Box_f16 object_box) {
 
-	if (OVERLAPPED & axisXBoxRelativePos(subject, object)) {
-		if (IN_BETWEEN & axisYPxRelativePos(fix16ToInt(subject.y), object)) {
+	if (OVERLAPPED & axisYBoxRelativePos(subject_box, object_box)) {
+
+		s16 subject_right_edge = fix16ToInt(subject_box.x) + subject_box.w;
+
+		if (IN_BETWEEN & axisXPxRelativePos(subject_right_edge, object_box)) {
 			return TRUE;
 		}
 	}
@@ -99,13 +94,10 @@ u8 hitUnder(Box_f16 subject, Box_f16 object) {
 	return FALSE;
 }
 
-u8 hitLeft(Box_f16 subject, Box_f16 object) {
+u8 hitRight(Box_f16 subject_box, Box_f16 object_box) {
 
-	if (OVERLAPPED & axisYBoxRelativePos(subject, object)) {
-
-		s16 subject_right_edge = fix16ToInt(subject.x) + subject.w;
-
-		if (IN_BETWEEN & axisXPxRelativePos(subject_right_edge, object)) {
+	if (OVERLAPPED & axisYBoxRelativePos(subject_box, object_box)) {
+		if (IN_BETWEEN & axisXPxRelativePos(fix16ToInt(subject_box.x), object_box)) {
 			return TRUE;
 		}
 	}
@@ -113,79 +105,68 @@ u8 hitLeft(Box_f16 subject, Box_f16 object) {
 	return FALSE;
 }
 
-u8 hitRight(Box_f16 subject, Box_f16 object) {
-
-	if (OVERLAPPED & axisYBoxRelativePos(subject, object)) {
-		if (IN_BETWEEN & axisXPxRelativePos(fix16ToInt(subject.x), object)) {
-			return TRUE;
-		}
-	}
-
-	return FALSE;
+fix16 adjacentYAbove(Box_f16 subject_box, Box_f16 object_box) {
+	return fix16Sub(object_box.y, FIX16(subject_box.h));
 }
 
-fix16 adjacentYAbove(Box_f16 subject, Box_f16 object) {
-	return fix16Sub(object.y, FIX16(subject.h));
+fix16 adjacentYUnder(Box_f16 subject_box, Box_f16 object_box) {
+	return fix16Add(object_box.y, FIX16(object_box.h));
 }
 
-fix16 adjacentYUnder(Box_f16 subject, Box_f16 object) {
-	return fix16Add(object.y, FIX16(object.h));
+fix16 adjacentXOnTheLeft(Box_f16 subject_box, Box_f16 object_box) {
+	return fix16Sub(object_box.x, intToFix16(subject_box.w));
 }
 
-fix16 adjacentXOnTheLeft(Box_f16 subject, Box_f16 object) {
-	return fix16Sub(object.x, intToFix16(subject.w));
+fix16 adjacentXOnTheRight(Box_f16 subject_box, Box_f16 object_box) {
+	return fix16Add(object_box.x, FIX16(object_box.w));
 }
 
-fix16 adjacentXOnTheRight(Box_f16 subject, Box_f16 object) {
-	return fix16Add(object.x, FIX16(object.w));
-}
+static u8 axisXBoxRelativePos(Box_f16 subject_box, Box_f16 object_box) {
 
-static u8 axisXBoxRelativePos(Box_f16 subject, Box_f16 object) {
-
-	if (TO_THE_RIGHT & axisXPxRelativePos(fix16ToInt(subject.x), object)) {
+	if (TO_THE_RIGHT & axisXPxRelativePos(fix16ToInt(subject_box.x), object_box)) {
 		return TO_THE_RIGHT;
 	}
 
-	if (TO_THE_LEFT & axisXPxRelativePos(fix16ToInt(subject.x) + subject.w, object)) {
+	if (TO_THE_LEFT & axisXPxRelativePos(fix16ToInt(subject_box.x) + subject_box.w, object_box)) {
 		return TO_THE_LEFT;
 	}
 
 	return OVERLAPPED;
 }
 
-static u8 axisYBoxRelativePos(Box_f16 subject, Box_f16 object) {
+static u8 axisYBoxRelativePos(Box_f16 subject_box, Box_f16 object_box) {
 
-	if (UNDER & axisYPxRelativePos(fix16ToInt(subject.y), object)) {
+	if (UNDER & axisYPxRelativePos(fix16ToInt(subject_box.y), object_box)) {
 		return UNDER;
 	}
 
-	if (ABOVE & axisYPxRelativePos(fix16ToInt(subject.y) + subject.h, object)) {
+	if (ABOVE & axisYPxRelativePos(fix16ToInt(subject_box.y) + subject_box.h, object_box)) {
 		return ABOVE;
 	}
 
 	return OVERLAPPED;
 }
 
-static u8 axisXPxRelativePos(s16 x_px, Box_f16 object) {
+static u8 axisXPxRelativePos(s16 x_px, Box_f16 object_box) {
 
-	if (fix16ToInt(object.x) >= x_px) {
+	if (fix16ToInt(object_box.x) >= x_px) {
 		return TO_THE_LEFT;
 	}
 
-	if (x_px >= fix16ToInt(object.x) + object.w) {
+	if (x_px >= fix16ToInt(object_box.x) + object_box.w) {
 		return TO_THE_RIGHT;
 	}
 
 	return IN_BETWEEN;
 }
 
-static u8 axisYPxRelativePos(s16 y_px, Box_f16 object) {
+static u8 axisYPxRelativePos(s16 y_px, Box_f16 object_box) {
 
-	if (fix16ToInt(object.y) >= y_px) {
+	if (fix16ToInt(object_box.y) >= y_px) {
 		return ABOVE;
 	}
 
-	if ((fix16ToInt(object.y) + object.h) <= y_px) {
+	if ((fix16ToInt(object_box.y) + object_box.h) <= y_px) {
 		return UNDER;
 	}
 
