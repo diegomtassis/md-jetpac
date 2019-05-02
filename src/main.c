@@ -14,14 +14,13 @@
 
 #define LOADING_TIME	3000
 
+static void setUpGame(Game*, u8, u8);
+
 int main() {
 
 	// default resolution
 	VDP_setScreenWidth256();
 	VDP_setScreenHeight224();
-
-	// initialization area
-	SPR_init(32, 256, 256);
 
 	// jetpac file
 	printDisclaimer();
@@ -30,12 +29,26 @@ int main() {
 	printerOff();
 	waitMs(75);
 
-	// jetpac loading...
-	showSplashScreen();
-	waitMs(LOADING_TIME);
+	Game* game = MEM_alloc(sizeof(Game));
+	while (1) {
 
-	// run game
-	startGame();
+		// jetpac loading...
+		showSplashScreen();
+		waitMs(LOADING_TIME);
+
+		// run game
+		setUpGame(game, 1, 3);
+		startGame(game);
+
+		VDP_waitVSync();
+	}
 
 	return 0;
+}
+
+static void setUpGame(Game* game, u8 level, u8 lives) {
+
+	game->level = level;
+	game->lives = lives;
+	game->score = 0;
 }
