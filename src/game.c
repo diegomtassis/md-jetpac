@@ -13,6 +13,8 @@
 #include "../inc/enemies.h"
 #include "../inc/jetman.h"
 #include "../inc/levels.h"
+#include "../inc/level_00.h"
+#include "../inc/level_01.h"
 
 static void handleCollisionsBetweenElementsAlive(Level*);
 static u8 isJetmanAlive(Level*);
@@ -27,7 +29,7 @@ void startGame(Game* game) {
 
 	SPR_init(50, 256, 256);
 
-	Level* current_level = createLevel();
+	Level* current_level = createLevel00();
 	startLevel(current_level);
 
 	startJetman(current_level);

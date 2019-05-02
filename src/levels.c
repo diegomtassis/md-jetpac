@@ -20,10 +20,7 @@ static u16 idx_tile_platform;
 static u16 idx_tile_floor;
 static u16 idx_tile_platform;
 
-static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
 static void releasePlatform(Platform*);
-
-static void defineEnemies(Enemies* enemies);
 
 static void loadLevelResources();
 
@@ -34,21 +31,6 @@ static void drawPlatform(VDPPlan plan, const Platform * platform, u16 idx_tile);
 Level* createLevel() {
 
 	Level* level = MEM_alloc(sizeof(Level));
-
-	// level static elements
-	level->floor = createPlatform(0, 25, 32);
-
-//	level->num_platforms = 0;
-
-	level->num_platforms = 3;
-	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform*));
-
-	level->platforms[0] = createPlatform(4, 11, 6);
-	level->platforms[1] = createPlatform(15, 14, 4);
-	level->platforms[2] = createPlatform(24, 8, 6);
-
-	// define enemies
-	defineEnemies(&level->enemies);
 
 	return level;
 }
@@ -93,7 +75,7 @@ void releaseLevel(Level* level) {
 	MEM_free(level);
 }
 
-static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
+Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 
 	Platform* platform = MEM_alloc(sizeof(Platform));
 
@@ -119,12 +101,6 @@ static Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 static void releasePlatform(Platform* platform) {
 
 	MEM_free(platform);
-}
-
-static void defineEnemies(Enemies* enemies) {
-
-	enemies->current_num_enemies = 0;
-	enemies->max_num_enemies = 10;
 }
 
 static void loadLevelResources() {
