@@ -10,12 +10,11 @@
 #include <genesis.h>
 
 #include "../inc/commons.h"
+#include "../inc/enemy_01.h"
 #include "../inc/physics.h"
 #include "../res/sprite.h"
 
-#include "../inc/enemy_01.h"
-
-#define SPEED_ZERO		FIX16(0)
+#define SPEED_ZERO		FIX16_0
 #define SPEED_H_NORMAL	FIX16(1)
 #define SPEED_V_NORMAL	FIX16(0.3)
 
@@ -219,10 +218,10 @@ static void updatePosition(Enemy* enemy, const Level* level) {
 	} else if (target.pos.x < MIN_POS_H_PX_S16) {
 		enemy->object.pos.x = MAX_POS_H_PX_F16;
 	} else {
-		enemy->object.pos.x = FIX16(target.pos.x);
+		enemy->object.pos.x += enemy->object.mov.x;
 	}
 
-	enemy->object.pos.y = FIX16(target.pos.y);
+	enemy->object.pos.y += enemy->object.mov.y;
 
 	// update box
 	updateBox(&enemy->object);

@@ -28,20 +28,17 @@ void updateBox(Object_f16* object) {
 
 Box_s16 targetBox(Object_f16 object, u8 width, u8 height) {
 
-	fix16 target_x_f16 = fix16Add(object.pos.x, object.mov.x);
-	fix16 target_y_f16 = fix16Add(object.pos.y, object.mov.y);
 	Box_s16 box = { .w = width, .h = height };
-	box.pos.x = fix16ToInt(target_x_f16);
-	box.pos.y = fix16ToInt(target_y_f16);
+	box.pos.x = fix16ToInt(fix16Add(object.pos.x, object.mov.x));
+	box.pos.y = fix16ToInt(fix16Add(object.pos.y, object.mov.y));
 
 	return box;
 }
 
 Box_s16 targetHBox(Object_f16 object, u8 width, u8 height) {
 
-	fix16 target_x_f16 = fix16Add(object.pos.x, object.mov.x);
 	Box_s16 box = { .w = width, .h = height };
-	box.pos.x = fix16ToInt(target_x_f16);
+	box.pos.x = fix16ToInt(fix16Add(object.pos.x, object.mov.x));
 	box.pos.y = fix16ToInt(object.pos.y);
 
 	return box;
@@ -49,10 +46,9 @@ Box_s16 targetHBox(Object_f16 object, u8 width, u8 height) {
 
 Box_s16 targetVBox(Object_f16 object, u8 width, u8 height) {
 
-	fix16 target_y_f16 = fix16Add(object.pos.y, object.mov.y);
 	Box_s16 box = { .w = width, .h = height };
 	box.pos.x = fix16ToInt(object.pos.x);
-	box.pos.y = fix16ToInt(target_y_f16);
+	box.pos.y = fix16ToInt(fix16Add(object.pos.y, object.mov.y));
 
 	return box;
 }
@@ -89,10 +85,7 @@ u8 hitUnder(Box_s16 subject_box, Box_s16 object_box) {
 u8 hitLeft(Box_s16 subject_box, Box_s16 object_box) {
 
 	if (OVERLAPPED & axisYBoxRelativePos(subject_box, object_box)) {
-
-		s16 subject_right_edge = subject_box.pos.x + subject_box.w;
-
-		if (IN_BETWEEN & axisXPxRelativePos(subject_right_edge, object_box)) {
+		if (IN_BETWEEN & axisXPxRelativePos(subject_box.pos.x + subject_box.w, object_box)) {
 			return TRUE;
 		}
 	}
@@ -111,20 +104,20 @@ u8 hitRight(Box_s16 subject_box, Box_s16 object_box) {
 	return FALSE;
 }
 
-fix16 adjacentYAbove(Box_s16 subject_box, Box_s16 object_box) {
-	return FIX16(object_box.pos.y - subject_box.h);
+s16 adjacentYAbove(Box_s16 subject_box, Box_s16 object_box) {
+	return object_box.pos.y - subject_box.h;
 }
 
-fix16 adjacentYUnder(Box_s16 subject_box, Box_s16 object_box) {
-	return FIX16(object_box.pos.y + object_box.h);
+s16 adjacentYUnder(Box_s16 subject_box, Box_s16 object_box) {
+	return object_box.pos.y + object_box.h;
 }
 
-fix16 adjacentXOnTheLeft(Box_s16 subject_box, Box_s16 object_box) {
-	return FIX16(object_box.pos.x - subject_box.w);
+s16 adjacentXOnTheLeft(Box_s16 subject_box, Box_s16 object_box) {
+	return object_box.pos.x - subject_box.w;
 }
 
-fix16 adjacentXOnTheRight(Box_s16 subject_box, Box_s16 object_box) {
-	return FIX16(object_box.pos.x + object_box.w);
+s16 adjacentXOnTheRight(Box_s16 subject_box, Box_s16 object_box) {
+	return object_box.pos.x + object_box.w;
 }
 
 static u8 axisXBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {

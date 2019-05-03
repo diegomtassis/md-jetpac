@@ -10,6 +10,8 @@
 
 #include <genesis.h>
 
+#define	FIX16_0	FIX16(0)
+
 fix16 randomInRangeFix16(fix16 lower, fix16 higher);
 
 #endif /* INC_COMMONS_H_ */

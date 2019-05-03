@@ -9,6 +9,7 @@
 
 #include <genesis.h>
 
+#include "../inc/commons.h"
 #include "../inc/physics.h"
 #include "../res/sprite.h"
 
@@ -16,7 +17,7 @@
 #define ANIM_FLY		1
 #define STEPPING_SPEED	6 // 0 Maximum
 
-#define SPEED_ZERO		FIX16(0)
+#define SPEED_ZERO		FIX16_0
 #define SPEED_H_NORMAL	FIX16(1.5)
 #define SPEED_V_UP		FIX16(-1.5)
 #define SPEED_V_DOWN	FIX16(1.5)
@@ -154,7 +155,7 @@ static void updatePosition(Jetman* jetman, const Level* level) {
 			jetman->object.pos.x = blockedHorizontally;
 
 		} else {
-			jetman->object.pos.x = FIX16(target_h.pos.x);
+			jetman->object.pos.x += jetman->object.mov.x;
 		}
 	}
 
@@ -171,7 +172,7 @@ static void updatePosition(Jetman* jetman, const Level* level) {
 			jetman->object.pos.y = top_pos_y;
 
 		} else {
-			jetman->object.pos.y = FIX16(target_v.pos.y);
+			jetman->object.pos.y += jetman->object.mov.y;
 		}
 	}
 
@@ -182,17 +183,17 @@ static void updatePosition(Jetman* jetman, const Level* level) {
 static fix16 landed(Box_s16 subject_box, const Level* level) {
 
 	if (hitAbove(subject_box, level->floor->object.box)) {
-		return adjacentYAbove(subject_box, level->floor->object.box);
+		return FIX16(adjacentYAbove(subject_box, level->floor->object.box));
 	}
 
 	for (u8 i = 0; i < level->num_platforms; i++) {
 		Box_s16 object_box = level->platforms[i]->object.box;
 		if (hitAbove(subject_box, object_box)) {
-			return adjacentYAbove(subject_box, object_box);
+			return FIX16(adjacentYAbove(subject_box, object_box));
 		}
 	}
 
-	return 0;
+	return FIX16_0;
 }
 
 static fix16 reachedTop(Box_s16 subject_box, const Level* level) {
@@ -204,47 +205,47 @@ static fix16 reachedTop(Box_s16 subject_box, const Level* level) {
 	for (u8 i = 0; i < level->num_platforms; i++) {
 		Box_s16 object_box = level->platforms[i]->object.box;
 		if (hitUnder(subject_box, object_box)) {
-			return adjacentYUnder(subject_box, object_box);
+			return FIX16(adjacentYUnder(subject_box, object_box));
 		}
 	}
 
 	if (hitUnder(subject_box, level->floor->object.box)) {
-		return adjacentYUnder(subject_box, level->floor->object.box);
+		return FIX16(adjacentYUnder(subject_box, level->floor->object.box));
 	}
 
-	return 0;
+	return FIX16_0;
 }
 
 static fix16 blockedByLeft(Box_s16 target_box, const Level* level) {
 
 	if (hitLeft(target_box, level->floor->object.box)) {
-		return adjacentXOnTheLeft(target_box, level->floor->object.box);
+		return FIX16(adjacentXOnTheLeft(target_box, level->floor->object.box));
 	}
 
 	for (u8 i = 0; i < level->num_platforms; i++) {
 		Box_s16 object_box = level->platforms[i]->object.box;
 		if (hitLeft(target_box, object_box)) {
-			return adjacentXOnTheLeft(target_box, object_box);
+			return FIX16(adjacentXOnTheLeft(target_box, object_box));
 		}
 	}
 
-	return 0;
+	return FIX16_0;
 }
 
 static fix16 blockedByRight(Box_s16 target_box, const Level* level) {
 
 	if (hitRight(target_box, level->floor->object.box)) {
-		return adjacentXOnTheRight(target_box, level->floor->object.box);
+		return FIX16(adjacentXOnTheRight(target_box, level->floor->object.box));
 	}
 
 	for (u8 i = 0; i < level->num_platforms; i++) {
 		Box_s16 object_box = level->platforms[i]->object.box;
 		if (hitRight(target_box, object_box)) {
-			return adjacentXOnTheRight(target_box, object_box);
+			return FIX16(adjacentXOnTheRight(target_box, object_box));
 		}
 	}
 
-	return 0;
+	return FIX16_0;
 }
 
 static void drawJetman(Jetman* jetman) {

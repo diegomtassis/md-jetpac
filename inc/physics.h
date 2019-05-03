@@ -46,9 +46,9 @@ u8 hitUnder(Box_s16, Box_s16);
 u8 hitLeft(Box_s16, Box_s16);
 u8 hitRight(Box_s16, Box_s16);
 
-fix16 adjacentYAbove(Box_s16, Box_s16);
-fix16 adjacentYUnder(Box_s16, Box_s16);
-fix16 adjacentXOnTheLeft(Box_s16, Box_s16);
-fix16 adjacentXOnTheRight(Box_s16, Box_s16);
+s16 adjacentYAbove(Box_s16, Box_s16);
+s16 adjacentYUnder(Box_s16, Box_s16);
+s16 adjacentXOnTheLeft(Box_s16, Box_s16);
+s16 adjacentXOnTheRight(Box_s16, Box_s16);
 
 #endif /* INC_PHYSICS_H_ */
