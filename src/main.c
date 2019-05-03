@@ -23,11 +23,11 @@ int main() {
 	VDP_setScreenHeight224();
 
 	// jetpac file
-	printDisclaimer();
-
-	JOY_waitPress(JOY_1, BUTTON_BTN);
-	printerOff();
-	waitMs(75);
+//	printDisclaimer();
+//
+//	JOY_waitPress(JOY_1, BUTTON_BTN);
+//	printerOff();
+//	waitMs(75);
 
 	Game* game = MEM_alloc(sizeof(Game));
 	while (1) {

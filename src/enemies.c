@@ -19,10 +19,15 @@
 #define SPEED_H_NORMAL	FIX16(1)
 #define SPEED_V_NORMAL	FIX16(0.3)
 
-#define MIN_POS_H_PX_F16	LEFT_POS_H_PX_F16 - FIX16(-8)
-#define MAX_POS_H_PX_F16	RIGHT_POS_H_PX_F16 - FIX16(8)
-#define MIN_POS_V_PX_F16	TOP_POS_V_PX_F16
-#define MAX_POS_V_PX_F16	BOTTOM_POS_V_PX_F16 - FIX16(16)
+#define MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16  + 8
+#define MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
+#define MIN_POS_V_PX_S16	TOP_POS_V_PX_S16
+#define MAX_POS_V_PX_S16	BOTTOM_POS_V_PX_S16 - 16
+
+#define MIN_POS_H_PX_F16	FIX16(MIN_POS_H_PX_S16)
+#define MAX_POS_H_PX_F16	FIX16(MAX_POS_H_PX_S16)
+#define MIN_POS_V_PX_F16	FIX16(MIN_POS_V_PX_S16)
+#define MAX_POS_V_PX_F16	FIX16(MAX_POS_V_PX_S16)
 
 #define ENEMY_CREATION_TIMER 0
 
@@ -34,7 +39,7 @@ static void enemiesJoin(Level* level);
 static void moveEnemy(Enemy*, const Level*);
 static void calculateNextMovement(Enemy*);
 static void updatePosition(Enemy*, const Level*);
-static u8 crashedIntoPlatform(Box_f16 subject_box, const Level* level);
+static u8 crashedIntoPlatform(Box_s16 subject_box, const Level* level);
 static Sprite* createSprite(Enemy* enemy);
 
 static void updateSprite(Enemy* enemy);
@@ -162,8 +167,8 @@ static Enemy* createEnemy() {
 	// box
 	enemy->object.box.w = ENEMY_01_WIDTH;
 	enemy->object.box.h = ENEMY_01_HEIGHT;
-	enemy->object.box.x = enemy->object.pos.x;
-	enemy->object.box.y = enemy->object.pos.y;
+	enemy->object.box.pos.x = fix16ToInt(enemy->object.pos.x);
+	enemy->object.box.pos.y = fix16ToInt(enemy->object.pos.y);
 
 	startTimer(ENEMY_CREATION_TIMER);
 	return enemy;
@@ -202,28 +207,28 @@ static void calculateNextMovement(Enemy* enemy) {
 static void updatePosition(Enemy* enemy, const Level* level) {
 
 	// horizontal position
-	Box_f16 target = targetBox(enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
+	Box_s16 target = targetBox(enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
 	if (crashedIntoPlatform(target, level)) {
 		enemy->alive = FALSE;
 		return;
 	}
 
-	if (target.x > MAX_POS_H_PX_F16) {
+	if (target.pos.x > MAX_POS_H_PX_S16) {
 		enemy->object.pos.x = MIN_POS_H_PX_F16;
 
-	} else if (target.x < MIN_POS_H_PX_F16) {
+	} else if (target.pos.x < MIN_POS_H_PX_S16) {
 		enemy->object.pos.x = MAX_POS_H_PX_F16;
 	} else {
-		enemy->object.pos.x = target.x;
+		enemy->object.pos.x = FIX16(target.pos.x);
 	}
 
-	enemy->object.pos.y = target.y;
+	enemy->object.pos.y = FIX16(target.pos.y);
 
 	// update box
 	updateBox(&enemy->object);
 }
 
-static u8 crashedIntoPlatform(Box_f16 subject_box, const Level* level) {
+static u8 crashedIntoPlatform(Box_s16 subject_box, const Level* level) {
 
 	u8 crashed = overlap(subject_box, level->floor->object.box);
 	if (crashed) {

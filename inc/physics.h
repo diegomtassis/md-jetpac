@@ -10,41 +10,45 @@
 
 #include <genesis.h>
 
-#define LEFT_POS_H_PX_F16    	FIX16(0)
-#define RIGHT_POS_H_PX_F16  	FIX16(256)
-#define TOP_POS_V_PX_F16 		FIX16(32)
-#define BOTTOM_POS_V_PX_F16 	FIX16(224 - 32)
+#define LEFT_POS_H_PX_S16    	0
+#define RIGHT_POS_H_PX_S16  	256
+#define TOP_POS_V_PX_S16 		32
+#define BOTTOM_POS_V_PX_S16 	224 - 32
+
+#define LEFT_POS_H_PX_F16    	FIX16(LEFT_POS_H_PX_S16)
+#define RIGHT_POS_H_PX_F16  	FIX16(RIGHT_POS_H_PX_S16)
+#define TOP_POS_V_PX_F16 		FIX16(TOP_POS_V_PX_S16)
+#define BOTTOM_POS_V_PX_F16 	FIX16(BOTTOM_POS_V_PX_S16)
 
 typedef struct {
-	fix16 x;
-	fix16 y;
+	Vect2D_s16 pos;
 	u16 w;
 	u16 h;
-} Box_f16;
+} Box_s16;
 
 typedef struct {
 	Vect2D_f16 pos;
 	Vect2D_u16 size;
 	Vect2D_f16 mov;
-	Box_f16 box;
+	Box_s16 box;
 } Object_f16;
 
 void updateBox(Object_f16*);
 
-Box_f16 targetBox(Object_f16, u8, u8);
-Box_f16 targetHBox(Object_f16, u8, u8);
-Box_f16 targetVBox(Object_f16, u8, u8);
+Box_s16 targetBox(Object_f16, u8, u8);
+Box_s16 targetHBox(Object_f16, u8, u8);
+Box_s16 targetVBox(Object_f16, u8, u8);
 
-u8 overlap(Box_f16, Box_f16);
+u8 overlap(Box_s16, Box_s16);
 
-u8 hitAbove(Box_f16, Box_f16);
-u8 hitUnder(Box_f16, Box_f16);
-u8 hitLeft(Box_f16, Box_f16);
-u8 hitRight(Box_f16, Box_f16);
+u8 hitAbove(Box_s16, Box_s16);
+u8 hitUnder(Box_s16, Box_s16);
+u8 hitLeft(Box_s16, Box_s16);
+u8 hitRight(Box_s16, Box_s16);
 
-fix16 adjacentYAbove(Box_f16, Box_f16);
-fix16 adjacentYUnder(Box_f16, Box_f16);
-fix16 adjacentXOnTheLeft(Box_f16, Box_f16);
-fix16 adjacentXOnTheRight(Box_f16, Box_f16);
+fix16 adjacentYAbove(Box_s16, Box_s16);
+fix16 adjacentYUnder(Box_s16, Box_s16);
+fix16 adjacentXOnTheLeft(Box_s16, Box_s16);
+fix16 adjacentXOnTheRight(Box_s16, Box_s16);
 
 #endif /* INC_PHYSICS_H_ */
