@@ -12,6 +12,7 @@
 #include "../inc/elements.h"
 #include "../inc/enemies.h"
 #include "../inc/jetman.h"
+#include "../inc/explosions.h"
 #include "../inc/levels.h"
 #include "../inc/level_00.h"
 #include "../inc/level_01.h"
@@ -34,44 +35,65 @@ void startGame(Game* game) {
 
 	startJetman(current_level);
 	startEnemies(current_level);
+	initExplosions(current_level);
 
 	SPR_update();
 
 	JOY_setEventHandler(joyEvent);
 
-	while (game->lives > 0) {
+	u8 jetmanAlive = TRUE;
+	u8 gameOver = FALSE;
 
-		VDP_clearText(15, 15, 10);
+	while (!gameOver) {
 
 		if (!paused) {
 
-			jetmanActs(current_level);
-			enemiesAct(current_level);
+			if (jetmanAlive) {
 
-			handleCollisionsBetweenElementsAlive(current_level);
+				jetmanActs(current_level);
+				enemiesAct(current_level);
+				updateExplosions(current_level);
 
-			if (killJetman) {
-				current_level->jetman->alive = FALSE;
-				killJetman = FALSE;
-			}
+				handleCollisionsBetweenElementsAlive(current_level);
 
-			if (!isJetmanAlive(current_level)) {
-
-				releaseAllEnemies(current_level);
-				game->lives--;
-				if (game->lives > 0) {
-					resetJetman(current_level);
-					startEnemies(current_level);
-				} else {
-					releaseJetman(current_level->jetman);
+				if (killJetman) {
+					current_level->jetman->alive = FALSE;
+					killJetman = FALSE;
 				}
+
+				jetmanAlive = isJetmanAlive(current_level);
+				if (jetmanAlive) {
+					releaseDeadEnemies(current_level);
+					releaseFinishedExplosions(current_level);
+
+				} else {
+					game->lives--;
+				}
+
+				game->score++;
+				updateInfoPanel(game);
+
 			} else {
-				releaseDeadEnemies(current_level);
+
+				// Smart dying, wait for explosions to finish
+				updateExplosions(current_level);
+				releaseFinishedExplosions(current_level);
+				if (!current_level->booms.current_num_booms) {
+
+					waitMs(100);
+
+					releaseAllEnemies(current_level);
+					if (game->lives > 0) {
+						resetJetman(current_level);
+						startEnemies(current_level);
+						jetmanAlive = TRUE;
+					} else {
+						releaseJetman(current_level->jetman);
+					}
+				}
 			}
 
-			game->score++;
-			updateInfoPanel(game);
-
+			gameOver = !game->lives && !current_level->booms.current_num_booms;
 			SPR_update();
 		}
 
@@ -102,6 +124,7 @@ static void handleCollisionsBetweenElementsAlive(Level* level) {
 			current_enemy++;
 			if (enemy->alive && overlap(level->jetman->object.box, enemy->object.box)) {
 				level->jetman->alive = FALSE;
+				explode(level, level->jetman->object.pos);
 				break;
 			}
 		}

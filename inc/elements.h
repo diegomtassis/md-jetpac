@@ -39,11 +39,24 @@ typedef struct {
 } Enemies;
 
 typedef struct {
+	Vect2D_s16 where;
+	u8 step;
+	Sprite* sprite;
+} Explosion;
+
+typedef struct {
+	u8 current_num_booms;
+	u8 max_num_booms;
+	Explosion** objects;
+} Explosions;
+
+typedef struct {
 	Platform* floor;
 	Platform** platforms;
 	u8 num_platforms;
 	Enemies enemies;
 	Jetman* jetman;
+	Explosions booms;
 } Level;
 
 #endif /* INC_ELEMENTS_H_ */

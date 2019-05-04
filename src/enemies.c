@@ -10,8 +10,10 @@
 #include <genesis.h>
 
 #include "../inc/commons.h"
+#include "../inc/timers.h"
 #include "../inc/enemy_01.h"
 #include "../inc/physics.h"
+#include "../inc/explosions.h"
 #include "../res/sprite.h"
 
 #define SPEED_ZERO		FIX16_0
@@ -28,16 +30,14 @@
 #define MIN_POS_V_PX_F16	FIX16(MIN_POS_V_PX_S16)
 #define MAX_POS_V_PX_F16	FIX16(MAX_POS_V_PX_S16)
 
-#define ENEMY_CREATION_TIMER 0
-
 static void addEnemy(Level*, u8 pos);
 static Enemy* createEnemy();
 static void releaseEnemy(Enemy*);
 static void enemiesJoin(Level* level);
 
-static void moveEnemy(Enemy*, const Level*);
+static void moveEnemy(Enemy*, Level*);
 static void calculateNextMovement(Enemy*);
-static void updatePosition(Enemy*, const Level*);
+static void updatePosition(Enemy*, Level*);
 static u8 crashedIntoPlatform(Box_s16 subject_box, const Level* level);
 static Sprite* createSprite(Enemy* enemy);
 
@@ -175,7 +175,7 @@ static Enemy* createEnemy() {
 static void enemiesJoin(Level* level) {
 
 	if (level->enemies.current_num_enemies
-			< level->enemies.max_num_enemies && getTimer(ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND) {
+			< level->enemies.max_num_enemies&& getTimer(ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND) {
 
 		u8 num_enemies = level->enemies.max_num_enemies;
 		u8 idx;
@@ -192,7 +192,7 @@ static void enemiesJoin(Level* level) {
 	}
 }
 
-static void moveEnemy(Enemy* enemy, const Level* level) {
+static void moveEnemy(Enemy* enemy, Level* level) {
 
 	calculateNextMovement(enemy);
 	updatePosition(enemy, level);
@@ -202,12 +202,13 @@ static void calculateNextMovement(Enemy* enemy) {
 	// nothing for the moment
 }
 
-static void updatePosition(Enemy* enemy, const Level* level) {
+static void updatePosition(Enemy* enemy, Level* level) {
 
 	// horizontal position
 	Box_s16 target = targetBox(enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
 	if (crashedIntoPlatform(target, level)) {
 		enemy->alive = FALSE;
+		explode(level, enemy->object.pos);
 		return;
 	}
 
