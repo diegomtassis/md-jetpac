@@ -31,6 +31,7 @@ static Sprite* cursor;
 
 void printerOn() {
 
+	SPR_init(5, 16, 64);
 	cursor = SPR_addSprite(&cursor_sprite, tilesToPx(MIN_PRT_AREA.x), tilesToPx(MIN_PRT_AREA.y),
 			TILE_ATTR(VDP_getTextPalette(), TRUE, FALSE, FALSE));
 	cursorOn();
