@@ -127,7 +127,6 @@ void releaseDeadEnemies(Level* level) {
 static void releaseEnemy(Enemy* enemy) {
 
 	SPR_releaseSprite(enemy->sprite);
-	MEM_free(enemy->sprite);
 	MEM_free(enemy);
 
 	startTimer(ENEMY_CREATION_TIMER);

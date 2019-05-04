@@ -59,7 +59,6 @@ void releaseJetman(Jetman* jetman) {
 
 	SPR_setVisibility(jetman->sprite, FALSE);
 	SPR_releaseSprite(jetman->sprite);
-	MEM_free(jetman->sprite);
 	jetman->sprite = NULL;
 	MEM_free(jetman);
 }
