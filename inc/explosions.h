@@ -12,13 +12,13 @@
 
 #include "elements.h"
 
-#define BOOM_ANIMATION_SPEED SUBTICKPERSECOND / 32
+#define BOOM_ANIMATION_SPEED SUBTICKPERSECOND / 16
 
 void initExplosions(Level*);
 void updateExplosions(Level*);
 void releaseAllExplosions(Level*);
 void releaseFinishedExplosions(Level*);
 
-void explode(Level* level, Vect2D_f16 where);
+void explode(Box_s16 what, Level* level);
 
 #endif /* INC_EXPLOSIONS_H_ */

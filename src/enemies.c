@@ -208,7 +208,7 @@ static void updatePosition(Enemy* enemy, Level* level) {
 	Box_s16 target = targetBox(enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
 	if (crashedIntoPlatform(target, level)) {
 		enemy->alive = FALSE;
-		explode(level, enemy->object.pos);
+		explode(enemy->object.box, level);
 		return;
 	}
 

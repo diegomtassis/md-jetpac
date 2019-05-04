@@ -12,6 +12,8 @@
 #include "../res/sprite.h"
 #include "../inc/timers.h"
 
+#define BOOM_H_PX 16
+
 #define FINISHED 3
 
 void initExplosions(Level* level) {
@@ -77,7 +79,7 @@ void releaseFinishedExplosions(Level* level) {
 	}
 }
 
-void explode(Level* level, Vect2D_f16 where) {
+void explode(Box_s16 what, Level* level) {
 
 	// Find an empty slot
 	u8 num_booms = level->booms.max_num_booms;
@@ -96,8 +98,8 @@ void explode(Level* level, Vect2D_f16 where) {
 	level->booms.objects[idx] = boom;
 	boom->step = 0;
 	level->booms.current_num_booms++;
-	boom->where.x = fix16ToInt(where.x);
-	boom->where.y = fix16ToInt(where.y);
+	boom->where.x = what.pos.x;
+	boom->where.y = what.pos.y + what.h - BOOM_H_PX;
 
 	// Create sprite
 	Sprite* sprite = SPR_addSprite(&boom_sprite, boom->where.x, boom->where.y, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));

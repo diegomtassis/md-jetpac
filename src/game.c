@@ -124,7 +124,8 @@ static void handleCollisionsBetweenElementsAlive(Level* level) {
 			current_enemy++;
 			if (enemy->alive && overlap(level->jetman->object.box, enemy->object.box)) {
 				level->jetman->alive = FALSE;
-				explode(level, level->jetman->object.pos);
+				explode(level->jetman->object.box, level);
+				explode(enemy->object.box, level);
 				break;
 			}
 		}
