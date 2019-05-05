@@ -24,7 +24,7 @@ static void updateInfoPanel(Game*);
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
 vu8 paused = FALSE;
-vu8 killJetman = FALSE;
+vu8 commitSuicide = FALSE;
 
 void startGame(Game* game) {
 
@@ -50,22 +50,18 @@ void startGame(Game* game) {
 
 			if (jetmanAlive) {
 
+				if (commitSuicide) {
+					killJetman(current_level);
+					commitSuicide = FALSE;
+				}
+
 				jetmanActs(current_level);
 				enemiesAct(current_level);
-				updateExplosions(current_level);
-
 				handleCollisionsBetweenElementsAlive(current_level);
-
-				if (killJetman) {
-					current_level->jetman->alive = FALSE;
-					killJetman = FALSE;
-				}
 
 				jetmanAlive = isJetmanAlive(current_level);
 				if (jetmanAlive) {
 					releaseDeadEnemies(current_level);
-					releaseFinishedExplosions(current_level);
-
 				} else {
 					game->lives--;
 				}
@@ -76,8 +72,6 @@ void startGame(Game* game) {
 			} else {
 
 				// Smart dying, wait for explosions to finish
-				updateExplosions(current_level);
-				releaseFinishedExplosions(current_level);
 				if (!current_level->booms.current_num_booms) {
 
 					waitMs(100);
@@ -92,6 +86,8 @@ void startGame(Game* game) {
 					}
 				}
 			}
+
+			updateExplosions(current_level);
 
 			gameOver = !game->lives && !current_level->booms.current_num_booms;
 			SPR_update();
@@ -113,28 +109,20 @@ void startGame(Game* game) {
 
 static void handleCollisionsBetweenElementsAlive(Level* level) {
 
-	u8 num_enemies = level->enemies.current_num_enemies;
-	u8 current_enemy = 0;
-	u8 idx = 0;
+	for (u8 enemy_idx = 0; enemy_idx < level->enemies.max_num_enemies; enemy_idx++) {
 
-	while (current_enemy < num_enemies) {
-
-		Enemy* enemy = level->enemies.objects[idx++];
-		if (enemy) {
-			current_enemy++;
-			if (enemy->alive && overlap(level->jetman->object.box, enemy->object.box)) {
-				level->jetman->alive = FALSE;
-				explode(level->jetman->object.box, level);
-				explode(enemy->object.box, level);
-				break;
-			}
+		Enemy* enemy = level->enemies.objects[enemy_idx];
+		if (enemy && (ALIVE & enemy->health) && overlap(level->jetman->object.box, enemy->object.box)) {
+			killJetman(level);
+			killEnemy(enemy, level);
+			break;
 		}
 	}
 }
 
 static u8 isJetmanAlive(Level* level) {
 
-	return level->jetman->alive;
+	return ALIVE & level->jetman->health;
 }
 
 static void updateInfoPanel(Game* game) {
@@ -157,6 +145,6 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 	}
 
 	if (BUTTON_C & changed & ~state) {
-		killJetman = TRUE;
+		commitSuicide = TRUE;
 	}
 }

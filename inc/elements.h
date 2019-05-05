@@ -12,6 +12,9 @@
 
 #include <genesis.h>
 
+#define ALIVE		0x01
+#define DEAD		0x02
+
 typedef struct {
 	Vect2D_u16 pos_t;
 	Vect2D_u16 size_t;
@@ -22,13 +25,13 @@ typedef struct {
 	Object_f16 object;
 	Vect2D_s16 order;
 	u8 walk_step_counter;
-	u8 alive;
+	u8 health;
 	Sprite* sprite;
 } Jetman;
 
 typedef struct {
 	Object_f16 object;
-	u8 alive;
+	u8 health;
 	Sprite* sprite;
 } Enemy;
 

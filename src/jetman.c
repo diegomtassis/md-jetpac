@@ -11,6 +11,7 @@
 
 #include "../inc/commons.h"
 #include "../inc/physics.h"
+#include "../inc/explosions.h"
 #include "../res/sprite.h"
 
 #define ANIM_WALK		0
@@ -24,7 +25,6 @@
 
 #define JETMAN_HEIGHT 24
 #define JETMAN_WIDTH 16
-
 
 #define MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16 - 8
 #define MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
@@ -66,15 +66,23 @@ void releaseJetman(Jetman* jetman) {
 void resetJetman(Level* level) {
 
 	moveToStart(level->jetman, level);
-	level->jetman->alive = TRUE;
+	level->jetman->health = ALIVE;
+}
+
+void killJetman(Level* level) {
+
+	explode(level->jetman->object.box, level);
+	level->jetman->health = DEAD;
 }
 
 void jetmanActs(Level* level) {
 
-	handleInputJetman(level->jetman);
-
-	moveJetman(level->jetman, level);
-	drawJetman(level->jetman);
+	Jetman* jetman = level->jetman;
+	if (jetman->health & ALIVE) {
+		handleInputJetman(jetman);
+		moveJetman(level->jetman, level);
+		drawJetman(level->jetman);
+	}
 }
 
 static void createPlayer1(Level* level) {
@@ -88,7 +96,7 @@ static void createPlayer1(Level* level) {
 	jetman->object.box.h = JETMAN_HEIGHT;
 
 	moveToStart(jetman, level);
-	jetman->alive = TRUE;
+	jetman->health = ALIVE;
 
 	level->jetman = jetman;
 }

@@ -57,9 +57,9 @@ void startEnemies(Level* level) {
 		level->enemies.objects[idx] = NULL;
 	}
 
-	u8 num_enemies = level->enemies.max_num_enemies / 3; // start with a portion of the maximum enemies
-	while (num_enemies--) {
-		addEnemy(level, num_enemies);
+	// start with a portion of the maximum enemies
+	for (u8 enemy_idx = 0; enemy_idx < level->enemies.max_num_enemies / 3; enemy_idx++) {
+		addEnemy(level, enemy_idx);
 	}
 }
 
@@ -69,20 +69,22 @@ void enemiesAct(Level* level) {
 
 	u8 num_enemies = level->enemies.current_num_enemies;
 	u8 current_enemy = 0;
-	u8 idx = 0;
+	u8 enemy_idx = 0;
 
 	while (current_enemy < num_enemies) {
 
-		Enemy* enemy = level->enemies.objects[idx++];
+		Enemy* enemy = level->enemies.objects[enemy_idx++];
 		if (enemy) {
 
-			if (nuclear_bomb) {
-				enemy->alive = FALSE;
-			} else {
-				moveEnemy(enemy, level);
+			if (ALIVE & enemy->health) {
+				if (nuclear_bomb) {
+					killEnemy(enemy, level);
+				} else {
+					moveEnemy(enemy, level);
+				}
+				updateSprite(enemy);
 			}
 
-			updateSprite(enemy);
 			current_enemy++;
 		}
 	}
@@ -93,13 +95,19 @@ void enemiesAct(Level* level) {
 	nuclear_bomb = FALSE;
 }
 
+void killEnemy(Enemy* enemy, Level* level) {
+
+	explode(enemy->object.box, level);
+	enemy->health = DEAD;
+}
+
 void releaseAllEnemies(Level* level) {
 
 	for (u8 idx = 0; idx < level->enemies.max_num_enemies; idx++) {
 
 		Enemy* enemy = level->enemies.objects[idx];
 		if (enemy) {
-			enemy->alive = FALSE;
+			enemy->health = DEAD;
 		}
 	}
 
@@ -114,7 +122,7 @@ void releaseDeadEnemies(Level* level) {
 	for (u8 idx = 0; idx < level->enemies.max_num_enemies; idx++) {
 
 		Enemy* enemy = level->enemies.objects[idx];
-		if (enemy && !enemy->alive) {
+		if (enemy && (enemy->health & DEAD)) {
 
 			releaseEnemy(enemy);
 			level->enemies.objects[idx] = NULL;
@@ -143,7 +151,7 @@ static void addEnemy(Level* level, u8 pos) {
 static Enemy* createEnemy() {
 
 	Enemy* enemy = MEM_alloc(sizeof(Enemy));
-	enemy->alive = TRUE;
+	enemy->health = ALIVE;
 
 	// position & direction
 	if (random() % 2) {
@@ -207,8 +215,8 @@ static void updatePosition(Enemy* enemy, Level* level) {
 	// horizontal position
 	Box_s16 target = targetBox(enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
 	if (crashedIntoPlatform(target, level)) {
-		enemy->alive = FALSE;
-		explode(enemy->object.box, level);
+
+		killEnemy(enemy, level);
 		return;
 	}
 
@@ -260,7 +268,7 @@ static Sprite* createSprite(Enemy* enemy) {
 
 static void updateSprite(Enemy* enemy) {
 
-	if (enemy->alive) {
+	if (enemy->health & ALIVE) {
 		SPR_setPosition(enemy->sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y));
 	}
 }

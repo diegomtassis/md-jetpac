@@ -16,9 +16,9 @@
 
 void initExplosions(Level*);
 void updateExplosions(Level*);
-void releaseAllExplosions(Level*);
-void releaseFinishedExplosions(Level*);
 
 void explode(Box_s16 what, Level* level);
+
+void boost(Box_s16 what, Level* level);
 
 #endif /* INC_EXPLOSIONS_H_ */

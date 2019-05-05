@@ -14,6 +14,8 @@ void startEnemies(Level* level);
 void releaseDeadEnemies(Level* level);
 void releaseAllEnemies(Level* level);
 
+void killEnemy(Enemy* enemy, Level* level);
+
 void enemiesAct(Level* level);
 
 #endif /* INC_ENEMIES_H_ */

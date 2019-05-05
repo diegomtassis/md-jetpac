@@ -16,6 +16,11 @@
 
 #define FINISHED 3
 
+#define BOOST 0
+
+static void boom(Box_s16 what, Level* level, u8 style);
+static void releaseFinishedExplosions(Level*);
+
 void initExplosions(Level* level) {
 
 	level->booms.current_num_booms = 0;
@@ -47,14 +52,16 @@ void updateExplosions(Level* level) {
 
 		startTimer(EXPLOSIONS_TIMER);
 	}
+
+	releaseFinishedExplosions(level);
 }
 
-void releaseAllExplosions(Level* level) {
+static void releaseFinishedExplosions(Level* level) {
 
 	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
 
 		Explosion* boom = level->booms.objects[idx];
-		if (boom) {
+		if (boom && boom->step == FINISHED) {
 			SPR_releaseSprite(boom->sprite);
 			MEM_free(boom);
 			level->booms.objects[idx] = NULL;
@@ -63,39 +70,33 @@ void releaseAllExplosions(Level* level) {
 	}
 }
 
-void releaseFinishedExplosions(Level* level) {
+void explode(Box_s16 what, Level* level) {
 
-	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
-
-		Explosion* boom = level->booms.objects[idx];
-		if (boom) {
-			if (boom->step == FINISHED) {
-				SPR_releaseSprite(boom->sprite);
-				MEM_free(boom);
-				level->booms.objects[idx] = NULL;
-				level->booms.current_num_booms--;
-			}
-		}
-	}
+	boom(what, level, abs(random()) % 3 + 1);
 }
 
-void explode(Box_s16 what, Level* level) {
+void boost(Box_s16 what, Level* level) {
+
+	boom(what, level, BOOST);
+}
+
+static void boom(Box_s16 what, Level* level, u8 style) {
 
 	// Find an empty slot
 	u8 num_booms = level->booms.max_num_booms;
-	u8 idx;
+	u8 boom_idx;
 	while (num_booms--) {
 		// find the first empty slot
 		Explosion* boom = level->booms.objects[num_booms];
 		if (!boom) {
-			idx = num_booms;
+			boom_idx = num_booms;
 			break;
 		}
 	}
 
 	// Create the explosion
 	Explosion* boom = MEM_alloc(sizeof(Explosion));
-	level->booms.objects[idx] = boom;
+	level->booms.objects[boom_idx] = boom;
 	boom->step = 0;
 	level->booms.current_num_booms++;
 	boom->where.x = what.pos.x;
@@ -104,5 +105,5 @@ void explode(Box_s16 what, Level* level) {
 	// Create sprite
 	Sprite* sprite = SPR_addSprite(&boom_sprite, boom->where.x, boom->where.y, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	boom->sprite = sprite;
-	SPR_setAnim(sprite, (abs(random())) % 4);
+	SPR_setAnim(sprite, style);
 }
