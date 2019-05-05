@@ -23,6 +23,12 @@
 #define SPEED_V_UP		FIX16(-1.5)
 #define SPEED_V_DOWN	FIX16(1.5)
 
+#define UP			0x01
+#define DOWN		0x02
+#define RIGHT		0x04
+#define LEFT		0x10
+#define BOOST		0x20
+
 #define JETMAN_HEIGHT 24
 #define JETMAN_WIDTH 16
 
@@ -38,9 +44,9 @@ static void createPlayer1(Level*);
 static void handleInputJetman(Jetman*);
 
 static void moveToStart(Jetman* jetman, const Level* level);
-static void moveJetman(Jetman*, const Level*);
-static void calculateNextMovement(Jetman*);
-static void updatePosition(Jetman*, const Level*);
+static void moveJetman(Jetman*, Level*);
+static u8 calculateNextMovement(Jetman*);
+static void updatePosition(Jetman*, Level*);
 static fix16 landed(Box_s16, const Level*);
 static fix16 reachedTop(Box_s16, const Level*);
 static fix16 blockedByLeft(Box_s16, const Level*);
@@ -111,22 +117,27 @@ static void moveToStart(Jetman* jetman, const Level* level) {
 	updateBox(&jetman->object);
 }
 
-static void moveJetman(Jetman* jetman, const Level* level) {
+static void moveJetman(Jetman* jetman, Level* level) {
 
-	calculateNextMovement(jetman);
+	if (BOOST & calculateNextMovement(jetman)) {
+		boost(jetman->object.box, level);
+	}
 	updatePosition(jetman, level);
-
 	SPR_setPosition(jetman->sprite, fix16ToInt(jetman->object.pos.x), fix16ToInt(jetman->object.pos.y));
 }
 
-static void calculateNextMovement(Jetman* jetman) {
+static u8 calculateNextMovement(Jetman* jetman) {
+
+	u8 movement = 0;
 
 	// horizontal movement
 	if (jetman->order.x > 0) {
 		jetman->object.mov.x = SPEED_H_NORMAL;
+		movement |= RIGHT;
 
 	} else if (jetman->order.x < 0) {
 		jetman->object.mov.x = -SPEED_H_NORMAL;
+		movement |= LEFT;
 
 	} else {
 		jetman->object.mov.x = SPEED_ZERO;
@@ -134,14 +145,22 @@ static void calculateNextMovement(Jetman* jetman) {
 
 	// vertical movement
 	if (jetman->order.y < 0) {
+		if (jetman->object.mov.y == FIX16_0) {
+			movement |= BOOST;
+		}
+
 		jetman->object.mov.y = SPEED_V_UP;
+		movement |= UP;
 
 	} else {
 		jetman->object.mov.y = SPEED_V_DOWN;
+		movement |= DOWN;
 	}
+
+	return movement;
 }
 
-static void updatePosition(Jetman* jetman, const Level* level) {
+static void updatePosition(Jetman* jetman, Level* level) {
 
 	// horizontal position
 	Box_s16 target_h = targetHBox(jetman->object, JETMAN_WIDTH, JETMAN_HEIGHT);
