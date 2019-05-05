@@ -160,5 +160,5 @@ static void cursorOff() {
 }
 
 static u16 tilesToPx(u8 tiles) {
-	return  tiles * 8;
+	return tiles * 8;
 }
