@@ -7,13 +7,15 @@
 
 #include <genesis.h>
 
+#include "../inc/config.h"
 #include "../inc/jetpac_file.h"
-#include "../inc/menu.h"
 #include "../inc/game.h"
 #include "../inc/printer.h"
 #include "../inc/splash_screen.h"
 
 #define LOADING_TIME	3000
+
+u16 maxScore = 0;
 
 int main() {
 
@@ -36,8 +38,12 @@ int main() {
 	while (1) {
 
 		// run game
-		setUpGame(game, 1, 3);
+		setUpGame(game);
 		startGame(game);
+
+		if (game->score > maxScore) {
+			maxScore = game->score;
+		}
 
 		VDP_waitVSync();
 	}

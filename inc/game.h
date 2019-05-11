@@ -11,6 +11,7 @@
 #include <genesis.h>
 
 typedef struct {
+	u8 mode;
 	u8 lives;
 	u8 level;
 	u16 score;
