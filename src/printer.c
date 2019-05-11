@@ -41,6 +41,7 @@ void printerOff() {
 
 	SPR_reset();
 	SPR_update();
+	VDP_clearPlan(VDP_getTextPlan(), TRUE);
 }
 
 void println(const char* text, Vect2D_u16* offset) {

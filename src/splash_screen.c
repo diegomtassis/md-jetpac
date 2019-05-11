@@ -17,7 +17,6 @@ void showSplashScreen() {
 	SYS_disableInts();
 
 	// clear screen
-	VDP_clearPlan(PLAN_A, TRUE);
 	VDP_clearPlan(PLAN_B, TRUE);
 
 	VDP_setPaletteColors(0, (u16*) palette_black, 16);
@@ -39,4 +38,9 @@ void showSplashScreen() {
 
 	// fade in
 	VDP_fadeIn(0, (1 * 16) - 1, palette, 50, FALSE);
+}
+
+void clearSplashScreen() {
+
+	VDP_clearPlan(PLAN_B, TRUE);
 }

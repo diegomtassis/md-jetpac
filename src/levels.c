@@ -13,9 +13,7 @@
 #include "../res/gfx.h"
 
 static u16 palette[64];
-static u16 idx_tile_malloc;
 
-static u16 idx_tile_oneup;
 static u16 idx_tile_platform;
 static u16 idx_tile_floor;
 static u16 idx_tile_platform;
@@ -24,7 +22,6 @@ static void releasePlatform(Platform*);
 
 static void loadLevelResources();
 
-static void drawInfoPanel();
 static void drawPlatforms(VDPPlan plan, const Level * level);
 static void drawPlatform(VDPPlan plan, const Platform * platform, u16 idx_tile);
 
@@ -40,14 +37,11 @@ void startLevel(Level* level) {
 	SYS_disableInts();
 
 	// initialization
-	VDP_clearPlan(PLAN_A, TRUE);
 	VDP_clearPlan(PLAN_B, TRUE);
 
 	VDP_setPaletteColors(0, (u16*) palette_black, 16);
 
 	loadLevelResources();
-
-	drawInfoPanel();
 
 	drawPlatforms(PLAN_B, level);
 
@@ -105,28 +99,9 @@ static void releasePlatform(Platform* platform) {
 
 static void loadLevelResources() {
 
-	// load background
-	idx_tile_malloc = TILE_USERINDEX;
-
 	// load floor & platform
 	idx_tile_floor = loadTile(&floor, &idx_tile_malloc);
 	idx_tile_platform = loadTile(&platform, &idx_tile_malloc);
-}
-
-static void drawInfoPanel() {
-
-	idx_tile_oneup = loadTile(oneup.tileset, &idx_tile_malloc);
-	VDP_setTextPalette(PAL3);
-	VDP_setTextPlan(PLAN_A);
-
-	VDP_drawText("1UP", 3, 2);
-	VDP_drawText("3", 8, 2);
-	VDP_setTileMapXY(PLAN_A, TILE_ATTR_FULL(PAL3, TRUE, FALSE, FALSE, idx_tile_oneup), 9, 2);
-	VDP_drawText("HI", 15, 2);
-	VDP_drawText("2UP", 27, 2);
-	VDP_drawText("000000", 1, 3);
-	VDP_drawText("000000", 13, 3);
-	VDP_drawText("000000", 25, 3);
 }
 
 static void drawPlatforms(VDPPlan plan, const Level * level) {

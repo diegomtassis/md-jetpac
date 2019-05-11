@@ -8,14 +8,14 @@
 #include <genesis.h>
 
 #include "../inc/config.h"
-#include "../inc/jetpac_file.h"
 #include "../inc/game.h"
+#include "../inc/hud.h"
+#include "../inc/jetpac_file.h"
 #include "../inc/printer.h"
 #include "../inc/splash_screen.h"
+#include "../inc/vdp_utils.h"
 
 #define LOADING_TIME	3000
-
-u16 maxScore = 0;
 
 int main() {
 
@@ -25,14 +25,17 @@ int main() {
 
 	// jetpac file
 	printDisclaimer();
-
 	JOY_waitPress(JOY_1, BUTTON_BTN);
 	printerOff();
 	waitMs(75);
 
-	// jetpac loading...
+	// splash screen
 	showSplashScreen();
 	waitMs(LOADING_TIME);
+	clearSplashScreen();
+
+	resetTileMemory();
+	initializeHud();
 
 	Game* game = MEM_alloc(sizeof(Game));
 	while (1) {
@@ -41,9 +44,7 @@ int main() {
 		setUpGame(game);
 		startGame(game);
 
-		if (game->score > maxScore) {
-			maxScore = game->score;
-		}
+		registerScore(game->score);
 
 		VDP_waitVSync();
 	}

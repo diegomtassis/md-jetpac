@@ -11,15 +11,15 @@
 
 #include "../inc/elements.h"
 #include "../inc/enemies.h"
-#include "../inc/jetman.h"
 #include "../inc/explosions.h"
-#include "../inc/levels.h"
-#include "../inc/level_00.h"
+#include "../inc/hud.h"
+#include "../inc/jetman.h"
 #include "../inc/level_01.h"
+#include "../inc/levels.h"
+#include "../inc/physics.h"
 
 static void handleCollisionsBetweenElementsAlive(Level*);
 static u8 isJetmanAlive(Level*);
-static void updateInfoPanel(Game*);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
@@ -67,7 +67,7 @@ void startGame(Game* game) {
 				}
 
 				game->score++;
-				updateInfoPanel(game);
+				updateHud(game);
 
 			} else {
 
@@ -100,9 +100,11 @@ void startGame(Game* game) {
 	releaseLevel(current_level);
 	current_level = NULL;
 
-	SPR_end();
-
 	waitMs(5000);
+
+	SPR_end();
+	VDP_clearTextLine(5);
+	VDP_clearPlan(PLAN_B, TRUE);
 
 	return;
 }
@@ -123,19 +125,6 @@ static void handleCollisionsBetweenElementsAlive(Level* level) {
 static u8 isJetmanAlive(Level* level) {
 
 	return ALIVE & level->jetman->health;
-}
-
-static void updateInfoPanel(Game* game) {
-
-// lives
-	char lives[2];
-	uint16ToStr(game->lives, lives, 1);
-	VDP_drawText(lives, 8, 2);
-
-// score
-	char score[6];
-	sprintf(score, "%06d", game->score);
-	VDP_drawText(score, 1, 3);
 }
 
 static void joyEvent(u16 joy, u16 changed, u16 state) {

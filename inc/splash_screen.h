@@ -9,5 +9,6 @@
 #define INC_SPLASH_SCREEN_H_
 
 void showSplashScreen();
+void clearSplashScreen();
 
 #endif /* INC_SPLASH_SCREEN_H_ */

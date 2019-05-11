@@ -22,30 +22,33 @@ static void displayOption(const char *str, u8 highlighted, u16 x, u16 y);
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
 vu8 current_option = 0;
-vu8 config_has_changed = TRUE;
 vu8 start = FALSE;
+vu8 refresh = TRUE;
 
 void setUpGame(Game* game) {
 
-	VDP_clearPlan(PLAN_B, TRUE);
+	u8 prev_priority = VDP_getTextPriority();
 
-    VDP_setPalette(PAL1, palette_grey);
+	VDP_setPalette(PAL1, palette_grey);
 	VDP_setTextPalette(PAL1);
-	VDP_setTextPlan(PLAN_B);
 	VDP_setTextPriority(0);
+
 	VDP_setHilightShadow(TRUE);
 
 	start = FALSE;
+	refresh = TRUE;
 
 	JOY_setEventHandler(joyEvent);
 
-	while (!start) {
+	do {
 		displayConfig();
 		VDP_waitVSync();
-	}
+	} while (!start);
 
-	VDP_clearPlan(PLAN_B, TRUE);
+	VDP_clearTextAreaBG(PLAN_A, 0, 5, 32, 15); // don't clear the HUD
 	VDP_setHilightShadow(FALSE);
+
+	VDP_setTextPriority(prev_priority);
 
 	game->mode = current_option == 0 ? MODE_ZX : MODE_MD;
 	game->level = 1;
@@ -55,11 +58,9 @@ void setUpGame(Game* game) {
 
 static void displayConfig() {
 
-	if (config_has_changed) {
+	if (refresh) {
 
-		VDP_clearPlan(PLAN_B, TRUE);
-
-		Vect2D_u16 pos = { .x = 6, .y = 5 };
+		Vect2D_u16 pos = { .x = 6, .y = 8 };
 		VDP_drawText(JETPAC_GAME_SELECTION, pos.x, pos.y);
 
 		pos.y += 4;
@@ -71,7 +72,7 @@ static void displayConfig() {
 		pos.y += 4;
 		VDP_drawText(PRESS_START_BUTTON, pos.x, pos.y);
 
-		config_has_changed = FALSE;
+		refresh = FALSE;
 	}
 }
 
@@ -90,7 +91,7 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 		if (current_option == NUM_MODES) {
 			current_option = 0;
 		}
-		config_has_changed = TRUE;
+		refresh = TRUE;
 	}
 
 	if (BUTTON_UP & changed & ~state) {
@@ -98,10 +99,10 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 			current_option = NUM_MODES;
 		}
 		current_option--;
-		config_has_changed = TRUE;
+		refresh = TRUE;
 	}
 
 	if (BUTTON_START & changed & ~state) {
-		start = 1;
+		start = TRUE;
 	}
 }
