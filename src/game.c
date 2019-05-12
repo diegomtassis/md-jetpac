@@ -21,6 +21,7 @@
 #include "../inc/physics.h"
 
 static void handleCollisionsBetweenElementsAlive(Level*);
+static void handleElementsLeavingScreenUnder(Level*);
 static u8 isJetmanAlive(Level*);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
@@ -54,12 +55,13 @@ void startGame(Game* game) {
 			if (jetmanAlive) {
 
 				if (commitSuicide) {
-					killJetman(current_level);
+					killJetman(current_level, TRUE);
 					commitSuicide = FALSE;
 				}
 
 				jetmanActs(current_level);
 				enemiesAct(current_level);
+				handleElementsLeavingScreenUnder(current_level);
 				handleCollisionsBetweenElementsAlive(current_level);
 
 				jetmanAlive = isJetmanAlive(current_level);
@@ -101,7 +103,7 @@ void startGame(Game* game) {
 
 	VDP_drawText("Game Over", 12, 5);
 	releaseLevel(current_level);
-	current_level = NULL;
+	current_level = 0;
 
 	waitMs(5000);
 
@@ -118,9 +120,24 @@ static void handleCollisionsBetweenElementsAlive(Level* level) {
 
 		Enemy* enemy = level->enemies.objects[enemy_idx];
 		if (enemy && (ALIVE & enemy->health) && overlap(level->jetman->object.box, enemy->object.box)) {
-			killJetman(level);
-			killEnemy(enemy, level);
+			killJetman(level, TRUE);
+			killEnemy(enemy, level, TRUE);
 			break;
+		}
+	}
+}
+
+static void handleElementsLeavingScreenUnder(Level* level) {
+
+	if ((ALIVE & level->jetman->health) && level->jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
+		killJetman(level, FALSE);
+	}
+
+	for (u8 enemy_idx = 0; enemy_idx < level->enemies.max_num_enemies; enemy_idx++) {
+
+		Enemy* enemy = level->enemies.objects[enemy_idx];
+		if (enemy && (ALIVE & enemy->health) && enemy->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
+			killEnemy(enemy, level, FALSE);
 		}
 	}
 }

@@ -29,6 +29,7 @@
 #define MAX_POS_H_PX_F16	FIX16(MAX_POS_H_PX_S16)
 #define MIN_POS_V_PX_F16	FIX16(MIN_POS_V_PX_S16)
 #define MAX_POS_V_PX_F16	FIX16(MAX_POS_V_PX_S16)
+#define MAX_POS_START_V_PX_F16	FIX16(MAX_POS_V_PX_S16 - 32)
 
 static void addEnemy(Level*, u8 pos);
 static Enemy* createEnemy();
@@ -54,7 +55,7 @@ void startEnemies(Level* level) {
 	setRandomSeed(getTick());
 
 	for (u8 idx = 0; idx < level->enemies.max_num_enemies; idx++) {
-		level->enemies.objects[idx] = NULL;
+		level->enemies.objects[idx] = 0;
 	}
 
 	// start with a portion of the maximum enemies
@@ -78,7 +79,7 @@ void enemiesAct(Level* level) {
 
 			if (ALIVE & enemy->health) {
 				if (nuclear_bomb) {
-					killEnemy(enemy, level);
+					killEnemy(enemy, level, TRUE);
 				} else {
 					moveEnemy(enemy, level);
 				}
@@ -95,9 +96,12 @@ void enemiesAct(Level* level) {
 	nuclear_bomb = FALSE;
 }
 
-void killEnemy(Enemy* enemy, Level* level) {
+void killEnemy(Enemy* enemy, Level* level, u8 exploding) {
 
-	explode(enemy->object.box, level);
+	if (exploding) {
+		explode(enemy->object.box, level);
+	}
+
 	enemy->health = DEAD;
 }
 
@@ -114,7 +118,7 @@ void releaseAllEnemies(Level* level) {
 	releaseDeadEnemies(level);
 
 	MEM_free(level->enemies.objects);
-	level->enemies.objects = NULL;
+	level->enemies.objects = 0;
 }
 
 void releaseDeadEnemies(Level* level) {
@@ -125,7 +129,7 @@ void releaseDeadEnemies(Level* level) {
 		if (enemy && (enemy->health & DEAD)) {
 
 			releaseEnemy(enemy);
-			level->enemies.objects[idx] = NULL;
+			level->enemies.objects[idx] = 0;
 			level->enemies.current_num_enemies--;
 		}
 	}
@@ -161,7 +165,8 @@ static Enemy* createEnemy() {
 		enemy->object.pos.x = MAX_POS_H_PX_F16;
 		enemy->object.mov.x = -SPEED_H_NORMAL;
 	}
-	enemy->object.pos.y = randomInRangeFix16(MIN_POS_V_PX_F16, MAX_POS_V_PX_F16);
+
+	enemy->object.pos.y = randomInRangeFix16(MIN_POS_V_PX_F16, MAX_POS_START_V_PX_F16);
 
 	// V speed
 	if (random() % 2) {
@@ -216,7 +221,7 @@ static void updatePosition(Enemy* enemy, Level* level) {
 	Box_s16 target = targetBox(enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
 	if (crashedIntoPlatform(target, level)) {
 
-		killEnemy(enemy, level);
+		killEnemy(enemy, level, TRUE);
 		return;
 	}
 

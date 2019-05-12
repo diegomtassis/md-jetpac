@@ -56,12 +56,17 @@ void releaseLevel(Level* level) {
 
 	// release floor
 	releasePlatform(level->floor);
-	level->floor = NULL;
+	level->floor = 0;
 
 	// release platforms
 	for (u8 i = 0; i < level->num_platforms; i++) {
 		releasePlatform(level->platforms[i]);
-		level->platforms[i] = NULL;
+		level->platforms[i] = 0;
+	}
+
+	if (level->initPos) {
+		MEM_free(level->initPos);
+		level->initPos = 0;
 	}
 
 	MEM_free(level);

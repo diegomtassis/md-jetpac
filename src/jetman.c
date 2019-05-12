@@ -65,7 +65,7 @@ void releaseJetman(Jetman* jetman) {
 
 	SPR_setVisibility(jetman->sprite, FALSE);
 	SPR_releaseSprite(jetman->sprite);
-	jetman->sprite = NULL;
+	jetman->sprite = 0;
 	MEM_free(jetman);
 }
 
@@ -75,9 +75,12 @@ void resetJetman(Level* level) {
 	level->jetman->health = ALIVE;
 }
 
-void killJetman(Level* level) {
+void killJetman(Level* level, u8 exploding) {
 
-	explode(level->jetman->object.box, level);
+	if (exploding) {
+		explode(level->jetman->object.box, level);
+	}
+
 	level->jetman->health = DEAD;
 }
 
@@ -109,8 +112,14 @@ static void createPlayer1(Level* level) {
 
 static void moveToStart(Jetman* jetman, const Level* level) {
 
-	jetman->object.pos.x = FIX16(124);
-	jetman->object.pos.y = fix16Sub(level->floor->object.pos.y, FIX16(8*3));
+	if (level->initPos) {
+		jetman->object.pos.x = FIX16(level->initPos->x);
+		jetman->object.pos.y = FIX16(level->initPos->y - 8 * 3);
+	} else {
+		jetman->object.pos.x = FIX16(124);
+		jetman->object.pos.y = fix16Sub(level->floor->object.pos.y, FIX16(8*3));
+	}
+
 	jetman->object.mov.x = SPEED_ZERO;
 	jetman->object.mov.y = SPEED_ZERO;
 

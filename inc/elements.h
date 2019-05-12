@@ -59,6 +59,7 @@ typedef struct {
 	u8 num_platforms;
 	Enemies enemies;
 	Jetman* jetman;
+	Vect2D_u16* initPos;
 	Explosions booms;
 } Level;
 

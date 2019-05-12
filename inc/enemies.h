@@ -14,7 +14,7 @@ void startEnemies(Level* level);
 void releaseDeadEnemies(Level* level);
 void releaseAllEnemies(Level* level);
 
-void killEnemy(Enemy* enemy, Level* level);
+void killEnemy(Enemy* enemy, Level* level, u8 exploding);
 
 void enemiesAct(Level* level);
 
