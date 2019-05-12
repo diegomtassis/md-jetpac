@@ -10,7 +10,7 @@
 
 #include "game.h"
 
-void initializeHud();
+void initHud();
 void updateHud(Game*);
 void registerScore(u16 highest_score);
 

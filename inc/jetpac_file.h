@@ -9,5 +9,6 @@
 #define INC_JETPAC_FILE_H_
 
 void printDisclaimer();
+void clearDisclaimer();
 
 #endif /* INC_JETPAC_FILE_H_ */

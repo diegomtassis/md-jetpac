@@ -48,3 +48,8 @@ void printDisclaimer() {
 	println("", &pos);
 	print("End of Line", &pos);
 }
+
+void clearDisclaimer() {
+
+	printerOff();
+}

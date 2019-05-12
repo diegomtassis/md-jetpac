@@ -16,7 +16,7 @@ static u16 idx_tile_oneup;
 
 static u16 highest_score = 0;
 
-void initializeHud() {
+void initHud() {
 
 	idx_tile_oneup = loadTile(oneup.tileset, &idx_tile_malloc);
 	VDP_setTextPalette(PAL1);
@@ -36,12 +36,12 @@ void initializeHud() {
 
 void updateHud(Game* game) {
 
-	// lives
+	// p1 lives
 	char lives[2];
 	uint16ToStr(game->lives, lives, 1);
 	VDP_drawText(lives, 8, 2);
 
-	// score
+	// p1 score
 	char score[6];
 	sprintf(score, "%06d", game->score);
 	VDP_drawText(score, 1, 3);

@@ -26,8 +26,9 @@ int main() {
 	// jetpac file
 	printDisclaimer();
 	JOY_waitPress(JOY_1, BUTTON_BTN);
-	printerOff();
-	waitMs(75);
+	clearDisclaimer();
+
+	waitMs(50);
 
 	// splash screen
 	showSplashScreen();
@@ -35,7 +36,7 @@ int main() {
 	clearSplashScreen();
 
 	resetTileMemory();
-	initializeHud();
+	initHud();
 
 	Game* game = MEM_alloc(sizeof(Game));
 	while (1) {
