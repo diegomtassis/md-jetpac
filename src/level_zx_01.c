@@ -20,6 +20,8 @@ Level* createLevelZX01() {
 	createPlatforms(level);
 	defineEnemies(&level->enemies);
 
+	level->def.check_bottom = FALSE;
+
 	return level;
 }
 

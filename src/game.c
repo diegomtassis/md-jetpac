@@ -61,8 +61,10 @@ void startGame(Game* game) {
 
 				jetmanActs(current_level);
 				enemiesAct(current_level);
-				handleElementsLeavingScreenUnder(current_level);
 				handleCollisionsBetweenElementsAlive(current_level);
+				if (current_level->def.check_bottom) {
+					handleElementsLeavingScreenUnder(current_level);
+				}
 
 				jetmanAlive = isJetmanAlive(current_level);
 				if (jetmanAlive) {

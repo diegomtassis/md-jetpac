@@ -54,13 +54,18 @@ typedef struct {
 } Explosions;
 
 typedef struct {
+	u8 check_bottom;
+	Vect2D_u16* jetman_init_pos;
+} LevelDefinition;
+
+typedef struct {
 	Platform* floor;
 	Platform** platforms;
 	u8 num_platforms;
 	Enemies enemies;
 	Jetman* jetman;
-	Vect2D_u16* initPos;
 	Explosions booms;
+	LevelDefinition def;
 } Level;
 
 #endif /* INC_ELEMENTS_H_ */

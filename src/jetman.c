@@ -112,9 +112,9 @@ static void createPlayer1(Level* level) {
 
 static void moveToStart(Jetman* jetman, const Level* level) {
 
-	if (level->initPos) {
-		jetman->object.pos.x = FIX16(level->initPos->x);
-		jetman->object.pos.y = FIX16(level->initPos->y - 8 * 3);
+	if (level->def.jetman_init_pos) {
+		jetman->object.pos.x = FIX16(level->def.jetman_init_pos->x);
+		jetman->object.pos.y = FIX16(level->def.jetman_init_pos->y - 8 * 3);
 	} else {
 		jetman->object.pos.x = FIX16(124);
 		jetman->object.pos.y = fix16Sub(level->floor->object.pos.y, FIX16(8*3));

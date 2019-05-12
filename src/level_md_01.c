@@ -20,9 +20,11 @@ Level* createLevelMD01() {
 	createPlatforms(level);
 	defineEnemies(&level->enemies);
 
-	level->initPos = MEM_alloc(sizeof(Vect2D_u16));
-	level->initPos->x = 88;
-	level->initPos->y = 72;
+	level->def.jetman_init_pos = MEM_alloc(sizeof(Vect2D_u16));
+	level->def.jetman_init_pos->x = 88;
+	level->def.jetman_init_pos->y = 72;
+
+	level->def.check_bottom = TRUE;
 
 	return level;
 }

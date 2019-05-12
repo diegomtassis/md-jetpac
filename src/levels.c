@@ -64,9 +64,9 @@ void releaseLevel(Level* level) {
 		level->platforms[i] = 0;
 	}
 
-	if (level->initPos) {
-		MEM_free(level->initPos);
-		level->initPos = 0;
+	if (level->def.jetman_init_pos) {
+		MEM_free(level->def.jetman_init_pos);
+		level->def.jetman_init_pos = 0;
 	}
 
 	MEM_free(level);
