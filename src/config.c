@@ -5,9 +5,12 @@
  *      Author: diegomtassis
  */
 
+#include "../inc/config.h"
+
 #include <genesis.h>
 
-#include "../inc/config.h"
+#include "../inc/level_zx_01.h"
+#include "../inc/level_md_01.h"
 
 #define NUM_MODES		2
 
@@ -96,7 +99,14 @@ static void displayOption(const char *str, u8 highlighted, u16 x, u16 y) {
 
 static void setGameConfig(Game* game) {
 
-	game->mode = current_option == 0 ? MODE_ZX : MODE_MD;
+	if (current_option == 0) {
+		game->mode = MODE_ZX;
+		game->createLevel = createLevelZX01;
+	} else {
+		game->mode = MODE_MD;
+		game->createLevel = createLevelMD01;
+	}
+
 	game->level = 1;
 	game->lives = 3;
 	game->score = 0;

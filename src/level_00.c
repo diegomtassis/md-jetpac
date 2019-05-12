@@ -16,7 +16,7 @@ static void defineEnemies(Enemies* enemies);
 
 Level* createLevel00() {
 
-	Level* level = createLevel();
+	Level* level = allocLevel();
 
 	createPlatforms(level);
 	defineEnemies(&level->enemies);

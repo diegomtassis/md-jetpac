@@ -10,10 +10,10 @@
 
 #include "elements.h"
 
-Level* createLevel();
-Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
-
+Level* allocLevel();
 void startLevel(Level* level);
 void releaseLevel(Level*);
+
+Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
 
 #endif /* INC_LEVELS_H_ */

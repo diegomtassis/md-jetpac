@@ -25,11 +25,9 @@ static void loadLevelResources();
 static void drawPlatforms(VDPPlan plan, const Level * level);
 static void drawPlatform(VDPPlan plan, const Platform * platform, u16 idx_tile);
 
-Level* createLevel() {
+Level* allocLevel() {
 
-	Level* level = MEM_alloc(sizeof(Level));
-
-	return level;
+	return (Level*) MEM_alloc(sizeof(Level));
 }
 
 void startLevel(Level* level) {

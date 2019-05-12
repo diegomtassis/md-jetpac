@@ -9,12 +9,14 @@
 #define INC_GAME_H_
 
 #include <genesis.h>
+#include "elements.h"
 
 typedef struct {
 	u8 mode;
 	u8 lives;
 	u8 level;
 	u16 score;
+	Level* (*createLevel)(void);
 } Game;
 
 void startGame(Game*);

@@ -32,12 +32,7 @@ void startGame(Game* game) {
 
 	SPR_init(50, 256, 256);
 
-	Level* current_level = 0;
-	if (MODE_ZX & game->mode) {
-		current_level = createLevelZX01();
-	} else {
-		current_level = createLevelMD01();
-	}
+	Level* current_level = game->createLevel();
 
 	startLevel(current_level);
 
