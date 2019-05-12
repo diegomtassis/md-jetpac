@@ -9,13 +9,15 @@
 
 #include <genesis.h>
 
+#include "../inc/config.h"
 #include "../inc/elements.h"
 #include "../inc/enemies.h"
 #include "../inc/explosions.h"
 #include "../inc/hud.h"
 #include "../inc/jetman.h"
-#include "../inc/level_01.h"
 #include "../inc/levels.h"
+#include "../inc/level_zx_01.h"
+#include "../inc/level_md_01.h"
 #include "../inc/physics.h"
 
 static void handleCollisionsBetweenElementsAlive(Level*);
@@ -30,7 +32,13 @@ void startGame(Game* game) {
 
 	SPR_init(50, 256, 256);
 
-	Level* current_level = createLevel01();
+	Level* current_level = 0;
+	if (MODE_ZX & game->mode) {
+		current_level = createLevelZX01();
+	} else {
+		current_level = createLevelMD01();
+	}
+
 	startLevel(current_level);
 
 	startJetman(current_level);
