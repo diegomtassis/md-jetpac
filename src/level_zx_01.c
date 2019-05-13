@@ -10,7 +10,7 @@
 #include <genesis.h>
 
 #include "../inc/elements.h"
-#include "../inc/levels.h"
+#include "../inc/level.h"
 
 static void createPlatforms(Level* level);
 static void defineEnemies(Enemies* enemies);

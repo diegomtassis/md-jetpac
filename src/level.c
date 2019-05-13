@@ -1,14 +1,13 @@
 /*
- * levels.c
+ * level.c
  *
  *  Created on: Apr 7, 2019
  *      Author: diegomtassis
  */
 
-#include "../inc/levels.h"
-
 #include <genesis.h>
 
+#include "../inc/level.h"
 #include "../inc/vdp_utils.h"
 #include "../res/gfx.h"
 

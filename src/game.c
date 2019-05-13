@@ -16,7 +16,7 @@
 #include "../inc/explosions.h"
 #include "../inc/hud.h"
 #include "../inc/jetman.h"
-#include "../inc/levels.h"
+#include "../inc/level.h"
 #include "../inc/level_zx_01.h"
 #include "../inc/level_md_01.h"
 #include "../inc/physics.h"

@@ -8,7 +8,8 @@
 #include <genesis.h>
 
 #include "../inc/level_md_01.h"
-#include "../inc/levels.h"
+
+#include "../inc/level.h"
 
 static void createPlatforms(Level* level);
 static void defineEnemies(Enemies* enemies);
