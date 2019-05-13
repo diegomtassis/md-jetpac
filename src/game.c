@@ -34,14 +34,14 @@ static const Vect2D_u16 game_over_text_pos = { .x = 12, .y = 5 };
 
 void startGame(Game* game) {
 
-	SPR_init(50, 256, 256);
+	SPR_init(50, 384, 256);
 
 	Level* current_level = game->createLevel();
 
 	startLevel(current_level);
 
-	startSpaceship(current_level);
 	startJetman(current_level);
+	startSpaceship(current_level);
 	startEnemies(current_level);
 	initExplosions(current_level);
 

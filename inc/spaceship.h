@@ -12,8 +12,8 @@
 
 #include <genesis.h>
 
-#define NOTHING		1
-#define BASE		2
+#define UNASSEMBLED	1
+#define MID_SET		2
 #define ASSEMBLED	3
 #define FUEL_1		4
 #define FUEL_2		5

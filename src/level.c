@@ -64,11 +64,6 @@ void releaseLevel(Level* level) {
 	}
 
 	// spaceship
-	if (level->def.spaceshipDef) {
-
-		MEM_free(level->def.spaceshipDef);
-		level->def.spaceshipDef = 0;
-	}
 
 	// jetman definition
 	if (level->def.jetman_init_pos) {

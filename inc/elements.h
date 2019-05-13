@@ -61,16 +61,26 @@ typedef struct {
 typedef struct {
 	u8 type;
 	u16 init_step;
+	Vect2D_u16 basePos;
+	Vect2D_u16 middlePos;
+	Vect2D_u16 topPos;
 } SpaceshipDefinition;
 
 typedef struct {
+	u8 type;
 	u16 step;
+	Object_f16 objectBase;
+	Object_f16 objectMid;
+	Object_f16 objectTop;
+	Sprite* spriteBase;
+	Sprite* spriteMid;
+	Sprite* spriteTop;
 } Spaceship;
 
 typedef struct {
 	u8 check_bottom;
 	Vect2D_u16* jetman_init_pos;
-	SpaceshipDefinition* spaceshipDef;
+	SpaceshipDefinition spaceshipDef;
 } LevelDefinition;
 
 typedef struct {
@@ -79,6 +89,7 @@ typedef struct {
 	u8 num_platforms;
 	Enemies enemies;
 	Jetman* jetman;
+	Spaceship* spaceship;
 	Explosions booms;
 	LevelDefinition def;
 } Level;

@@ -9,8 +9,9 @@
 
 #include <genesis.h>
 
-#include "../inc/elements.h"
+#include "../inc/commons.h"
 #include "../inc/level.h"
+#include "../inc/spaceship.h"
 
 static void createPlatforms(Level* level);
 static void defineEnemies(Enemies* enemies);
@@ -49,7 +50,9 @@ static void defineEnemies(Enemies* enemies) {
 
 static void defineSpaceship(Level* level) {
 
-	level->def.spaceshipDef = MEM_alloc(sizeof(SpaceshipDefinition));
-	level->def.spaceshipDef->type = U1;
-	level->def.spaceshipDef->init_step = 0;
+	level->def.spaceshipDef.type = U1;
+	level->def.spaceshipDef.init_step = UNASSEMBLED;
+	setVect2D_u16(&level->def.spaceshipDef.basePos, 168, 184);
+	setVect2D_u16(&level->def.spaceshipDef.middlePos, 128, 96);
+	setVect2D_u16(&level->def.spaceshipDef.topPos, 48, 72);
 }
