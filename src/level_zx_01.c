@@ -5,13 +5,16 @@
  *      Author: diegomtassis
  */
 
+#include "../inc/level_zx_01.h"
+
 #include <genesis.h>
 
-#include "../inc/level_zx_01.h"
+#include "../inc/elements.h"
 #include "../inc/levels.h"
 
 static void createPlatforms(Level* level);
 static void defineEnemies(Enemies* enemies);
+static void defineSpaceship(Level* level);
 
 Level* createLevelZX01() {
 
@@ -19,6 +22,7 @@ Level* createLevelZX01() {
 
 	createPlatforms(level);
 	defineEnemies(&level->enemies);
+	defineSpaceship(level);
 
 	level->def.check_bottom = FALSE;
 
@@ -41,4 +45,11 @@ static void defineEnemies(Enemies* enemies) {
 
 	enemies->current_num_enemies = 0;
 	enemies->max_num_enemies = 10;
+}
+
+static void defineSpaceship(Level* level) {
+
+	level->def.spaceshipDef = MEM_alloc(sizeof(SpaceshipDefinition));
+	level->def.spaceshipDef->type = U1;
+	level->def.spaceshipDef->init_step = 0;
 }

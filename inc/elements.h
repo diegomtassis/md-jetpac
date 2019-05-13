@@ -15,6 +15,11 @@
 #define ALIVE		0x01
 #define DEAD		0x02
 
+#define U1		0x01
+#define U2		0x02
+#define U3		0x04
+#define U4		0x08
+
 typedef struct {
 	Vect2D_u16 pos_t;
 	Vect2D_u16 size_t;
@@ -54,8 +59,18 @@ typedef struct {
 } Explosions;
 
 typedef struct {
+	u8 type;
+	u16 init_step;
+} SpaceshipDefinition;
+
+typedef struct {
+	u16 step;
+} Spaceship;
+
+typedef struct {
 	u8 check_bottom;
 	Vect2D_u16* jetman_init_pos;
+	SpaceshipDefinition* spaceshipDef;
 } LevelDefinition;
 
 typedef struct {

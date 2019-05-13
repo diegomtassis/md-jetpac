@@ -12,6 +12,7 @@
 #include "../inc/config.h"
 #include "../inc/elements.h"
 #include "../inc/enemies.h"
+#include "../inc/spaceship.h"
 #include "../inc/explosions.h"
 #include "../inc/hud.h"
 #include "../inc/jetman.h"
@@ -29,6 +30,8 @@ static void joyEvent(u16 joy, u16 changed, u16 state);
 vu8 paused = FALSE;
 vu8 commitSuicide = FALSE;
 
+static const Vect2D_u16 game_over_text_pos = { .x = 12, .y = 5 };
+
 void startGame(Game* game) {
 
 	SPR_init(50, 256, 256);
@@ -37,6 +40,7 @@ void startGame(Game* game) {
 
 	startLevel(current_level);
 
+	startSpaceship(current_level);
 	startJetman(current_level);
 	startEnemies(current_level);
 	initExplosions(current_level);
@@ -90,6 +94,8 @@ void startGame(Game* game) {
 						jetmanAlive = TRUE;
 					} else {
 						releaseJetman(current_level->jetman);
+						current_level->jetman = 0;
+						releaseSpaceship(current_level);
 					}
 				}
 			}
@@ -103,14 +109,14 @@ void startGame(Game* game) {
 		VDP_waitVSync();
 	}
 
-	VDP_drawText("Game Over", 12, 5);
+	VDP_drawText("Game Over", game_over_text_pos.x, game_over_text_pos.y);
 	releaseLevel(current_level);
 	current_level = 0;
 
 	waitMs(5000);
 
 	SPR_end();
-	VDP_clearTextLine(5);
+	VDP_clearTextLine(5); // Game over text
 	VDP_clearPlan(PLAN_B, TRUE);
 
 	return;

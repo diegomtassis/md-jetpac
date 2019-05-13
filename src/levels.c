@@ -54,16 +54,24 @@ void startLevel(Level* level) {
 
 void releaseLevel(Level* level) {
 
-	// release floor
+	// floor
 	releasePlatform(level->floor);
 	level->floor = 0;
 
-	// release platforms
+	// platforms
 	for (u8 i = 0; i < level->num_platforms; i++) {
 		releasePlatform(level->platforms[i]);
 		level->platforms[i] = 0;
 	}
 
+	// spaceship
+	if (level->def.spaceshipDef) {
+
+		MEM_free(level->def.spaceshipDef);
+		level->def.spaceshipDef = 0;
+	}
+
+	// jetman definition
 	if (level->def.jetman_init_pos) {
 		MEM_free(level->def.jetman_init_pos);
 		level->def.jetman_init_pos = 0;
