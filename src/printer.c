@@ -12,17 +12,17 @@
 
 #define WAIT_MS	50
 
-static const Vect2D_u16 MIN_PRT_AREA = { .x = 0, .y = 3 };
-static const Vect2D_u16 MAX_PRT_AREA = { .x = 31, .y = 27 };
+static const V2u16 MIN_PRT_AREA = { .x = 0, .y = 3 };
+static const V2u16 MAX_PRT_AREA = { .x = 31, .y = 27 };
 
-static void printChar(const char* text, u16 pos, int is_last, Vect2D_u16* offset);
+static void printChar(const char* text, u16 pos, int is_last, V2u16* offset);
 
-static void moveForward(Vect2D_u16* offset);
-static void moveToNextLine(Vect2D_u16* offset);
-static void normalizeOffset(Vect2D_u16* offset);
+static void moveForward(V2u16* offset);
+static void moveToNextLine(V2u16* offset);
+static void normalizeOffset(V2u16* offset);
 
 static void cursorOn();
-static void cursorOnAt(Vect2D_u16* offset);
+static void cursorOnAt(V2u16* offset);
 static void cursorOff();
 
 static u16 tilesToPx(u8);
@@ -44,7 +44,7 @@ void printerOff() {
 	VDP_clearPlan(VDP_getTextPlan(), TRUE);
 }
 
-void println(const char* text, Vect2D_u16* offset) {
+void println(const char* text, V2u16* offset) {
 
 	print(text, offset);
 	if (offset->x != MIN_PRT_AREA.x) {
@@ -55,7 +55,7 @@ void println(const char* text, Vect2D_u16* offset) {
 	cursorOnAt(offset);
 }
 
-void print(const char* text, Vect2D_u16* offset) {
+void print(const char* text, V2u16* offset) {
 
 	normalizeOffset(offset);
 
@@ -73,7 +73,7 @@ void print(const char* text, Vect2D_u16* offset) {
 	cursorOnAt(offset);
 }
 
-static void printChar(const char* text, u16 pos, int is_last, Vect2D_u16* offset) {
+static void printChar(const char* text, u16 pos, int is_last, V2u16* offset) {
 
 	char current = text[pos];
 	char str[1];
@@ -111,7 +111,7 @@ static void printChar(const char* text, u16 pos, int is_last, Vect2D_u16* offset
 	}
 }
 
-static void normalizeOffset(Vect2D_u16* offset) {
+static void normalizeOffset(V2u16* offset) {
 
 	if (offset->x < MIN_PRT_AREA.x) {
 		offset->x = MIN_PRT_AREA.x;
@@ -122,7 +122,7 @@ static void normalizeOffset(Vect2D_u16* offset) {
 	}
 }
 
-static void moveForward(Vect2D_u16* offset) {
+static void moveForward(V2u16* offset) {
 
 	if (offset->x == MAX_PRT_AREA.x) {
 		moveToNextLine(offset);
@@ -134,7 +134,7 @@ static void moveForward(Vect2D_u16* offset) {
 	SPR_setPosition(cursor, offset->x, offset->y);
 }
 
-static void moveToNextLine(Vect2D_u16* offset) {
+static void moveToNextLine(V2u16* offset) {
 
 	offset->x = MIN_PRT_AREA.x;
 	offset->y++;
@@ -148,7 +148,7 @@ static void cursorOn() {
 	SPR_update();
 }
 
-static void cursorOnAt(Vect2D_u16* offset) {
+static void cursorOnAt(V2u16* offset) {
 
 	SPR_setPosition(cursor, tilesToPx(offset->x), tilesToPx(offset->y));
 	cursorOn();

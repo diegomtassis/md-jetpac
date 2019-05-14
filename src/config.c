@@ -33,7 +33,7 @@ vu8 current_option = 0;
 vu8 start = FALSE;
 vu8 refresh = TRUE;
 
-const Vect2D_u16 pos_init = { .x = 6, .y = 8 };
+const V2u16 pos_init = { .x = 6, .y = 8 };
 
 void setUpGame(Game* game) {
 
@@ -71,7 +71,7 @@ static void clearConfigScreen() {
 	VDP_setHilightShadow(FALSE);
 }
 
-static void displayConfig(Vect2D_u16 pos) {
+static void displayConfig(V2u16 pos) {
 
 	if (refresh) {
 

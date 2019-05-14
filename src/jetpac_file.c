@@ -16,7 +16,7 @@ void printDisclaimer() {
 
 	VDP_setTextPalette(PAL2);
 
-	Vect2D_u16 pos = { .x = 0, .y = 3 };
+	V2u16 pos = { .x = 0, .y = 3 };
 
 	printerOn();
 	waitMs(WAIT_MS_BEFORE);

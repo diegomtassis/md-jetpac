@@ -25,6 +25,8 @@ Level* createLevelZX01() {
 	defineEnemies(&level->enemies);
 	defineSpaceship(level);
 
+	level->def.jetman_init_pos = 0;
+
 	level->def.check_bottom = FALSE;
 
 	return level;
@@ -50,9 +52,9 @@ static void defineEnemies(Enemies* enemies) {
 
 static void defineSpaceship(Level* level) {
 
-	level->def.spaceshipDef.type = U1;
-	level->def.spaceshipDef.init_step = UNASSEMBLED;
-	setVect2D_u16(&level->def.spaceshipDef.basePos, 168, 184);
-	setVect2D_u16(&level->def.spaceshipDef.middlePos, 128, 96);
-	setVect2D_u16(&level->def.spaceshipDef.topPos, 48, 72);
+	level->def.spaceship_def.type = U1;
+	level->def.spaceship_def.init_step = UNASSEMBLED;
+	setV2u16(&level->def.spaceship_def.base_pos, 168, 184);
+	setV2u16(&level->def.spaceship_def.middle_pos, 128, 96);
+	setV2u16(&level->def.spaceship_def.top_pos, 48, 72);
 }

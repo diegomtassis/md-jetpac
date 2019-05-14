@@ -21,15 +21,15 @@
 #define BOTTOM_POS_V_PX_F16 	FIX16(BOTTOM_POS_V_PX_S16)
 
 typedef struct {
-	Vect2D_s16 pos;
+	V2s16 pos;
 	u16 w;
 	u16 h;
 } Box_s16;
 
 typedef struct {
-	Vect2D_f16 pos;
-	Vect2D_u16 size;
-	Vect2D_f16 mov;
+	V2f16 pos;
+	V2u16 size;
+	V2f16 mov;
 	Box_s16 box;
 } Object_f16;
 

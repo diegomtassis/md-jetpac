@@ -9,13 +9,13 @@
 
 #include <genesis.h>
 
-void setVect2D_u16(Vect2D_u16* pos, u16 x, u16 y) {
+void setV2u16(V2u16* pos, u16 x, u16 y) {
 
 	pos->x = x;
 	pos->y = y;
 }
 
-fix16 randomInRangeFix16(fix16 lower, fix16 higher) {
+f16 randomInRangeFix16(f16 lower, f16 higher) {
 
 	int min = abs(fix16ToInt(lower));
 	int max = abs(fix16ToInt(higher));

@@ -12,8 +12,8 @@
 
 #define	FIX16_0	FIX16(0)
 
-void setVect2D_u16(Vect2D_u16* pos, u16 x, u16 y);
+void setV2u16(V2u16* pos, u16 x, u16 y);
 
-fix16 randomInRangeFix16(fix16 lower, fix16 higher);
+f16 randomInRangeFix16(f16 lower, f16 higher);
 
 #endif /* INC_COMMONS_H_ */

@@ -38,7 +38,7 @@ void updateHud(Game* game) {
 
 	// p1 lives
 	char lives[2];
-	uint16ToStr(game->lives, lives, 1);
+	uintToStr(game->lives, lives, 1);
 	VDP_drawText(lives, 8, 2);
 
 	// p1 score

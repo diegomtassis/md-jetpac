@@ -25,9 +25,8 @@ Level* createLevelMD01() {
 	defineEnemies(&level->enemies);
 	defineSpaceship(level);
 
-	level->def.jetman_init_pos = MEM_alloc(sizeof(Vect2D_u16));
-	level->def.jetman_init_pos->x = 88;
-	level->def.jetman_init_pos->y = 72;
+	level->def.jetman_init_pos = MEM_alloc(sizeof(V2u16));
+	setV2u16(level->def.jetman_init_pos, 88, 72);
 
 	level->def.check_bottom = TRUE;
 
@@ -54,9 +53,9 @@ static void defineEnemies(Enemies* enemies) {
 
 static void defineSpaceship(Level* level) {
 
-	level->def.spaceshipDef.type = U1;
-	level->def.spaceshipDef.init_step = UNASSEMBLED;
-	setVect2D_u16(&level->def.spaceshipDef.basePos, 72, 112);
-	setVect2D_u16(&level->def.spaceshipDef.middlePos, 188, 64);
-	setVect2D_u16(&level->def.spaceshipDef.topPos, 188, 160);
+	level->def.spaceship_def.type = U1;
+	level->def.spaceship_def.init_step = UNASSEMBLED;
+	setV2u16(&level->def.spaceship_def.base_pos, 72, 112);
+	setV2u16(&level->def.spaceship_def.middle_pos, 188, 64);
+	setV2u16(&level->def.spaceship_def.top_pos, 188, 160);
 }

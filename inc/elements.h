@@ -21,14 +21,14 @@
 #define U4		0x08
 
 typedef struct {
-	Vect2D_u16 pos_t;
-	Vect2D_u16 size_t;
+	V2u16 pos_t;
+	V2u16 size_t;
 	Object_f16 object;
 } Platform;
 
 typedef struct {
 	Object_f16 object;
-	Vect2D_s16 order;
+	V2s16 order;
 	u8 walk_step_counter;
 	u8 health;
 	Sprite* sprite;
@@ -47,7 +47,7 @@ typedef struct {
 } Enemies;
 
 typedef struct {
-	Vect2D_s16 where;
+	V2s16 where;
 	u8 step;
 	Sprite* sprite;
 } Explosion;
@@ -61,26 +61,26 @@ typedef struct {
 typedef struct {
 	u8 type;
 	u16 init_step;
-	Vect2D_u16 basePos;
-	Vect2D_u16 middlePos;
-	Vect2D_u16 topPos;
+	V2u16 base_pos;
+	V2u16 middle_pos;
+	V2u16 top_pos;
 } SpaceshipDefinition;
 
 typedef struct {
 	u8 type;
 	u16 step;
-	Object_f16 objectBase;
-	Object_f16 objectMid;
-	Object_f16 objectTop;
-	Sprite* spriteBase;
-	Sprite* spriteMid;
-	Sprite* spriteTop;
+	Object_f16 base_object;
+	Object_f16 mid_object;
+	Object_f16 top_object;
+	Sprite* base_sprite;
+	Sprite* mid_sprite;
+	Sprite* top_sprite;
 } Spaceship;
 
 typedef struct {
 	u8 check_bottom;
-	Vect2D_u16* jetman_init_pos;
-	SpaceshipDefinition spaceshipDef;
+	V2u16* jetman_init_pos;
+	SpaceshipDefinition spaceship_def;
 } LevelDefinition;
 
 typedef struct {

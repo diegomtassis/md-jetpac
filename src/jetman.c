@@ -47,10 +47,10 @@ static void moveToStart(Jetman* jetman, const Level* level);
 static void moveJetman(Jetman*, Level*);
 static u8 calculateNextMovement(Jetman*);
 static void updatePosition(Jetman*, Level*);
-static fix16 landed(Box_s16, const Level*);
-static fix16 reachedTop(Box_s16, const Level*);
-static fix16 blockedByLeft(Box_s16, const Level*);
-static fix16 blockedByRight(Box_s16, const Level*);
+static f16 landed(Box_s16, const Level*);
+static f16 reachedTop(Box_s16, const Level*);
+static f16 blockedByLeft(Box_s16, const Level*);
+static f16 blockedByRight(Box_s16, const Level*);
 
 static void drawJetman(Jetman*);
 
@@ -181,7 +181,7 @@ static void updatePosition(Jetman* jetman, Level* level) {
 
 	} else {
 
-		fix16 blockedHorizontally = blockedByLeft(target_h, level);
+		f16 blockedHorizontally = blockedByLeft(target_h, level);
 		if (!blockedHorizontally) {
 			blockedHorizontally = blockedByRight(target_h, level);
 		}
@@ -196,13 +196,13 @@ static void updatePosition(Jetman* jetman, Level* level) {
 
 	// vertical position
 	Box_s16 target_v = targetVBox(jetman->object, JETMAN_WIDTH, JETMAN_HEIGHT);
-	fix16 landed_pos_y = landed(target_v, level);
+	f16 landed_pos_y = landed(target_v, level);
 	if (landed_pos_y) {
 		jetman->object.pos.y = landed_pos_y;
 		jetman->object.mov.y = SPEED_ZERO;
 
 	} else {
-		fix16 top_pos_y = reachedTop(target_v, level);
+		f16 top_pos_y = reachedTop(target_v, level);
 		if (top_pos_y) {
 			jetman->object.pos.y = top_pos_y;
 
@@ -215,7 +215,7 @@ static void updatePosition(Jetman* jetman, Level* level) {
 	updateBox(&jetman->object);
 }
 
-static fix16 landed(Box_s16 subject_box, const Level* level) {
+static f16 landed(Box_s16 subject_box, const Level* level) {
 
 	if (hitAbove(subject_box, level->floor->object.box)) {
 		return FIX16(adjacentYAbove(subject_box, level->floor->object.box));
@@ -231,7 +231,7 @@ static fix16 landed(Box_s16 subject_box, const Level* level) {
 	return FIX16_0;
 }
 
-static fix16 reachedTop(Box_s16 subject_box, const Level* level) {
+static f16 reachedTop(Box_s16 subject_box, const Level* level) {
 
 	if (subject_box.pos.y <= MIN_POS_V_PX_S16) {
 		return MIN_POS_V_PX_F16;
@@ -251,7 +251,7 @@ static fix16 reachedTop(Box_s16 subject_box, const Level* level) {
 	return FIX16_0;
 }
 
-static fix16 blockedByLeft(Box_s16 target_box, const Level* level) {
+static f16 blockedByLeft(Box_s16 target_box, const Level* level) {
 
 	if (hitLeft(target_box, level->floor->object.box)) {
 		return FIX16(adjacentXOnTheLeft(target_box, level->floor->object.box));
@@ -267,7 +267,7 @@ static fix16 blockedByLeft(Box_s16 target_box, const Level* level) {
 	return FIX16_0;
 }
 
-static fix16 blockedByRight(Box_s16 target_box, const Level* level) {
+static f16 blockedByRight(Box_s16 target_box, const Level* level) {
 
 	if (hitRight(target_box, level->floor->object.box)) {
 		return FIX16(adjacentXOnTheRight(target_box, level->floor->object.box));

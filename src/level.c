@@ -78,16 +78,16 @@ Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 
 	Platform* platform = MEM_alloc(sizeof(Platform));
 
-	Vect2D_u16 pos_t = { .x = pos_x_t, .y = pos_y_t };
+	V2u16 pos_t = { .x = pos_x_t, .y = pos_y_t };
 	platform->pos_t = pos_t;
 
-	Vect2D_u16 size = { .x = length_t, .y = 1 };
+	V2u16 size = { .x = length_t, .y = 1 };
 	platform->size_t = size;
 
-	Vect2D_f16 pos_px = { .x = FIX16(pos_x_t * 8), .y = FIX16(pos_y_t * 8) };
+	V2f16 pos_px = { .x = FIX16(pos_x_t * 8), .y = FIX16(pos_y_t * 8) };
 	platform->object.pos = pos_px;
 
-	Vect2D_u16 size_px = { .x = length_t * 8, .y = 8 };
+	V2u16 size_px = { .x = length_t * 8, .y = 8 };
 	platform->object.size = size_px;
 
 	platform->object.box.w = size_px.x;

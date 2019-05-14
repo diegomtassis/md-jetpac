@@ -18,7 +18,7 @@ Sega Mega Drive / Genesis port written by diegomtassis using SGDK.
 
 https://github.com/diegomtassis/md-jetpac
 
-All the artwork in this port has been extracted directly from the original game and thus is a RARE property. The port itself is built without RARE permission.
+All the artwork in this port has been extracted directly from the original game and thus is a RARE property. This port is free and is been built without RARE permission.
 
 
 ### SGDK
@@ -30,4 +30,4 @@ GitHub page: https://github.com/Stephane-D/SGDK
 
 Wiki page: https://github.com/Stephane-D/SGDK/wiki
 
-JetPac MD is built using SGDK 1.34
+JetPac MD is built using SGDK 1.40

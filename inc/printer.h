@@ -13,7 +13,7 @@
 void printerOn();
 void printerOff();
 
-void print(const char *text, Vect2D_u16 * offset);
-void println(const char *text, Vect2D_u16 * offset);
+void print(const char *text, V2u16 * offset);
+void println(const char *text, V2u16 * offset);
 
 #endif /* INC_PRINTER_H_ */
