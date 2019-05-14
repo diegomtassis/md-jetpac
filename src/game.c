@@ -40,9 +40,9 @@ void startGame(Game* game) {
 
 	startLevel(current_level);
 
-	startSpaceship(current_level);
 	startJetman(current_level);
 	startEnemies(current_level);
+	startSpaceship(current_level);
 	initExplosions(current_level);
 
 	SPR_update();
