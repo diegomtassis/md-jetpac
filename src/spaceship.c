@@ -7,11 +7,9 @@
 
 #include "../inc/spaceship.h"
 
-#include <maths.h>
-#include <memory.h>
-#include <sprite_eng.h>
-#include <vdp_tile.h>
+#include <genesis.h>
 
+#include "../inc/commons.h"
 #include "../inc/physics.h"
 #include "../res/sprite.h"
 
@@ -22,12 +20,17 @@
 
 static Object_f16* createModule(u8 module, V2u16 pos);
 
+static void handleAssembly(Level* level);
+
 void startSpaceship(Level* level) {
 
 	Spaceship* spaceship = MEM_alloc(sizeof(Spaceship));
 	level->spaceship = spaceship;
+	spaceship->grabbed = FALSE;
 
 	if (UNASSEMBLED & level->def.spaceship_def.type) {
+
+		spaceship->step = UNASSEMBLED;
 
 		spaceship->top_object = *createModule(TOP, level->def.spaceship_def.top_pos);
 		spaceship->top_sprite = SPR_addSprite(&u1_top_sprite, fix16ToInt(spaceship->top_object.pos.x),
@@ -43,9 +46,17 @@ void startSpaceship(Level* level) {
 
 	} else {
 		// ASSEMBLED
+		spaceship->step = ASSEMBLED;
 		spaceship->base_object = *createModule(WHOLE, level->def.spaceship_def.base_pos);
 		spaceship->base_sprite = SPR_addSprite(&u1_sprite, fix16ToInt(spaceship->base_object.pos.x),
 				fix16ToInt(spaceship->base_object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	}
+}
+
+void handleSpaceship(Level* level) {
+
+	if (level->spaceship->step < ASSEMBLED) {
+		handleAssembly(level);
 	}
 }
 
@@ -92,3 +103,23 @@ static Object_f16* createModule(u8 module, V2u16 pos) {
 	return object;
 }
 
+static void handleAssembly(Level* level) {
+
+	Spaceship* spaceship = level->spaceship;
+	V2f16 jetman_pos = level->jetman->object.pos;
+
+	if (spaceship->step == UNASSEMBLED) {
+		if (spaceship->grabbed || overlap(level->jetman->object.box, spaceship->mid_object.box)) {
+			spaceship->grabbed = TRUE;
+			spaceship->mid_object.pos.x = jetman_pos.x;
+			spaceship->mid_object.pos.y = jetman_pos.y;
+			updateBox(&spaceship->mid_object);
+			SPR_setPosition(spaceship->mid_sprite, fix16ToInt(jetman_pos.x), fix16ToInt(jetman_pos.y));
+		}
+
+	} else if (spaceship->step == MID_SET) {
+		if (spaceship->grabbed || overlap(level->jetman->object.box, spaceship->top_object.box)) {
+			spaceship->grabbed = TRUE;
+		}
+	}
+}

@@ -66,9 +66,11 @@ void startGame(Game* game) {
 				jetmanActs(current_level);
 				enemiesAct(current_level);
 				handleCollisionsBetweenElementsAlive(current_level);
-				if (current_level->def.check_bottom) {
+				if (current_level->def.mind_bottom) {
 					handleElementsLeavingScreenUnder(current_level);
 				}
+
+				handleSpaceship(current_level);
 
 				jetmanAlive = isJetmanAlive(current_level);
 				if (jetmanAlive) {

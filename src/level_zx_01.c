@@ -27,7 +27,7 @@ Level* createLevelZX01() {
 
 	level->def.jetman_init_pos = 0;
 
-	level->def.check_bottom = FALSE;
+	level->def.mind_bottom = FALSE;
 
 	return level;
 }

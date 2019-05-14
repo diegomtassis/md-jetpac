@@ -28,7 +28,7 @@ Level* createLevelMD01() {
 	level->def.jetman_init_pos = MEM_alloc(sizeof(V2u16));
 	setV2u16(level->def.jetman_init_pos, 88, 72);
 
-	level->def.check_bottom = TRUE;
+	level->def.mind_bottom = TRUE;
 
 	return level;
 }

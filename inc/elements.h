@@ -69,6 +69,7 @@ typedef struct {
 typedef struct {
 	u8 type;
 	u16 step;
+	bool grabbed;
 	Object_f16 base_object;
 	Object_f16 mid_object;
 	Object_f16 top_object;
@@ -78,7 +79,7 @@ typedef struct {
 } Spaceship;
 
 typedef struct {
-	u8 check_bottom;
+	u8 mind_bottom;
 	V2u16* jetman_init_pos;
 	SpaceshipDefinition spaceship_def;
 } LevelDefinition;

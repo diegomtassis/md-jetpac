@@ -24,6 +24,8 @@
 
 void startSpaceship(Level* level);
 
+void handleSpaceship(Level*);
+
 void releaseSpaceship(Level* level);
 
 #endif /* INC_SPACESHIP_H_ */
