@@ -39,12 +39,12 @@ Box_s16 targetBox(Object_f16, u8, u8);
 Box_s16 targetHBox(Object_f16, u8, u8);
 Box_s16 targetVBox(Object_f16, u8, u8);
 
-u8 overlap(Box_s16, Box_s16);
+bool overlap(Box_s16, Box_s16);
 
-u8 hitAbove(Box_s16, Box_s16);
-u8 hitUnder(Box_s16, Box_s16);
-u8 hitLeft(Box_s16, Box_s16);
-u8 hitRight(Box_s16, Box_s16);
+bool hitAbove(Box_s16, Box_s16);
+bool hitUnder(Box_s16, Box_s16);
+bool hitLeft(Box_s16, Box_s16);
+bool hitRight(Box_s16, Box_s16);
 
 s16 adjacentYAbove(Box_s16, Box_s16);
 s16 adjacentYUnder(Box_s16, Box_s16);

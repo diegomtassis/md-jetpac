@@ -30,8 +30,8 @@ static void setGameConfig(Game* game);
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
 vu8 current_option = 0;
-vu8 start = FALSE;
-vu8 refresh = TRUE;
+volatile bool start = FALSE;
+volatile bool refresh = TRUE;
 
 const V2u16 pos_init = { .x = 6, .y = 8 };
 
@@ -41,6 +41,7 @@ void setUpGame(Game* game) {
 
 	initConfigScreen();
 
+	current_option = 0;
 	start = FALSE;
 	refresh = TRUE;
 

@@ -23,12 +23,12 @@
 
 static void handleCollisionsBetweenElementsAlive(Level*);
 static void handleElementsLeavingScreenUnder(Level*);
-static u8 isJetmanAlive(Level*);
+static bool isJetmanAlive(Level*);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
-vu8 paused = FALSE;
-vu8 commitSuicide = FALSE;
+volatile bool paused = FALSE;
+volatile bool commitSuicide = FALSE;
 
 static const V2u16 game_over_text_pos = { .x = 12, .y = 5 };
 
@@ -40,12 +40,14 @@ void startGame(Game* game) {
 
 	startLevel(current_level);
 
+	startSpaceship(current_level);
 	startJetman(current_level);
 	startEnemies(current_level);
-	startSpaceship(current_level);
 	initExplosions(current_level);
 
 	SPR_update();
+
+	VDP_waitVSync();
 
 	JOY_setEventHandler(joyEvent);
 
@@ -152,7 +154,7 @@ static void handleElementsLeavingScreenUnder(Level* level) {
 	}
 }
 
-static u8 isJetmanAlive(Level* level) {
+static bool isJetmanAlive(Level* level) {
 
 	return ALIVE & level->jetman->health;
 }

@@ -46,7 +46,7 @@ static void updateSprite(Enemy* enemy);
 
 static void detectNuclearBomb();
 
-u8 nuclear_bomb;
+bool nuclear_bomb;
 
 void startEnemies(Level* level) {
 
