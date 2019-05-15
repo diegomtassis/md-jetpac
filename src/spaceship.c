@@ -109,17 +109,50 @@ static void handleAssembly(Level* level) {
 	V2f16 jetman_pos = level->jetman->object.pos;
 
 	if (spaceship->step == UNASSEMBLED) {
-		if (spaceship->grabbed || overlap(level->jetman->object.box, spaceship->mid_object.box)) {
+		if (isAbove(spaceship->mid_object.box, spaceship->base_object.box)) {
+			if (spaceship->grabbed) {
+				// Release right over the base
+				spaceship->grabbed = FALSE;
+				spaceship->mid_object.pos.x = spaceship->base_object.pos.x;
+				spaceship->mid_object.pos.y = spaceship->base_object.pos.y - FIX16_16; // Directly above the base
+				spaceship->step = MID_SET;
+			} else {
+				// Fall
+			}
+
+		} else if (spaceship->grabbed || overlap(level->jetman->object.box, spaceship->mid_object.box)) {
+
+			// The jetman has grabbed the middle section of the rocket
 			spaceship->grabbed = TRUE;
 			spaceship->mid_object.pos.x = jetman_pos.x;
-			spaceship->mid_object.pos.y = jetman_pos.y;
-			updateBox(&spaceship->mid_object);
-			SPR_setPosition(spaceship->mid_sprite, fix16ToInt(jetman_pos.x), fix16ToInt(jetman_pos.y));
+			spaceship->mid_object.pos.y = fix16Add(jetman_pos.y, FIX16_8); // the rocket part is 8px shorter than the jetman
 		}
+		updateBox(&spaceship->mid_object);
+		SPR_setPosition(spaceship->mid_sprite, fix16ToInt(spaceship->mid_object.pos.x),
+				fix16ToInt(spaceship->mid_object.pos.y));
 
 	} else if (spaceship->step == MID_SET) {
-		if (spaceship->grabbed || overlap(level->jetman->object.box, spaceship->top_object.box)) {
+
+		if (isAbove(spaceship->top_object.box, spaceship->mid_object.box)) {
+			if (spaceship->grabbed) {
+				// Release right over the base
+				spaceship->grabbed = FALSE;
+				spaceship->top_object.pos.x = spaceship->base_object.pos.x;
+				spaceship->top_object.pos.y = spaceship->base_object.pos.y - FIX16_32; // Directly above the base
+				spaceship->step = ASSEMBLED;
+			} else {
+				// Fall
+			}
+
+		} else if (spaceship->grabbed || overlap(level->jetman->object.box, spaceship->top_object.box)) {
+
+			// The jetman has grabbed the top section of the rocket
 			spaceship->grabbed = TRUE;
+			spaceship->top_object.pos.x = jetman_pos.x;
+			spaceship->top_object.pos.y = fix16Add(jetman_pos.y, FIX16_8); // the rocket part is 8px shorter than the jetman
 		}
+		updateBox(&spaceship->top_object);
+		SPR_setPosition(spaceship->top_sprite, fix16ToInt(spaceship->top_object.pos.x),
+				fix16ToInt(spaceship->top_object.pos.y));
 	}
 }

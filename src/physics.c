@@ -59,6 +59,12 @@ bool overlap(Box_s16 subject_box, Box_s16 object_box) {
 			&& (OVERLAPPED & axisYBoxRelativePos(subject_box, object_box));
 }
 
+bool isAbove(Box_s16 subject_box, Box_s16 object_box) {
+
+	return (OVERLAPPED & axisXBoxRelativePos(subject_box, object_box))
+			&& (subject_box.pos.y + subject_box.h <= object_box.pos.y);
+}
+
 bool hitAbove(Box_s16 subject_box, Box_s16 object_box) {
 
 	if (OVERLAPPED & axisXBoxRelativePos(subject_box, object_box)) {

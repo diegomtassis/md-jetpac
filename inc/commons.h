@@ -10,7 +10,10 @@
 
 #include <genesis.h>
 
-#define	FIX16_0	FIX16(0)
+#define	FIX16_0		FIX16(0)
+#define	FIX16_8		FIX16(8)
+#define	FIX16_16	FIX16(16)
+#define	FIX16_32	FIX16(32)
 
 void setV2u16(V2u16* pos, u16 x, u16 y);
 

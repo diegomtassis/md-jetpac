@@ -41,6 +41,8 @@ Box_s16 targetVBox(Object_f16, u8, u8);
 
 bool overlap(Box_s16, Box_s16);
 
+bool isAbove(Box_s16, Box_s16);
+
 bool hitAbove(Box_s16, Box_s16);
 bool hitUnder(Box_s16, Box_s16);
 bool hitLeft(Box_s16, Box_s16);
