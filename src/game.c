@@ -24,6 +24,7 @@
 static void handleCollisionsBetweenElementsAlive(Level*);
 static void handleElementsLeavingScreenUnder(Level*);
 static bool isJetmanAlive(Level*);
+static bool isLevelFinished(Level*);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
@@ -51,14 +52,15 @@ void startGame(Game* game) {
 
 	JOY_setEventHandler(joyEvent);
 
-	u8 jetmanAlive = TRUE;
-	u8 gameOver = FALSE;
+	bool jetman_alive = TRUE;
+	bool game_over = FALSE;
+	bool done = FALSE;
 
-	while (!gameOver) {
+	while (!game_over && !done) {
 
 		if (!paused) {
 
-			if (jetmanAlive) {
+			if (jetman_alive) {
 
 				if (commitSuicide) {
 					killJetman(current_level, TRUE);
@@ -74,9 +76,10 @@ void startGame(Game* game) {
 
 				handleSpaceship(current_level);
 
-				jetmanAlive = isJetmanAlive(current_level);
-				if (jetmanAlive) {
+				jetman_alive = isJetmanAlive(current_level);
+				if (jetman_alive) {
 					releaseDeadEnemies(current_level);
+					done = isLevelFinished(current_level);
 				} else {
 					game->lives--;
 				}
@@ -95,25 +98,32 @@ void startGame(Game* game) {
 					if (game->lives > 0) {
 						resetJetman(current_level);
 						startEnemies(current_level);
-						jetmanAlive = TRUE;
-					} else {
-						releaseJetman(current_level->jetman);
-						current_level->jetman = 0;
-						releaseSpaceship(current_level);
+						jetman_alive = TRUE;
 					}
 				}
 			}
 
 			updateExplosions(current_level);
 
-			gameOver = !game->lives && !current_level->booms.current_num_booms;
+			game_over = !game->lives && !current_level->booms.current_num_booms;
 			SPR_update();
 		}
 
 		VDP_waitVSync();
 	}
 
-	VDP_drawText("Game Over", game_over_text_pos.x, game_over_text_pos.y);
+	if (done) {
+		VDP_drawText("Well done", game_over_text_pos.x, game_over_text_pos.y);
+	} else {
+		VDP_drawText("Game Over", game_over_text_pos.x, game_over_text_pos.y);
+	}
+
+	releaseSpaceship(current_level);
+	releaseExplosions(current_level);
+	releaseAllEnemies(current_level);
+	releaseJetman(current_level->jetman);
+	current_level->jetman = 0;
+
 	releaseLevel(current_level);
 	current_level = 0;
 
@@ -157,6 +167,12 @@ static void handleElementsLeavingScreenUnder(Level* level) {
 static bool isJetmanAlive(Level* level) {
 
 	return ALIVE & level->jetman->health;
+}
+
+static bool isLevelFinished(Level* level) {
+
+	return (level->spaceship->step == ASSEMBLED)
+			&& overlap(level->jetman->object.box, level->spaceship->base_object.box);
 }
 
 static void joyEvent(u16 joy, u16 changed, u16 state) {

@@ -56,6 +56,20 @@ void updateExplosions(Level* level) {
 	releaseFinishedExplosions(level);
 }
 
+void releaseExplosions(Level* level) {
+
+	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
+
+		Explosion* boom = level->booms.objects[idx];
+		if (boom) {
+			SPR_releaseSprite(boom->sprite);
+			MEM_free(boom);
+			level->booms.objects[idx] = 0;
+			level->booms.current_num_booms--;
+		}
+	}
+}
+
 static void releaseFinishedExplosions(Level* level) {
 
 	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {

@@ -16,6 +16,7 @@
 
 void initExplosions(Level*);
 void updateExplosions(Level*);
+void releaseExplosions(Level*);
 
 void explode(Box_s16 what, Level* level);
 
