@@ -18,6 +18,11 @@
 #define TOP		0x04
 #define WHOLE	0x08
 
+#define WAITING		0x01
+#define GRABBED		0x02
+#define FALLING		0x04
+#define DONE		0x08
+
 static Object_f16* createModule(u8 module, V2u16 pos);
 
 static void handleAssembly(Level* level);
@@ -26,11 +31,11 @@ void startSpaceship(Level* level) {
 
 	Spaceship* spaceship = MEM_alloc(sizeof(Spaceship));
 	level->spaceship = spaceship;
-	spaceship->grabbed = FALSE;
 
 	if (UNASSEMBLED & level->def.spaceship_def.type) {
 
 		spaceship->step = UNASSEMBLED;
+		spaceship->current_part_state = WAITING;
 
 		spaceship->top_object = *createModule(TOP, level->def.spaceship_def.top_pos);
 		spaceship->top_sprite = SPR_addSprite(&u1_top_sprite, fix16ToInt(spaceship->top_object.pos.x),
@@ -47,6 +52,8 @@ void startSpaceship(Level* level) {
 	} else {
 		// ASSEMBLED
 		spaceship->step = ASSEMBLED;
+		spaceship->current_part_state = DONE;
+
 		spaceship->base_object = *createModule(WHOLE, level->def.spaceship_def.base_pos);
 		spaceship->base_sprite = SPR_addSprite(&u1_sprite, fix16ToInt(spaceship->base_object.pos.x),
 				fix16ToInt(spaceship->base_object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
@@ -110,9 +117,9 @@ static void handleAssembly(Level* level) {
 
 	if (spaceship->step == UNASSEMBLED) {
 		if (isAbove(spaceship->mid_object.box, spaceship->base_object.box)) {
-			if (spaceship->grabbed) {
+			if (spaceship->current_part_state & GRABBED) {
 				// Release right over the base
-				spaceship->grabbed = FALSE;
+				spaceship->current_part_state = FALLING;
 				spaceship->mid_object.pos.x = spaceship->base_object.pos.x;
 				spaceship->mid_object.pos.y = spaceship->base_object.pos.y - FIX16_16; // Directly above the base
 				spaceship->step = MID_SET;
@@ -120,10 +127,11 @@ static void handleAssembly(Level* level) {
 				// Fall
 			}
 
-		} else if (spaceship->grabbed || overlap(level->jetman->object.box, spaceship->mid_object.box)) {
+		} else if ((spaceship->current_part_state & GRABBED)
+				|| overlap(level->jetman->object.box, spaceship->mid_object.box)) {
 
 			// The jetman has grabbed the middle section of the rocket
-			spaceship->grabbed = TRUE;
+			spaceship->current_part_state = GRABBED;
 			spaceship->mid_object.pos.x = jetman_pos.x;
 			spaceship->mid_object.pos.y = fix16Add(jetman_pos.y, FIX16_8); // the rocket part is 8px shorter than the jetman
 		}
@@ -134,9 +142,9 @@ static void handleAssembly(Level* level) {
 	} else if (spaceship->step == MID_SET) {
 
 		if (isAbove(spaceship->top_object.box, spaceship->mid_object.box)) {
-			if (spaceship->grabbed) {
+			if (spaceship->current_part_state & GRABBED) {
 				// Release right over the base
-				spaceship->grabbed = FALSE;
+				spaceship->current_part_state = FALLING;
 				spaceship->top_object.pos.x = spaceship->base_object.pos.x;
 				spaceship->top_object.pos.y = spaceship->base_object.pos.y - FIX16_32; // Directly above the base
 				spaceship->step = ASSEMBLED;
@@ -144,10 +152,11 @@ static void handleAssembly(Level* level) {
 				// Fall
 			}
 
-		} else if (spaceship->grabbed || overlap(level->jetman->object.box, spaceship->top_object.box)) {
+		} else if ((spaceship->current_part_state & GRABBED)
+				|| overlap(level->jetman->object.box, spaceship->top_object.box)) {
 
 			// The jetman has grabbed the top section of the rocket
-			spaceship->grabbed = TRUE;
+			spaceship->current_part_state = GRABBED;
 			spaceship->top_object.pos.x = jetman_pos.x;
 			spaceship->top_object.pos.y = fix16Add(jetman_pos.y, FIX16_8); // the rocket part is 8px shorter than the jetman
 		}
