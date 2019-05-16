@@ -71,8 +71,7 @@ bool shareBase(Box_s16 subject_box, Box_s16 object_box) {
 		return FALSE;
 	}
 
-	return IN_BETWEEN & axisXPxRelativePos(subject_box.pos.x, object_box)
-			& axisXPxRelativePos(subject_box.pos.x + subject_box.w - 1, object_box);
+	return IN_BETWEEN & axisXPxRelativePos(subject_box.pos.x + subject_box.w / 2, object_box);
 }
 
 bool hitAbove(Box_s16 subject_box, Box_s16 object_box) {
