@@ -61,8 +61,11 @@ bool overlap(Box_s16 subject_box, Box_s16 object_box) {
 
 bool isAbove(Box_s16 subject_box, Box_s16 object_box) {
 
-	return (OVERLAPPED & axisXBoxRelativePos(subject_box, object_box))
-			&& (subject_box.pos.y + subject_box.h <= object_box.pos.y);
+	if (subject_box.pos.y + subject_box.h > object_box.pos.y) {
+		return FALSE;
+	}
+
+	return IN_BETWEEN & axisXPxRelativePos(subject_box.pos.x + subject_box.w / 2, object_box);
 }
 
 bool shareBase(Box_s16 subject_box, Box_s16 object_box) {
