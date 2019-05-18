@@ -96,7 +96,7 @@ void jetmanActs(Level* level) {
 
 static void createPlayer1(Level* level) {
 
-	Jetman* jetman = MEM_alloc(sizeof(Jetman));
+	Jetman* jetman = MEM_alloc(sizeof *jetman);
 
 	jetman->object.size.x = JETMAN_WIDTH;
 	jetman->object.size.y = JETMAN_HEIGHT;

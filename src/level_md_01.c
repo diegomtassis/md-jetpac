@@ -25,7 +25,7 @@ Level* createLevelMD01() {
 	defineEnemies(&level->enemies);
 	defineSpaceship(level);
 
-	level->def.jetman_init_pos = MEM_alloc(sizeof(V2u16));
+	level->def.jetman_init_pos = MEM_alloc(sizeof *level->def.jetman_init_pos);
 	setV2u16(level->def.jetman_init_pos, 88, 72);
 
 	level->def.mind_bottom = TRUE;

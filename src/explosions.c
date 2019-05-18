@@ -109,7 +109,7 @@ static void boom(Box_s16 what, Level* level, u8 style) {
 	}
 
 	// Create the explosion
-	Explosion* boom = MEM_alloc(sizeof(Explosion));
+	Explosion* boom = MEM_alloc(sizeof *boom);
 	level->booms.objects[boom_idx] = boom;
 	boom->step = 0;
 	level->booms.current_num_booms++;

@@ -76,7 +76,7 @@ void releaseLevel(Level* level) {
 
 Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 
-	Platform* platform = MEM_alloc(sizeof(Platform));
+	Platform* platform = MEM_alloc(sizeof *platform);
 
 	V2u16 pos_t = { .x = pos_x_t, .y = pos_y_t };
 	platform->pos_t = pos_t;

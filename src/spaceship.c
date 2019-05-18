@@ -32,13 +32,13 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 height,
 
 void startSpaceship(Level* level) {
 
-	Spaceship* spaceship = MEM_alloc(sizeof(Spaceship));
+	Spaceship* spaceship = MEM_alloc(sizeof *spaceship);
 	level->spaceship = spaceship;
 
 	if (UNASSEMBLED & level->def.spaceship_def.type) {
 
 		spaceship->step = UNASSEMBLED;
-		spaceship->current_part_state = WAITING;
+		spaceship->substep = WAITING;
 
 		spaceship->top_object = *createModule(TOP, level->def.spaceship_def.top_pos);
 		spaceship->top_sprite = SPR_addSprite(&u1_top_sprite, fix16ToInt(spaceship->top_object.pos.x),
@@ -55,7 +55,7 @@ void startSpaceship(Level* level) {
 	} else {
 		// ASSEMBLED
 		spaceship->step = ASSEMBLED;
-		spaceship->current_part_state = DONE;
+		spaceship->substep = DONE;
 
 		spaceship->base_object = *createModule(WHOLE, level->def.spaceship_def.base_pos);
 		spaceship->base_sprite = SPR_addSprite(&u1_sprite, fix16ToInt(spaceship->base_object.pos.x),
@@ -93,7 +93,7 @@ void releaseSpaceship(Level* level) {
 
 static Object_f16* createModule(u8 module, V2u16 pos) {
 
-	Object_f16* object = MEM_alloc(sizeof(Object_f16));
+	Object_f16* object = MEM_alloc(sizeof *object);
 
 	object->pos.x = FIX16(pos.x);
 	object->pos.y = FIX16(pos.y);
@@ -131,9 +131,9 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 	V2f16 jetman_pos = level->jetman->object.pos;
 
 	if (isAbove(part->box, spaceship->base_object.box)) {
-		if (spaceship->current_part_state & GRABBED) {
+		if (spaceship->substep & GRABBED) {
 			// Release right over the base
-			spaceship->current_part_state = FALLING;
+			spaceship->substep = FALLING;
 			part->pos.x = spaceship->base_object.pos.x;
 		} else {
 			// Fall
@@ -145,10 +145,10 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 			}
 		}
 
-	} else if ((spaceship->current_part_state & GRABBED) || overlap(level->jetman->object.box, part->box)) {
+	} else if ((spaceship->substep & GRABBED) || overlap(level->jetman->object.box, part->box)) {
 
 		// The jetman has grabbed the a section of the rocket
-		spaceship->current_part_state = GRABBED;
+		spaceship->substep = GRABBED;
 		part->pos.x = jetman_pos.x;
 		part->pos.y = fix16Add(jetman_pos.y, FIX16_8); // the rocket part is 8px shorter than the jetman
 	}

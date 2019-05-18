@@ -154,7 +154,7 @@ static void addEnemy(Level* level, u8 pos) {
 
 static Enemy* createEnemy() {
 
-	Enemy* enemy = MEM_alloc(sizeof(Enemy));
+	Enemy* enemy = MEM_alloc(sizeof *enemy);
 	enemy->health = ALIVE;
 
 	// position & direction

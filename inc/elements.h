@@ -69,7 +69,7 @@ typedef struct {
 typedef struct {
 	u8 type;
 	u16 step;
-	u8 current_part_state;
+	u16 substep;
 	Object_f16 base_object;
 	Object_f16 mid_object;
 	Object_f16 top_object;
