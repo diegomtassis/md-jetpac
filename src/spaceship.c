@@ -29,6 +29,9 @@ static Object_f16* createModule(u8 module, V2u16 pos);
 
 static void handleAssembly(Level* level);
 static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 height, Level* level);
+static void mergeParts(Spaceship* spaceship);
+
+u16 default_sprite_attrs = TILE_ATTR(PAL0, TRUE, FALSE, FALSE);
 
 void startSpaceship(Level* level) {
 
@@ -42,20 +45,20 @@ void startSpaceship(Level* level) {
 
 		spaceship->top_object = *createModule(TOP, level->def.spaceship_def.top_pos);
 		spaceship->top_sprite = SPR_addSprite(&u1_top_sprite, fix16ToInt(spaceship->top_object.pos.x),
-				fix16ToInt(spaceship->top_object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+				fix16ToInt(spaceship->top_object.pos.y), default_sprite_attrs);
 
 		spaceship->mid_object = *createModule(MID, level->def.spaceship_def.middle_pos);
 		spaceship->mid_sprite = SPR_addSprite(&u1_middle_sprite, fix16ToInt(spaceship->mid_object.pos.x),
-				fix16ToInt(spaceship->mid_object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+				fix16ToInt(spaceship->mid_object.pos.y), default_sprite_attrs);
 
 		spaceship->base_object = *createModule(BASE, level->def.spaceship_def.base_pos);
 		spaceship->base_sprite = SPR_addSprite(&u1_base_sprite, fix16ToInt(spaceship->base_object.pos.x),
-				fix16ToInt(spaceship->base_object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+				fix16ToInt(spaceship->base_object.pos.y), default_sprite_attrs);
 
 	} else {
 		// ASSEMBLED
 		spaceship->step = ASSEMBLED;
-		spaceship->substep = DONE;
+		spaceship->substep = WAITING;
 
 		spaceship->base_object = *createModule(WHOLE, level->def.spaceship_def.base_pos);
 		spaceship->base_sprite = SPR_addSprite(&u1_sprite, fix16ToInt(spaceship->base_object.pos.x),
@@ -122,6 +125,11 @@ static void handleAssembly(Level* level) {
 
 	} else if (spaceship->step == MID_SET) {
 		handlePart(&spaceship->top_object, spaceship->top_sprite, ASSEMBLED, FIX16_32, level);
+
+		if (spaceship->step == ASSEMBLED) {
+			// Change to the complete sprite when assembled
+			mergeParts(spaceship);
+		}
 	}
 }
 
@@ -155,4 +163,20 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 
 	updateBox(part);
 	SPR_setPosition(sprite, fix16ToInt(part->pos.x), fix16ToInt(part->pos.y));
+}
+
+static void mergeParts(Spaceship* spaceship) {
+
+	// release mid and top modules
+	SPR_releaseSprite(spaceship->mid_sprite);
+	spaceship->mid_sprite = 0;
+	SPR_releaseSprite(spaceship->top_sprite);
+	spaceship->top_sprite = 0;
+
+	// the base becomes a whole spaceship
+	spaceship->base_object.pos.y -= FIX16_32;
+	spaceship->base_object.size.y = 48;
+	SPR_releaseSprite(spaceship->base_sprite);
+	spaceship->base_sprite = SPR_addSprite(&u1_sprite, fix16ToInt(spaceship->base_object.pos.x),
+			fix16ToInt(spaceship->base_object.pos.y), default_sprite_attrs);
 }
