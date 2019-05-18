@@ -207,7 +207,8 @@ static void handleFuelling(Level* level) {
 
 	} else if (spaceship->substep & FALLING) {
 
-		if (overlap(level->jetman->object.box, spaceship->fuel_object.box)) {
+		if (overlap(level->jetman->object.box, spaceship->fuel_object.box)
+				&& !(isAbove(spaceship->fuel_object.box, spaceship->base_object.box))) {
 			// jetman just grabbed the fuel load
 			spaceship->substep = GRABBED;
 			spaceship->fuel_object.mov.y = SPEED_0;
