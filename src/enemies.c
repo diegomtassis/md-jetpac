@@ -20,13 +20,13 @@
 #define SPEED_H_NORMAL	FIX16(1)
 #define SPEED_V_NORMAL	FIX16(0.3)
 
-#define MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16  + 8
-#define MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
+#define FUEL_MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16  + 8
+#define FUEL_MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
 #define MIN_POS_V_PX_S16	TOP_POS_V_PX_S16
 #define MAX_POS_V_PX_S16	BOTTOM_POS_V_PX_S16 - 16
 
-#define MIN_POS_H_PX_F16	FIX16(MIN_POS_H_PX_S16)
-#define MAX_POS_H_PX_F16	FIX16(MAX_POS_H_PX_S16)
+#define FUEL_MIN_POS_H_PX_F16	FIX16(FUEL_MIN_POS_H_PX_S16)
+#define FUEL_MAX_POS_H_PX_F16	FIX16(FUEL_MAX_POS_H_PX_S16)
 #define MIN_POS_V_PX_F16	FIX16(MIN_POS_V_PX_S16)
 #define MAX_POS_V_PX_F16	FIX16(MAX_POS_V_PX_S16)
 #define MAX_POS_START_V_PX_F16	FIX16(MAX_POS_V_PX_S16 - 32)
@@ -159,10 +159,10 @@ static Enemy* createEnemy() {
 
 	// position & direction
 	if (random() % 2) {
-		enemy->object.pos.x = MIN_POS_H_PX_F16;
+		enemy->object.pos.x = FUEL_MIN_POS_H_PX_F16;
 		enemy->object.mov.x = SPEED_H_NORMAL;
 	} else {
-		enemy->object.pos.x = MAX_POS_H_PX_F16;
+		enemy->object.pos.x = FUEL_MAX_POS_H_PX_F16;
 		enemy->object.mov.x = -SPEED_H_NORMAL;
 	}
 
@@ -225,11 +225,11 @@ static void updatePosition(Enemy* enemy, Level* level) {
 		return;
 	}
 
-	if (target.pos.x > MAX_POS_H_PX_S16) {
-		enemy->object.pos.x = MIN_POS_H_PX_F16;
+	if (target.pos.x > FUEL_MAX_POS_H_PX_S16) {
+		enemy->object.pos.x = FUEL_MIN_POS_H_PX_F16;
 
-	} else if (target.pos.x < MIN_POS_H_PX_S16) {
-		enemy->object.pos.x = MAX_POS_H_PX_F16;
+	} else if (target.pos.x < FUEL_MIN_POS_H_PX_S16) {
+		enemy->object.pos.x = FUEL_MAX_POS_H_PX_F16;
 	} else {
 		enemy->object.pos.x += enemy->object.mov.x;
 	}

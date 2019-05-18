@@ -11,6 +11,7 @@
 
 #include "../inc/commons.h"
 #include "../inc/physics.h"
+#include "../inc/level.h"
 #include "../inc/explosions.h"
 #include "../res/sprite.h"
 
@@ -32,12 +33,12 @@
 #define JETMAN_HEIGHT 24
 #define JETMAN_WIDTH 16
 
-#define MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16 - 8
-#define MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
+#define FUEL_MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16 - 8
+#define FUEL_MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
 #define MIN_POS_V_PX_S16	TOP_POS_V_PX_S16
 
-#define MIN_POS_H_PX_F16	FIX16(MIN_POS_H_PX_S16)
-#define MAX_POS_H_PX_F16	FIX16(MAX_POS_H_PX_S16)
+#define FUEL_MIN_POS_H_PX_F16	FIX16(FUEL_MIN_POS_H_PX_S16)
+#define FUEL_MAX_POS_H_PX_F16	FIX16(FUEL_MAX_POS_H_PX_S16)
 #define MIN_POS_V_PX_F16	FIX16(MIN_POS_V_PX_S16)
 
 static void createPlayer1(Level*);
@@ -47,7 +48,6 @@ static void moveToStart(Jetman* jetman, const Level* level);
 static void moveJetman(Jetman*, Level*);
 static u8 calculateNextMovement(Jetman*);
 static void updatePosition(Jetman*, Level*);
-static f16 landed(Box_s16, const Level*);
 static f16 reachedTop(Box_s16, const Level*);
 static f16 blockedByLeft(Box_s16, const Level*);
 static f16 blockedByRight(Box_s16, const Level*);
@@ -173,11 +173,11 @@ static void updatePosition(Jetman* jetman, Level* level) {
 
 	// horizontal position
 	Box_s16 target_h = targetHBox(jetman->object, JETMAN_WIDTH, JETMAN_HEIGHT);
-	if (target_h.pos.x > MAX_POS_H_PX_S16) {
-		jetman->object.pos.x = MIN_POS_H_PX_F16;
+	if (target_h.pos.x > FUEL_MAX_POS_H_PX_S16) {
+		jetman->object.pos.x = FUEL_MIN_POS_H_PX_F16;
 
-	} else if (target_h.pos.x < MIN_POS_H_PX_S16) {
-		jetman->object.pos.x = MAX_POS_H_PX_F16;
+	} else if (target_h.pos.x < FUEL_MIN_POS_H_PX_S16) {
+		jetman->object.pos.x = FUEL_MAX_POS_H_PX_F16;
 
 	} else {
 
@@ -213,22 +213,6 @@ static void updatePosition(Jetman* jetman, Level* level) {
 
 	// update box
 	updateBox(&jetman->object);
-}
-
-static f16 landed(Box_s16 subject_box, const Level* level) {
-
-	if (hitAbove(subject_box, level->floor->object.box)) {
-		return FIX16(adjacentYAbove(subject_box, level->floor->object.box));
-	}
-
-	for (u8 i = 0; i < level->num_platforms; i++) {
-		Box_s16 object_box = level->platforms[i]->object.box;
-		if (hitAbove(subject_box, object_box)) {
-			return FIX16(adjacentYAbove(subject_box, object_box));
-		}
-	}
-
-	return FIX16_0;
 }
 
 static f16 reachedTop(Box_s16 subject_box, const Level* level) {

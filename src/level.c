@@ -5,9 +5,11 @@
  *      Author: diegomtassis
  */
 
+#include "../inc/level.h"
+
 #include <genesis.h>
 
-#include "../inc/level.h"
+#include "../inc/commons.h"
 #include "../inc/vdp_utils.h"
 #include "../res/gfx.h"
 
@@ -95,6 +97,22 @@ Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 	updateBox(&platform->object);
 
 	return platform;
+}
+
+f16 landed(Box_s16 subject_box, const Level* level) {
+
+	if (hitAbove(subject_box, level->floor->object.box)) {
+		return FIX16(adjacentYAbove(subject_box, level->floor->object.box));
+	}
+
+	for (u8 i = 0; i < level->num_platforms; i++) {
+		Box_s16 object_box = level->platforms[i]->object.box;
+		if (hitAbove(subject_box, object_box)) {
+			return FIX16(adjacentYAbove(subject_box, object_box));
+		}
+	}
+
+	return FIX16_0;
 }
 
 static void releasePlatform(Platform* platform) {

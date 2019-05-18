@@ -76,6 +76,8 @@ typedef struct {
 	Sprite* base_sprite;
 	Sprite* mid_sprite;
 	Sprite* top_sprite;
+	Object_f16 fuel_object;
+	Sprite* fuel_sprite;
 } Spaceship;
 
 typedef struct {

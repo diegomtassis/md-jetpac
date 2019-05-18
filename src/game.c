@@ -171,8 +171,7 @@ static bool isJetmanAlive(Level* level) {
 
 static bool isLevelFinished(Level* level) {
 
-	return (level->spaceship->step == ASSEMBLED)
-			&& shareBase(level->jetman->object.box, level->spaceship->base_object.box);
+	return (level->spaceship->step == READY) && shareBase(level->jetman->object.box, level->spaceship->base_object.box);
 }
 
 static void joyEvent(u16 joy, u16 changed, u16 state) {

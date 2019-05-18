@@ -12,7 +12,7 @@
 
 #include <genesis.h>
 
-#define UNASSEMBLED	1
+#define UNASSEMBLED 1
 #define MID_SET		2
 #define ASSEMBLED	3
 #define FUEL_1		4
