@@ -75,6 +75,7 @@ void startGame(Game* game) {
 					releaseDeadEnemies(current_level);
 					done = isLevelFinished(current_level);
 				} else {
+					dropIfGrabbed(current_level->spaceship);
 					game->lives--;
 				}
 

@@ -23,9 +23,9 @@
 #define READY		9
 
 void startSpaceship(Level* level);
+void releaseSpaceship(Level* level);
 
 void handleSpaceship(Level*);
-
-void releaseSpaceship(Level* level);
+void dropIfGrabbed(Spaceship*);
 
 #endif /* INC_SPACESHIP_H_ */

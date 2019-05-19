@@ -10,7 +10,7 @@
 #include "../inc/commons.h"
 #include "../inc/physics.h"
 
-void initFallingItem(Object_f16* item) {
+void dropFromSky(Object_f16* item) {
 
 	item->pos.x = randomInRangeFix16(ITEM_MIN_POS_H_PX_F16, ITEM_MAX_POS_H_PX_F16);
 	item->pos.y = TOP_POS_V_PX_F16;
@@ -22,3 +22,12 @@ void initFallingItem(Object_f16* item) {
 	updateBox(item);
 }
 
+bool grab(Object_f16* subject, Object_f16* item) {
+
+	if (overlap(subject->box, item->box)) {
+		item->mov.y = SPEED_0;
+		return TRUE;
+	}
+
+	return FALSE;
+}

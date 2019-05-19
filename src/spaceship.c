@@ -24,7 +24,8 @@
 #define WAITING		0x02
 #define GRABBED		0x04
 #define FALLING		0x08
-#define DONE		0x10
+#define ASSEMBLING	0x10
+#define DONE		0x20
 
 static Object_f16* createModule(u8 module, V2u16 pos);
 
@@ -77,6 +78,14 @@ void handleSpaceship(Level* level) {
 
 	} else if (level->spaceship->step >= ASSEMBLED && level->spaceship->step < READY) {
 		handleFuelling(level);
+	}
+}
+
+void dropIfGrabbed(Spaceship* spaceship) {
+
+	if ((spaceship->substep & GRABBED) && (spaceship->step >= ASSEMBLED)) {
+		spaceship->substep = FALLING;
+		spaceship->fuel_object.mov.y = SPEED_V_DOWN;
 	}
 }
 
@@ -157,8 +166,13 @@ static void handleFuelling(Level* level) {
 	if (spaceship->substep & NONE) {
 
 		// initialize a new fuel load
-		initFallingItem(&spaceship->fuel_object);
-		spaceship->substep = FALLING;
+		dropFromSky(&spaceship->fuel_object);
+		if (isAbove(spaceship->fuel_object.box, spaceship->base_object.box)) {
+			spaceship->substep = ASSEMBLING;
+		} else {
+			spaceship->substep = FALLING;
+		}
+
 		if (!spaceship->fuel_sprite) {
 			spaceship->fuel_sprite = SPR_addSprite(&fuel_sprite, fix16ToInt(spaceship->fuel_object.pos.x),
 					fix16ToInt(spaceship->fuel_object.pos.y), default_sprite_attrs);
@@ -166,18 +180,17 @@ static void handleFuelling(Level* level) {
 
 	} else if (spaceship->substep & WAITING) {
 
-		if (overlap(level->jetman->object.box, spaceship->fuel_object.box)) {
-			// jetman just grabbed the fuel load
+		if (grab(&level->jetman->object, &spaceship->fuel_object)) {
+			// fuel grabbed while waiting
 			spaceship->substep = GRABBED;
-			spaceship->fuel_object.mov.y = SPEED_0;
 		}
 
 	} else if (spaceship->substep & GRABBED) {
 
-		// the fuel load is in possession of jetman
+		// fuel in jetman possession
 		if (isAbove(spaceship->fuel_object.box, spaceship->base_object.box)) {
 			spaceship->fuel_object.pos.x = spaceship->base_object.pos.x;
-			spaceship->substep = FALLING;
+			spaceship->substep = ASSEMBLING;
 			spaceship->fuel_object.mov.y = SPEED_V_DOWN;
 
 		} else {
@@ -188,34 +201,38 @@ static void handleFuelling(Level* level) {
 
 	} else if (spaceship->substep & FALLING) {
 
-		if (overlap(level->jetman->object.box, spaceship->fuel_object.box)
-				&& !(isAbove(spaceship->fuel_object.box, spaceship->base_object.box))) {
-			// jetman just grabbed the fuel load
+		if (grab(&level->jetman->object, &spaceship->fuel_object)) {
+			// fuel grabbed while falling
 			spaceship->substep = GRABBED;
-			spaceship->fuel_object.mov.y = SPEED_0;
 
 		} else {
 			Box_s16 target_v = targetVBox(spaceship->fuel_object, ITEM_WIDTH, ITEM_HEIGHT);
-			if (overlap(target_v, spaceship->base_object.box)) {
-				spaceship->step++;
-				spaceship->substep = NONE;
-				SPR_nextFrame(spaceship->base_sprite);
-				if (spaceship->step == READY) {
-					SPR_releaseSprite(spaceship->fuel_sprite);
-					spaceship->fuel_sprite = 0;
-				}
-
-			} else if (landed(target_v, level)) {
+			if (landed(target_v, level)) {
 				spaceship->substep = WAITING;
 				spaceship->fuel_object.mov.y = SPEED_0;
 
 			} else if (level->def.mind_bottom && target_v.pos.y > BOTTOM_POS_V_PX_S16) {
 				// fuel lost
 				spaceship->substep = NONE;
-			} else {
 
+			} else {
 				spaceship->fuel_object.pos.y += spaceship->fuel_object.mov.y;
 			}
+		}
+
+	} else if (spaceship->substep & ASSEMBLING) {
+
+		Box_s16 target_v = targetVBox(spaceship->fuel_object, ITEM_WIDTH, ITEM_HEIGHT);
+		if (overlap(target_v, spaceship->base_object.box)) {
+			spaceship->step++;
+			spaceship->substep = NONE;
+			SPR_nextFrame(spaceship->base_sprite);
+			if (spaceship->step == READY) {
+				SPR_releaseSprite(spaceship->fuel_sprite);
+				spaceship->fuel_sprite = 0;
+			}
+		} else {
+			spaceship->fuel_object.pos.y += spaceship->fuel_object.mov.y;
 		}
 	}
 
@@ -232,7 +249,7 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 	if (isAbove(part->box, spaceship->base_object.box)) {
 		if (spaceship->substep & GRABBED) {
 			// release right over the base
-			spaceship->substep = FALLING;
+			spaceship->substep = ASSEMBLING;
 			part->pos.x = spaceship->base_object.pos.x;
 		} else {
 			// falling
