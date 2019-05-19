@@ -22,7 +22,7 @@
 #define SPEED_0			FIX16(0)
 #define SPEED_V_DOWN	FIX16(0.9)
 
-void dropFromSky(Object_f16* item);
+void dropFromSky(Object_f16* item, Box_s16* avoid);
 bool grab(Object_f16* subject, Object_f16* item);
 
 #endif /* INC_ITEMS_H_ */

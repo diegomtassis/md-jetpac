@@ -38,7 +38,7 @@ int main() {
 	resetTileMemory();
 	initHud();
 
-	Game* game = MEM_alloc(sizeof(Game));
+	Game* game = MEM_alloc(sizeof *game);
 	while (1) {
 
 		// run game

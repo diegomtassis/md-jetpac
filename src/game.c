@@ -123,7 +123,7 @@ void startGame(Game* game) {
 	releaseLevel(current_level);
 	current_level = 0;
 
-	waitMs(1500);
+	waitMs(600);
 
 	SPR_end();
 	VDP_clearTextLine(5); // Game over text

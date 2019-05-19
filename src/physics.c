@@ -182,4 +182,3 @@ static u8 axisYPxRelativePos(s16 y_px, Box_s16 object_box) {
 
 	return IN_BETWEEN;
 }
-
