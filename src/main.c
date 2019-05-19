@@ -43,7 +43,7 @@ int main() {
 
 		// run game
 		setUpGame(game);
-		startGame(game);
+		runGame(game);
 
 		registerScore(game->score);
 

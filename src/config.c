@@ -116,7 +116,6 @@ static void setGameConfig(Game* game) {
 		game->createLevel[1] = createLevelMD02;
 	}
 
-	game->level = 1;
 	game->lives = 3;
 	game->score = 0;
 }
