@@ -45,6 +45,7 @@ static Sprite* createSprite(Enemy* enemy);
 static void updateSprite(Enemy* enemy);
 
 static void detectNuclearBomb();
+static void releaseDeadEnemies(Level* level);
 
 bool nuclear_bomb;
 
@@ -71,6 +72,8 @@ void enemiesAct(Level* level) {
 	u8 num_enemies = level->enemies.current_num_enemies;
 	u8 current_enemy = 0;
 	u8 enemy_idx = 0;
+
+	releaseDeadEnemies(level);
 
 	while (current_enemy < num_enemies) {
 
@@ -105,7 +108,7 @@ void killEnemy(Enemy* enemy, Level* level, u8 exploding) {
 	enemy->health = DEAD;
 }
 
-void releaseAllEnemies(Level* level) {
+void releaseEnemies(Level* level) {
 
 	for (u8 idx = 0; idx < level->enemies.max_num_enemies; idx++) {
 

@@ -73,7 +73,6 @@ void startGame(Game* game) {
 
 				jetman_alive = isJetmanAlive(current_level);
 				if (jetman_alive) {
-					releaseDeadEnemies(current_level);
 					mission_finished = isMissionFinished(current_level);
 				} else {
 					dropIfGrabbed(current_level->spaceship);
@@ -90,7 +89,7 @@ void startGame(Game* game) {
 
 					waitMs(100);
 
-					releaseAllEnemies(current_level);
+					releaseEnemies(current_level);
 					if (game->lives > 0) {
 						resetJetman(current_level);
 						startEnemies(current_level);
@@ -118,7 +117,7 @@ void startGame(Game* game) {
 
 	releaseSpaceship(current_level);
 	releaseExplosions(current_level);
-	releaseAllEnemies(current_level);
+	releaseEnemies(current_level);
 	releaseJetman(current_level->jetman);
 	current_level->jetman = 0;
 	releaseLevel(current_level);
@@ -175,10 +174,14 @@ static void leavePlanet(Level* current_level) {
 
 	launch(current_level->spaceship);
 	do {
+		// keep life going while the orbiter lifts
 		handleSpaceship(current_level);
 		enemiesAct(current_level);
+		updateExplosions(current_level);
+
 		SPR_update();
 		VDP_waitVSync();
+
 	} while (current_level->spaceship->step == LIFTING);
 }
 
