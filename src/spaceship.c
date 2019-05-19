@@ -12,6 +12,7 @@
 #include "../inc/commons.h"
 #include "../inc/physics.h"
 #include "../inc/level.h"
+#include "../inc/items.h"
 #include "../res/sprite.h"
 
 #define BASE	0x01
@@ -24,18 +25,6 @@
 #define GRABBED		0x04
 #define FALLING		0x08
 #define DONE		0x10
-
-#define SPEED_0	FIX16(0)
-#define SPEED_V_DOWN	FIX16(0.9)
-
-#define FUEL_HEIGHT 16
-#define FUEL_WIDTH 16
-
-#define FUEL_MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16
-#define FUEL_MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 16
-
-#define FUEL_MIN_POS_H_PX_F16	FIX16(FUEL_MIN_POS_H_PX_S16)
-#define FUEL_MAX_POS_H_PX_F16	FIX16(FUEL_MAX_POS_H_PX_S16)
 
 static Object_f16* createModule(u8 module, V2u16 pos);
 
@@ -168,16 +157,8 @@ static void handleFuelling(Level* level) {
 	if (spaceship->substep & NONE) {
 
 		// initialize a new fuel load
-		spaceship->fuel_object.pos.x = randomInRangeFix16(FUEL_MIN_POS_H_PX_F16, FUEL_MAX_POS_H_PX_F16);
-		spaceship->fuel_object.pos.y = TOP_POS_V_PX_F16;
-		spaceship->fuel_object.size.x = FUEL_WIDTH;
-		spaceship->fuel_object.size.y = FUEL_HEIGHT;
-		spaceship->fuel_object.box.w = FUEL_WIDTH;
-		spaceship->fuel_object.box.h = FUEL_HEIGHT;
+		initFallingItem(&spaceship->fuel_object);
 		spaceship->substep = FALLING;
-		spaceship->fuel_object.mov.y = SPEED_V_DOWN;
-		updateBox(&spaceship->fuel_object);
-
 		if (!spaceship->fuel_sprite) {
 			spaceship->fuel_sprite = SPR_addSprite(&fuel_sprite, fix16ToInt(spaceship->fuel_object.pos.x),
 					fix16ToInt(spaceship->fuel_object.pos.y), default_sprite_attrs);
@@ -214,7 +195,7 @@ static void handleFuelling(Level* level) {
 			spaceship->fuel_object.mov.y = SPEED_0;
 
 		} else {
-			Box_s16 target_v = targetVBox(spaceship->fuel_object, FUEL_WIDTH, FUEL_HEIGHT);
+			Box_s16 target_v = targetVBox(spaceship->fuel_object, ITEM_WIDTH, ITEM_HEIGHT);
 			if (overlap(target_v, spaceship->base_object.box)) {
 				spaceship->step++;
 				spaceship->substep = NONE;

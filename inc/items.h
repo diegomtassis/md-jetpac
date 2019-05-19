@@ -1,0 +1,27 @@
+/*
+ * items.h
+ *
+ *  Created on: May 19, 2019
+ *      Author: diegomtassis
+ */
+
+#ifndef INC_ITEMS_H_
+#define INC_ITEMS_H_
+
+#include "physics.h"
+
+#define ITEM_HEIGHT 16
+#define ITEM_WIDTH 16
+
+#define ITEM_MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16
+#define ITEM_MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - ITEM_WIDTH
+
+#define ITEM_MIN_POS_H_PX_F16	FIX16(ITEM_MIN_POS_H_PX_S16)
+#define ITEM_MAX_POS_H_PX_F16	FIX16(ITEM_MAX_POS_H_PX_S16)
+
+#define SPEED_0			FIX16(0)
+#define SPEED_V_DOWN	FIX16(0.9)
+
+void initFallingItem(Object_f16* item);
+
+#endif /* INC_ITEMS_H_ */

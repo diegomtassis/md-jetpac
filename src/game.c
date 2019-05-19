@@ -29,7 +29,6 @@ static bool isLevelFinished(Level*);
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
 volatile bool paused = FALSE;
-volatile bool commitSuicide = FALSE;
 
 static const V2u16 game_over_text_pos = { .x = 12, .y = 5 };
 
@@ -61,11 +60,6 @@ void startGame(Game* game) {
 		if (!paused) {
 
 			if (jetman_alive) {
-
-				if (commitSuicide) {
-					killJetman(current_level, TRUE);
-					commitSuicide = FALSE;
-				}
 
 				jetmanActs(current_level);
 				enemiesAct(current_level);
@@ -123,7 +117,6 @@ void startGame(Game* game) {
 	releaseAllEnemies(current_level);
 	releaseJetman(current_level->jetman);
 	current_level->jetman = 0;
-
 	releaseLevel(current_level);
 	current_level = 0;
 
@@ -178,9 +171,5 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 
 	if (BUTTON_START & changed & ~state) {
 		paused ^= 1;
-	}
-
-	if (BUTTON_C & changed & ~state) {
-		commitSuicide = TRUE;
 	}
 }
