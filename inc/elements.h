@@ -61,9 +61,9 @@ typedef struct {
 typedef struct {
 	u8 type;
 	u16 init_step;
-	V2u16 base_pos;
-	V2u16 middle_pos;
-	V2u16 top_pos;
+	V2s16 base_pos;
+	V2s16 middle_pos;
+	V2s16 top_pos;
 } SpaceshipDefinition;
 
 typedef struct {

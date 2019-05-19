@@ -55,7 +55,7 @@ static void defineSpaceship(Level* level) {
 
 	level->def.spaceship_def.type = U1;
 	level->def.spaceship_def.init_step = UNASSEMBLED;
-	setV2u16(&level->def.spaceship_def.base_pos, 72, 112);
-	setV2u16(&level->def.spaceship_def.middle_pos, 188, 64);
-	setV2u16(&level->def.spaceship_def.top_pos, 188, 160);
+	setV2s16(&level->def.spaceship_def.base_pos, 72, 112);
+	setV2s16(&level->def.spaceship_def.middle_pos, 188, 64);
+	setV2s16(&level->def.spaceship_def.top_pos, 188, 160);
 }

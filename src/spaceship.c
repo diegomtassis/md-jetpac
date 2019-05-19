@@ -29,13 +29,15 @@
 
 #define SPACESHIP_SPEED_V	FIX16(0.6)
 
-static Object_f16* createModule(u8 module, V2u16 pos);
+static Object_f16* createModule(u8 module, V2s16 pos);
 
 static void handleAssembly(Level* level);
 static void handleFuelling(Level* level);
 static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 height, Level* level);
 static void mergeParts(Spaceship* spaceship);
-static void handleFlight(Spaceship* spaceship, s16 v_floor_px);
+static void handleFlight(Spaceship* spaceship, Level* level);
+
+static bool leftPlanet(Spaceship* spaceship);
 
 u16 default_sprite_attrs = TILE_ATTR(PAL0, TRUE, FALSE, FALSE);
 
@@ -65,14 +67,22 @@ void startSpaceship(Level* level) {
 
 	} else {
 		// LANDING
-		spaceship->step = ASSEMBLED;
-		spaceship->substep = NONE; // Fuel
+		spaceship->step = LANDING;
+		spaceship->substep = NONE;
 
-		spaceship->base_object = *createModule(WHOLE, level->def.spaceship_def.base_pos);
-		spaceship->base_sprite = SPR_addSprite(&u1_sprite, fix16ToInt(spaceship->base_object.pos.x),
-				fix16ToInt(spaceship->base_object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+		// override whatever comes as vertical starting position
+		V2s16* base_pos = &level->def.spaceship_def.base_pos;
+		base_pos->y = TOP_POS_V_PX_S16 - 48;
 
-		spaceship->fire_sprite = 0;
+		spaceship->base_object = *createModule(WHOLE, *base_pos);
+		spaceship->base_object.mov.y = SPACESHIP_SPEED_V;
+
+		spaceship->base_sprite = SPR_addSprite(&u1_sprite, base_pos->x, base_pos->y,
+				TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+		// fire
+		spaceship->fire_sprite = SPR_addSprite(&fire_sprite, base_pos->x, base_pos->y + 52,
+				TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
 	}
 
 	spaceship->fuel_sprite = 0;
@@ -119,8 +129,8 @@ void handleSpaceship(Level* level) {
 	} else if (spaceship->step >= ASSEMBLED && spaceship->step < READY) {
 		handleFuelling(level);
 
-	} else if (level->spaceship->step == LIFTING) {
-		handleFlight(level->spaceship, level->floor->object.box.pos.y);
+	} else if (level->spaceship->step == LIFTING || level->spaceship->step == LANDING) {
+		handleFlight(level->spaceship, level);
 	}
 }
 
@@ -142,7 +152,7 @@ void launch(Spaceship* spaceship) {
 	spaceship->base_object.mov.y = -SPACESHIP_SPEED_V;
 }
 
-static Object_f16* createModule(u8 module, V2u16 pos) {
+static Object_f16* createModule(u8 module, V2s16 pos) {
 
 	Object_f16* object = MEM_alloc(sizeof *object);
 
@@ -317,30 +327,70 @@ static void mergeParts(Spaceship* spaceship) {
 			fix16ToInt(spaceship->base_object.pos.y), TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
 }
 
-static void handleFlight(Spaceship* spaceship, s16 v_floor_px) {
+static void handleFlight(Spaceship* spaceship, Level* level) {
 
-	if (spaceship->base_object.pos.y > TOP_POS_V_PX_F16 - FIX16(48)) {
+	if (spaceship->step == LANDING) {
 
 		// spaceship
-		spaceship->base_object.pos.y += spaceship->base_object.mov.y;
+		Box_s16 target_v = targetVBox(spaceship->base_object, spaceship->base_object.box.w,
+				spaceship->base_object.box.h);
+
+		f16 landed_y = landed(target_v, level);
+		if (landed_y) {
+			spaceship->step = ASSEMBLED;
+			spaceship->base_object.pos.y = landed_y;
+
+		} else {
+			spaceship->base_object.pos.y += spaceship->base_object.mov.y;
+		}
+
 		updateBox(&spaceship->base_object);
+
 		u16 h_pos_u16 = fix16ToInt(spaceship->base_object.pos.x);
 		u16 v_pos_u16 = fix16ToInt(spaceship->base_object.pos.y);
 		SPR_setPosition(spaceship->base_sprite, h_pos_u16, v_pos_u16);
 
 		// fire
-		u16 v_fire_u16 = v_pos_u16 + 52;
-		if (!spaceship->fire_sprite) {
-			if (v_fire_u16 + 12 < v_floor_px) { // leave room for the fire
-				spaceship->fire_sprite = SPR_addSprite(&fire_sprite, h_pos_u16, v_fire_u16,
-						TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+		if (spaceship->fire_sprite) {
+			u16 v_fire_u16 = v_pos_u16 + 52;
+			if (v_fire_u16 + 12 >= level->floor->object.box.pos.y) {
+				SPR_releaseSprite(spaceship->fire_sprite);
+				spaceship->fire_sprite = 0;
+
+			} else {
+				SPR_setPosition(spaceship->fire_sprite, h_pos_u16, v_fire_u16);
 			}
-		} else {
-			SPR_setPosition(spaceship->fire_sprite, h_pos_u16, v_fire_u16);
 		}
 
-	} else {
-		spaceship->step = ORBITING;
-		spaceship->substep = NONE;
+	} else if (spaceship->step == LIFTING) {
+
+		if (leftPlanet(spaceship)) {
+			spaceship->step = ORBITING;
+			spaceship->substep = NONE;
+
+		} else {
+			// spaceship
+			spaceship->base_object.pos.y += spaceship->base_object.mov.y;
+			updateBox(&spaceship->base_object);
+			u16 h_pos_u16 = fix16ToInt(spaceship->base_object.pos.x);
+			u16 v_pos_u16 = fix16ToInt(spaceship->base_object.pos.y);
+			SPR_setPosition(spaceship->base_sprite, h_pos_u16, v_pos_u16);
+
+			// fire
+			u16 v_fire_u16 = v_pos_u16 + 52;
+			if (!spaceship->fire_sprite) {
+				if (v_fire_u16 + 12 < level->floor->object.box.pos.y) { // leave room for the fire
+					spaceship->fire_sprite = SPR_addSprite(&fire_sprite, h_pos_u16, v_fire_u16,
+							TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+				}
+			} else {
+				SPR_setPosition(spaceship->fire_sprite, h_pos_u16, v_fire_u16);
+			}
+		}
 	}
+}
+
+static bool leftPlanet(Spaceship* spaceship) {
+
+	return spaceship->base_object.pos.y < TOP_POS_V_PX_F16 - FIX16(48);
 }

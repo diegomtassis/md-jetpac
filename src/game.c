@@ -25,6 +25,8 @@ static void handleCollisionsBetweenElementsAlive(Level*);
 static void handleElementsLeavingScreenUnder(Level*);
 static bool isJetmanAlive(Level*);
 static bool isMissionFinished(Level*);
+
+static void waitForLanding(Level*);
 static void leavePlanet(Level*);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
@@ -53,12 +55,13 @@ void runGame(Game* game) {
 		startLevel(current_level);
 
 		startSpaceship(current_level);
+		waitForLanding(current_level);
+
 		startJetman(current_level);
 		startEnemies(current_level);
 		initExplosions(current_level);
 
 		SPR_update();
-
 		VDP_waitVSync();
 
 		JOY_setEventHandler(joyEvent);
@@ -120,9 +123,10 @@ void runGame(Game* game) {
 		if (mission_finished) {
 			SPR_setVisibility(current_level->jetman->sprite, HIDDEN);
 			leavePlanet(current_level);
-
+			waitMs(500);
 		} else {
 			VDP_drawText("Game Over", game_over_text_pos.x, game_over_text_pos.y);
+			waitMs(1000);
 		}
 
 		releaseSpaceship(current_level);
@@ -133,7 +137,7 @@ void runGame(Game* game) {
 		releaseLevel(current_level);
 		current_level = 0;
 
-		waitMs(600);
+		SPR_update();
 
 		VDP_clearTextLine(5); // Game over text
 		VDP_clearPlan(PLAN_B, TRUE);
@@ -180,6 +184,17 @@ static bool isJetmanAlive(Level* level) {
 static bool isMissionFinished(Level* level) {
 
 	return (level->spaceship->step == READY) && shareBase(level->jetman->object.box, level->spaceship->base_object.box);
+}
+
+static void waitForLanding(Level* level) {
+
+	while (level->spaceship->step == LANDING) {
+
+		handleSpaceship(level);
+
+		SPR_update();
+		VDP_waitVSync();
+	}
 }
 
 static void leavePlanet(Level* current_level) {
