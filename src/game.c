@@ -24,7 +24,8 @@
 static void handleCollisionsBetweenElementsAlive(Level*);
 static void handleElementsLeavingScreenUnder(Level*);
 static bool isJetmanAlive(Level*);
-static bool isLevelFinished(Level*);
+static bool isMissionFinished(Level*);
+static void leavePlanet(Level*);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
@@ -52,10 +53,10 @@ void startGame(Game* game) {
 	JOY_setEventHandler(joyEvent);
 
 	bool jetman_alive = TRUE;
+	bool mission_finished = FALSE;
 	bool game_over = FALSE;
-	bool done = FALSE;
 
-	while (!game_over && !done) {
+	while (!game_over && !mission_finished) {
 
 		if (!paused) {
 
@@ -73,7 +74,7 @@ void startGame(Game* game) {
 				jetman_alive = isJetmanAlive(current_level);
 				if (jetman_alive) {
 					releaseDeadEnemies(current_level);
-					done = isLevelFinished(current_level);
+					mission_finished = isMissionFinished(current_level);
 				} else {
 					dropIfGrabbed(current_level->spaceship);
 					game->lives--;
@@ -107,8 +108,10 @@ void startGame(Game* game) {
 		VDP_waitVSync();
 	}
 
-	if (done) {
-		VDP_drawText("Well done", game_over_text_pos.x, game_over_text_pos.y);
+	if (mission_finished) {
+		SPR_setVisibility(current_level->jetman->sprite, HIDDEN);
+		leavePlanet(current_level);
+
 	} else {
 		VDP_drawText("Game Over", game_over_text_pos.x, game_over_text_pos.y);
 	}
@@ -121,7 +124,7 @@ void startGame(Game* game) {
 	releaseLevel(current_level);
 	current_level = 0;
 
-	waitMs(5000);
+	waitMs(1500);
 
 	SPR_end();
 	VDP_clearTextLine(5); // Game over text
@@ -163,9 +166,20 @@ static bool isJetmanAlive(Level* level) {
 	return ALIVE & level->jetman->health;
 }
 
-static bool isLevelFinished(Level* level) {
+static bool isMissionFinished(Level* level) {
 
 	return (level->spaceship->step == READY) && shareBase(level->jetman->object.box, level->spaceship->base_object.box);
+}
+
+static void leavePlanet(Level* current_level) {
+
+	launch(current_level->spaceship);
+	do {
+		handleSpaceship(current_level);
+		enemiesAct(current_level);
+		SPR_update();
+		VDP_waitVSync();
+	} while (current_level->spaceship->step == LIFTING);
 }
 
 static void joyEvent(u16 joy, u16 changed, u16 state) {

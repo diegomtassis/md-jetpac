@@ -12,20 +12,24 @@
 
 #include <genesis.h>
 
-#define UNASSEMBLED 1
-#define MID_SET		2
-#define ASSEMBLED	3
-#define FUEL_1		4
-#define FUEL_2		5
-#define FUEL_3		6
-#define FUEL_4		7
-#define FUEL_5		8
-#define READY		9
+#define LANDING 	1
+#define UNASSEMBLED 2
+#define FUSELAGE_SET		3
+#define ASSEMBLED	4
+#define FUEL_1		5
+#define FUEL_2		6
+#define FUEL_3		7
+#define FUEL_4		8
+#define FUEL_5		9
+#define READY		10
+#define LIFTING		11
+#define ORBITING	12
 
 void startSpaceship(Level* level);
 void releaseSpaceship(Level* level);
 
 void handleSpaceship(Level*);
 void dropIfGrabbed(Spaceship*);
+void launch(Spaceship*);
 
 #endif /* INC_SPACESHIP_H_ */

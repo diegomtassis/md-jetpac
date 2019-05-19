@@ -27,6 +27,8 @@
 #define ASSEMBLING	0x10
 #define DONE		0x20
 
+#define SPACESHIP_SPEED_V	FIX16(0.6)
+
 static Object_f16* createModule(u8 module, V2u16 pos);
 
 static void handleAssembly(Level* level);
@@ -41,7 +43,7 @@ void startSpaceship(Level* level) {
 	Spaceship* spaceship = MEM_alloc(sizeof *spaceship);
 	level->spaceship = spaceship;
 
-	if (UNASSEMBLED & level->def.spaceship_def.type) {
+	if (UNASSEMBLED == level->def.spaceship_def.init_step) {
 
 		spaceship->step = UNASSEMBLED;
 		spaceship->substep = WAITING;
@@ -59,8 +61,8 @@ void startSpaceship(Level* level) {
 				fix16ToInt(spaceship->base_object.pos.y), default_sprite_attrs);
 
 	} else {
-		// ASSEMBLED
-		spaceship->step = ASSEMBLED;
+		// LANDING
+		spaceship->step = LANDING;
 		spaceship->substep = NONE; // Fuel
 
 		spaceship->base_object = *createModule(WHOLE, level->def.spaceship_def.base_pos);
@@ -69,24 +71,6 @@ void startSpaceship(Level* level) {
 	}
 
 	spaceship->fuel_sprite = 0;
-}
-
-void handleSpaceship(Level* level) {
-
-	if (level->spaceship->step < ASSEMBLED) {
-		handleAssembly(level);
-
-	} else if (level->spaceship->step >= ASSEMBLED && level->spaceship->step < READY) {
-		handleFuelling(level);
-	}
-}
-
-void dropIfGrabbed(Spaceship* spaceship) {
-
-	if ((spaceship->substep & GRABBED) && (spaceship->step >= ASSEMBLED)) {
-		spaceship->substep = FALLING;
-		spaceship->fuel_object.mov.y = SPEED_V_DOWN;
-	}
 }
 
 void releaseSpaceship(Level* level) {
@@ -113,6 +97,48 @@ void releaseSpaceship(Level* level) {
 
 	MEM_free(level->spaceship);
 	level->spaceship = 0;
+}
+
+void handleSpaceship(Level* level) {
+
+	Spaceship* spaceship = level->spaceship;
+
+	if (spaceship->step >= UNASSEMBLED && spaceship->step < ASSEMBLED) {
+		handleAssembly(level);
+
+	} else if (spaceship->step >= ASSEMBLED && spaceship->step < READY) {
+		handleFuelling(level);
+
+	} else if (level->spaceship->step == LIFTING) {
+
+		if (spaceship->base_object.pos.y > TOP_POS_V_PX_F16 - FIX16(48)) {
+			spaceship->base_object.pos.y += spaceship->base_object.mov.y;
+			updateBox(&spaceship->base_object);
+			SPR_setPosition(spaceship->base_sprite, fix16ToInt(spaceship->base_object.pos.x),
+					fix16ToInt(spaceship->base_object.pos.y));
+		} else {
+			spaceship->step = ORBITING;
+			spaceship->substep = NONE;
+		}
+	}
+}
+
+void dropIfGrabbed(Spaceship* spaceship) {
+
+	if ((spaceship->substep & GRABBED) && (spaceship->step >= ASSEMBLED)) {
+		spaceship->substep = FALLING;
+		spaceship->fuel_object.mov.y = SPEED_V_DOWN;
+	}
+}
+
+void launch(Spaceship* spaceship) {
+
+	if (spaceship->step != READY) {
+		return;
+	}
+
+	spaceship->step = LIFTING;
+	spaceship->base_object.mov.y = -SPACESHIP_SPEED_V;
 }
 
 static Object_f16* createModule(u8 module, V2u16 pos) {
@@ -142,9 +168,9 @@ static void handleAssembly(Level* level) {
 	Spaceship* spaceship = level->spaceship;
 
 	if (spaceship->step == UNASSEMBLED) {
-		handlePart(&spaceship->mid_object, spaceship->mid_sprite, MID_SET, FIX16_16, level);
+		handlePart(&spaceship->mid_object, spaceship->mid_sprite, FUSELAGE_SET, FIX16_16, level);
 
-	} else if (spaceship->step == MID_SET) {
+	} else if (spaceship->step == FUSELAGE_SET) {
 		handlePart(&spaceship->top_object, spaceship->top_sprite, ASSEMBLED, FIX16_32, level);
 
 		if (spaceship->step == ASSEMBLED) {
@@ -276,16 +302,16 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 
 static void mergeParts(Spaceship* spaceship) {
 
-// release mid and top modules
+	// release mid and top modules
 	SPR_releaseSprite(spaceship->mid_sprite);
 	spaceship->mid_sprite = 0;
 	SPR_releaseSprite(spaceship->top_sprite);
 	spaceship->top_sprite = 0;
 
-// the base becomes a whole spaceship
+	// the base becomes a whole spaceship
 	spaceship->base_object.pos.y -= FIX16_32;
 	spaceship->base_object.size.y = 48;
 	SPR_releaseSprite(spaceship->base_sprite);
 	spaceship->base_sprite = SPR_addSprite(&u1_sprite, fix16ToInt(spaceship->base_object.pos.x),
-			fix16ToInt(spaceship->base_object.pos.y), default_sprite_attrs);
+			fix16ToInt(spaceship->base_object.pos.y), TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
 }
