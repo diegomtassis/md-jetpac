@@ -10,7 +10,9 @@
 #include <genesis.h>
 
 #include "../inc/level_zx_01.h"
+#include "../inc/level_zx_02.h"
 #include "../inc/level_md_01.h"
+#include "../inc/level_md_02.h"
 
 #define NUM_MODES		2
 
@@ -102,10 +104,16 @@ static void setGameConfig(Game* game) {
 
 	if (current_option == 0) {
 		game->mode = MODE_ZX;
-		game->createLevel = createLevelZX01;
+		game->num_levels = 2;
+		game->createLevel = MEM_alloc(game->num_levels * sizeof(Level*));
+		game->createLevel[0] = createLevelZX01;
+		game->createLevel[1] = createLevelZX02;
 	} else {
 		game->mode = MODE_MD;
-		game->createLevel = createLevelMD01;
+		game->num_levels = 2;
+		game->createLevel = MEM_alloc(game->num_levels * sizeof(Level*));
+		game->createLevel[0] = createLevelMD01;
+		game->createLevel[1] = createLevelMD02;
 	}
 
 	game->level = 1;

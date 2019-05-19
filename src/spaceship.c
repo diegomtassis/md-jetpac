@@ -65,7 +65,7 @@ void startSpaceship(Level* level) {
 
 	} else {
 		// LANDING
-		spaceship->step = LANDING;
+		spaceship->step = ASSEMBLED;
 		spaceship->substep = NONE; // Fuel
 
 		spaceship->base_object = *createModule(WHOLE, level->def.spaceship_def.base_pos);

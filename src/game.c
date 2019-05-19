@@ -33,101 +33,113 @@ volatile bool paused = FALSE;
 
 static const V2u16 game_over_text_pos = { .x = 12, .y = 5 };
 
-void startGame(Game* game) {
+void runGame(Game* game) {
 
 	SPR_init();
 
-	Level* current_level = game->createLevel();
-
-	startLevel(current_level);
-
-	startSpaceship(current_level);
-	startJetman(current_level);
-	startEnemies(current_level);
-	initExplosions(current_level);
-
-	SPR_update();
-
-	VDP_waitVSync();
-
-	JOY_setEventHandler(joyEvent);
-
-	bool jetman_alive = TRUE;
-	bool mission_finished = FALSE;
 	bool game_over = FALSE;
 
-	while (!game_over && !mission_finished) {
+	/* when all the levels are passed start again */
 
-		if (!paused) {
+	u8 level_number = 0;
 
-			if (jetman_alive) {
+	while (!game_over) {
 
-				jetmanActs(current_level);
-				enemiesAct(current_level);
-				handleCollisionsBetweenElementsAlive(current_level);
-				if (current_level->def.mind_bottom) {
-					handleElementsLeavingScreenUnder(current_level);
-				}
-
-				handleSpaceship(current_level);
-
-				jetman_alive = isJetmanAlive(current_level);
-				if (jetman_alive) {
-					mission_finished = isMissionFinished(current_level);
-				} else {
-					dropIfGrabbed(current_level->spaceship);
-					game->lives--;
-				}
-
-				game->score++;
-				updateHud(game);
-
-			} else {
-
-				// Smart dying, wait for explosions to finish
-				if (!current_level->booms.current_num_booms) {
-
-					waitMs(100);
-
-					releaseEnemies(current_level);
-					if (game->lives > 0) {
-						resetJetman(current_level);
-						startEnemies(current_level);
-						jetman_alive = TRUE;
-					}
-				}
-			}
-
-			updateExplosions(current_level);
-
-			game_over = !game->lives && !current_level->booms.current_num_booms;
-			SPR_update();
+		Level* current_level = game->createLevel[level_number]();
+		if (++level_number == game->num_levels) {
+			level_number = 0;
 		}
 
+		startLevel(current_level);
+
+		startSpaceship(current_level);
+		startJetman(current_level);
+		startEnemies(current_level);
+		initExplosions(current_level);
+
+		SPR_update();
+
 		VDP_waitVSync();
+
+		JOY_setEventHandler(joyEvent);
+
+		bool jetman_alive = TRUE;
+		bool mission_finished = FALSE;
+
+		while (!game_over && !mission_finished) {
+
+			if (!paused) {
+
+				if (jetman_alive) {
+
+					jetmanActs(current_level);
+					enemiesAct(current_level);
+					handleCollisionsBetweenElementsAlive(current_level);
+					if (current_level->def.mind_bottom) {
+						handleElementsLeavingScreenUnder(current_level);
+					}
+
+					handleSpaceship(current_level);
+
+					jetman_alive = isJetmanAlive(current_level);
+					if (jetman_alive) {
+						mission_finished = isMissionFinished(current_level);
+					} else {
+						dropIfGrabbed(current_level->spaceship);
+						game->lives--;
+					}
+
+					game->score++;
+					updateHud(game);
+
+				} else {
+
+					// Smart dying, wait for explosions to finish
+					if (!current_level->booms.current_num_booms) {
+
+						waitMs(100);
+
+						releaseEnemies(current_level);
+						if (game->lives > 0) {
+							resetJetman(current_level);
+							startEnemies(current_level);
+							jetman_alive = TRUE;
+						}
+					}
+				}
+
+				updateExplosions(current_level);
+
+				game_over = !game->lives && !current_level->booms.current_num_booms;
+				SPR_update();
+			}
+
+			VDP_waitVSync();
+		}
+
+		if (mission_finished) {
+			SPR_setVisibility(current_level->jetman->sprite, HIDDEN);
+			leavePlanet(current_level);
+
+		} else {
+			VDP_drawText("Game Over", game_over_text_pos.x, game_over_text_pos.y);
+		}
+
+		releaseSpaceship(current_level);
+		releaseExplosions(current_level);
+		releaseEnemies(current_level);
+		releaseJetman(current_level->jetman);
+		current_level->jetman = 0;
+		releaseLevel(current_level);
+		current_level = 0;
+
+		waitMs(600);
+
+		VDP_clearTextLine(5); // Game over text
+		VDP_clearPlan(PLAN_B, TRUE);
 	}
-
-	if (mission_finished) {
-		SPR_setVisibility(current_level->jetman->sprite, HIDDEN);
-		leavePlanet(current_level);
-
-	} else {
-		VDP_drawText("Game Over", game_over_text_pos.x, game_over_text_pos.y);
-	}
-
-	releaseSpaceship(current_level);
-	releaseExplosions(current_level);
-	releaseEnemies(current_level);
-	releaseJetman(current_level->jetman);
-	current_level->jetman = 0;
-	releaseLevel(current_level);
-	current_level = 0;
-
-	waitMs(600);
 
 	SPR_end();
-	VDP_clearTextLine(5); // Game over text
-	VDP_clearPlan(PLAN_B, TRUE);
 
 	return;
 }

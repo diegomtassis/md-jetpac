@@ -16,9 +16,10 @@ typedef struct {
 	u8 lives;
 	u8 level;
 	u16 score;
-	Level* (*createLevel)(void);
+	Level* (**createLevel)(void);
+	u8 num_levels;
 } Game;
 
-void startGame(Game*);
+void runGame(Game*);
 
 #endif /* INC_GAME_H_ */
