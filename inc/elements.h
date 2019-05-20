@@ -83,7 +83,7 @@ typedef struct {
 
 typedef struct {
 	u8 mind_bottom;
-	V2u16* jetman_init_pos;
+	V2s16* jetman_init_pos;
 	SpaceshipDefinition spaceship_def;
 } LevelDefinition;
 

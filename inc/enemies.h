@@ -13,8 +13,7 @@
 void startEnemies(Level* level);
 void releaseEnemies(Level* level);
 
-void killEnemy(Enemy* enemy, Level* level, u8 exploding);
-
 void enemiesAct(Level* level);
+void killEnemy(Enemy* enemy, Level* level, u8 exploding);
 
 #endif /* INC_ENEMIES_H_ */

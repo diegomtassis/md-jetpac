@@ -33,6 +33,7 @@
 
 static void addEnemy(Level*, u8 pos);
 static Enemy* createEnemy();
+static void releaseDeadEnemies(Level* level);
 static void releaseEnemy(Enemy*);
 static void enemiesJoin(Level* level);
 
@@ -45,7 +46,6 @@ static Sprite* createSprite(Enemy* enemy);
 static void updateSprite(Enemy* enemy);
 
 static void detectNuclearBomb();
-static void releaseDeadEnemies(Level* level);
 
 bool nuclear_bomb;
 
@@ -73,8 +73,6 @@ void enemiesAct(Level* level) {
 	u8 current_enemy = 0;
 	u8 enemy_idx = 0;
 
-	releaseDeadEnemies(level);
-
 	while (current_enemy < num_enemies) {
 
 		Enemy* enemy = level->enemies.objects[enemy_idx++];
@@ -93,6 +91,8 @@ void enemiesAct(Level* level) {
 		}
 	}
 
+	releaseDeadEnemies(level);
+
 	// New enemies joining the party?
 	enemiesJoin(level);
 
@@ -110,21 +110,30 @@ void killEnemy(Enemy* enemy, Level* level, u8 exploding) {
 
 void releaseEnemies(Level* level) {
 
+	if (!level->enemies.objects) {
+		return;
+	}
+
 	for (u8 idx = 0; idx < level->enemies.max_num_enemies; idx++) {
 
 		Enemy* enemy = level->enemies.objects[idx];
 		if (enemy) {
-			enemy->health = DEAD;
+
+			releaseEnemy(enemy);
+			level->enemies.objects[idx] = 0;
+			level->enemies.current_num_enemies--;
 		}
 	}
-
-	releaseDeadEnemies(level);
 
 	MEM_free(level->enemies.objects);
 	level->enemies.objects = 0;
 }
 
 void releaseDeadEnemies(Level* level) {
+
+	if (!level->enemies.objects) {
+		return;
+	}
 
 	for (u8 idx = 0; idx < level->enemies.max_num_enemies; idx++) {
 
@@ -136,7 +145,6 @@ void releaseDeadEnemies(Level* level) {
 			level->enemies.current_num_enemies--;
 		}
 	}
-
 }
 
 static void releaseEnemy(Enemy* enemy) {

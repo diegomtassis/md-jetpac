@@ -26,7 +26,7 @@ Level* createLevelMD02() {
 	defineSpaceship(level);
 
 	level->def.jetman_init_pos = MEM_alloc(sizeof *level->def.jetman_init_pos);
-	setV2u16(level->def.jetman_init_pos, 88, 72);
+	setV2s16(level->def.jetman_init_pos, 88, 72);
 
 	level->def.mind_bottom = TRUE;
 
@@ -51,5 +51,5 @@ static void defineSpaceship(Level* level) {
 
 	level->def.spaceship_def.type = U1;
 	level->def.spaceship_def.init_step = ASSEMBLED;
-	setV2u16(&level->def.spaceship_def.base_pos, 124, 96);
+	setV2s16(&level->def.spaceship_def.base_pos, 124, 96);
 }
