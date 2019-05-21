@@ -56,13 +56,18 @@ void startLevel(Level* level) {
 void releaseLevel(Level* level) {
 
 	// floor
-	releasePlatform(level->floor);
-	level->floor = 0;
+	if (level->floor) {
+		releasePlatform(level->floor);
+		level->floor = 0;
+	}
 
 	// platforms
-	for (u8 i = 0; i < level->num_platforms; i++) {
-		releasePlatform(level->platforms[i]);
-		level->platforms[i] = 0;
+	if (level->platforms) {
+		for (u8 i = 0; i < level->num_platforms; i++) {
+			releasePlatform(level->platforms[i]);
+			level->platforms[i] = 0;
+		}
+		level->platforms = 0;
 	}
 
 	// spaceship

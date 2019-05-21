@@ -43,8 +43,6 @@ static void updatePosition(Enemy*, Level*);
 static u8 crashedIntoPlatform(Box_s16 subject_box, const Level* level);
 static Sprite* createSprite(Enemy* enemy);
 
-static void updateSprite(Enemy* enemy);
-
 static void detectNuclearBomb();
 
 bool nuclear_bomb;
@@ -83,8 +81,8 @@ void enemiesAct(Level* level) {
 					killEnemy(enemy, level, TRUE);
 				} else {
 					moveEnemy(enemy, level);
+					SPR_setPosition(enemy->sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y));
 				}
-				updateSprite(enemy);
 			}
 
 			current_enemy++;
@@ -280,13 +278,6 @@ static Sprite* createSprite(Enemy* enemy) {
 	}
 
 	return enemySprite;
-}
-
-static void updateSprite(Enemy* enemy) {
-
-	if (enemy->health & ALIVE) {
-		SPR_setPosition(enemy->sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y));
-	}
 }
 
 static void detectNuclearBomb() {

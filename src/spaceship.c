@@ -91,6 +91,10 @@ void startSpaceship(Level* level) {
 
 void releaseSpaceship(Level* level) {
 
+	if (!level->spaceship) {
+		return;
+	}
+
 	if (level->spaceship->base_sprite) {
 		SPR_releaseSprite(level->spaceship->base_sprite);
 		level->spaceship->base_sprite = 0;

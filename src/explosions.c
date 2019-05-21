@@ -58,6 +58,10 @@ void updateExplosions(Level* level) {
 
 void releaseExplosions(Level* level) {
 
+	if (!level->booms.objects) {
+		return;
+	}
+
 	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
 
 		Explosion* boom = level->booms.objects[idx];

@@ -129,11 +129,10 @@ void runGame(Game* game) {
 			waitMs(1000);
 		}
 
-		releaseSpaceship(current_level);
 		releaseExplosions(current_level);
 		releaseEnemies(current_level);
-		releaseJetman(current_level->jetman);
-		current_level->jetman = 0;
+		releaseJetman(current_level);
+		releaseSpaceship(current_level);
 		releaseLevel(current_level);
 		current_level = 0;
 

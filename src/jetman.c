@@ -61,12 +61,18 @@ void startJetman(Level* level) {
 			fix16ToInt(level->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 }
 
-void releaseJetman(Jetman* jetman) {
+void releaseJetman(Level* level) {
+
+	Jetman* jetman = level->jetman;
+	if (!jetman) {
+		return;
+	}
 
 	SPR_setVisibility(jetman->sprite, FALSE);
 	SPR_releaseSprite(jetman->sprite);
 	jetman->sprite = 0;
 	MEM_free(jetman);
+	level->jetman = 0;
 }
 
 void resetJetman(Level* level) {
