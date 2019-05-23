@@ -5,7 +5,7 @@
  *      Author: diegomtassis
  */
 
-#include "../inc/vdp_utils.h"
+#include "../../inc/fwk/vdp_utils.h"
 
 void resetTileMemory() {
 

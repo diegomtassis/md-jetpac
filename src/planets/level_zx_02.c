@@ -5,13 +5,13 @@
  *      Author: diegomtassis
  */
 
-#include "../inc/level_zx_01.h"
+#include "../../inc/planets/level_zx_01.h"
 
 #include <genesis.h>
 
-#include "../inc/commons.h"
-#include "../inc/level.h"
-#include "../inc/spaceship.h"
+#include "../../inc/fwk/commons.h"
+#include "../../inc/level.h"
+#include "../../inc/spaceship.h"
 
 static void createPlatforms(Level* level);
 static void defineEnemies(Enemies* enemies);

@@ -9,8 +9,8 @@
 
 #include <genesis.h>
 
-#include "../inc/commons.h"
-#include "../inc/vdp_utils.h"
+#include "../inc/fwk/commons.h"
+#include "../inc/fwk/vdp_utils.h"
 #include "../res/gfx.h"
 
 static u16 palette[64];

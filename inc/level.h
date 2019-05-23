@@ -11,7 +11,7 @@
 #include <genesis.h>
 
 #include "elements.h"
-#include "physics.h"
+#include "fwk/physics.h"
 
 Level* allocLevel();
 void startLevel(Level* level);

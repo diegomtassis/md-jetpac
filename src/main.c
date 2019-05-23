@@ -8,12 +8,11 @@
 #include <genesis.h>
 
 #include "../inc/config.h"
+#include "../inc/fwk/vdp_utils.h"
 #include "../inc/game.h"
 #include "../inc/hud.h"
 #include "../inc/jetpac_file.h"
-#include "../inc/printer.h"
 #include "../inc/splash_screen.h"
-#include "../inc/vdp_utils.h"
 
 #define LOADING_TIME	3000
 

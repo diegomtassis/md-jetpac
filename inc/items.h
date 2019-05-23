@@ -8,7 +8,7 @@
 #ifndef INC_ITEMS_H_
 #define INC_ITEMS_H_
 
-#include "physics.h"
+#include "fwk/physics.h"
 
 #define ITEM_HEIGHT 16
 #define ITEM_WIDTH 16

@@ -9,7 +9,7 @@
 
 #include <genesis.h>
 
-#include "../inc/vdp_utils.h"
+#include "../inc/fwk/vdp_utils.h"
 #include "../res/gfx.h"
 
 static u16 idx_tile_oneup;

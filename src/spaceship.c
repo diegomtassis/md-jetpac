@@ -9,8 +9,8 @@
 
 #include <genesis.h>
 
-#include "../inc/commons.h"
-#include "../inc/physics.h"
+#include "../inc/fwk/commons.h"
+#include "../inc/fwk/physics.h"
 #include "../inc/level.h"
 #include "../inc/items.h"
 #include "../res/sprite.h"

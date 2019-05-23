@@ -1,23 +1,23 @@
 /*
- * level_md_01.c
+ * level_zx_01.c
  *
- *  Created on: May 12, 2019
+ *  Created on: May 2, 2019
  *      Author: diegomtassis
  */
 
-#include "../inc/level_md_01.h"
+#include "../../inc/planets/level_zx_01.h"
 
 #include <genesis.h>
 
-#include "../inc/commons.h"
-#include "../inc/level.h"
-#include "../inc/spaceship.h"
+#include "../../inc/fwk/commons.h"
+#include "../../inc/level.h"
+#include "../../inc/spaceship.h"
 
 static void createPlatforms(Level* level);
 static void defineEnemies(Enemies* enemies);
 static void defineSpaceship(Level* level);
 
-Level* createLevelMD01() {
+Level* createLevelZX01() {
 
 	Level* level = allocLevel();
 
@@ -25,24 +25,23 @@ Level* createLevelMD01() {
 	defineEnemies(&level->enemies);
 	defineSpaceship(level);
 
-	level->def.jetman_init_pos = MEM_alloc(sizeof *level->def.jetman_init_pos);
-	setV2s16(level->def.jetman_init_pos, 88, 72);
+	level->def.jetman_init_pos = 0;
 
-	level->def.mind_bottom = TRUE;
+	level->def.mind_bottom = FALSE;
 
 	return level;
 }
 
 static void createPlatforms(Level* level) {
 
-	level->floor = createPlatform(5, 16, 9);
+	level->floor = createPlatform(0, 25, 32);
 
 	level->num_platforms = 3;
 	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform*));
 
-	level->platforms[0] = createPlatform(22, 10, 5);
-	level->platforms[1] = createPlatform(22, 16, 5);
-	level->platforms[2] = createPlatform(22, 22, 5);
+	level->platforms[0] = createPlatform(4, 11, 6);
+	level->platforms[1] = createPlatform(15, 14, 4);
+	level->platforms[2] = createPlatform(24, 8, 6);
 }
 
 static void defineEnemies(Enemies* enemies) {
@@ -55,7 +54,7 @@ static void defineSpaceship(Level* level) {
 
 	level->def.spaceship_def.type = U1;
 	level->def.spaceship_def.init_step = UNASSEMBLED;
-	setV2s16(&level->def.spaceship_def.base_pos, 72, 112);
-	setV2s16(&level->def.spaceship_def.middle_pos, 188, 64);
-	setV2s16(&level->def.spaceship_def.top_pos, 188, 160);
+	setV2s16(&level->def.spaceship_def.base_pos, 168, 184);
+	setV2s16(&level->def.spaceship_def.middle_pos, 128, 96);
+	setV2s16(&level->def.spaceship_def.top_pos, 48, 72);
 }

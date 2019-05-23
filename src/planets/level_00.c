@@ -5,11 +5,11 @@
  *      Author: diegomtassis
  */
 
-#include "../inc/level_00.h"
+#include "../../inc/planets/level_00.h"
 
 #include <genesis.h>
 
-#include "../inc/level.h"
+#include "../../inc/level.h"
 
 static void createPlatforms(Level* level);
 static void defineEnemies(Enemies* enemies);

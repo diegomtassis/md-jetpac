@@ -5,8 +5,9 @@
  *      Author: diegomtassis
  */
 
+#include "../../inc/enemies/enemy_01.h"
+
 #include <genesis.h>
-#include "../inc/enemy_02.h"
 
 #define SPEED_ZERO		FIX16_0
 #define SPEED_H_NORMAL	FIX16(1)

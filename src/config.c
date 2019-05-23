@@ -9,10 +9,10 @@
 
 #include <genesis.h>
 
-#include "../inc/level_zx_01.h"
-#include "../inc/level_zx_02.h"
-#include "../inc/level_md_01.h"
-#include "../inc/level_md_02.h"
+#include "../inc/planets/level_zx_01.h"
+#include "../inc/planets/level_zx_02.h"
+#include "../inc/planets/level_md_01.h"
+#include "../inc/planets/level_md_02.h"
 
 #define NUM_MODES		2
 

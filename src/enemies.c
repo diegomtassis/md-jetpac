@@ -9,11 +9,12 @@
 
 #include <genesis.h>
 
-#include "../inc/commons.h"
-#include "../inc/timers.h"
-#include "../inc/enemy_01.h"
-#include "../inc/physics.h"
+#include "../inc/enemies/enemy_01.h"
 #include "../inc/explosions.h"
+#include "../inc/fwk/commons.h"
+#include "../inc/fwk/physics.h"
+#include "../inc/fwk/physics.h"
+#include "../inc/timers.h"
 #include "../res/sprite.h"
 
 #define SPEED_ZERO		FIX16_0

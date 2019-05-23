@@ -5,8 +5,8 @@
  *      Author: diegomtassis
  */
 
-#include "../inc/printer.h"
-#include "../res/sprite.h"
+#include "../../inc/fwk/printer.h"
+#include "../../res/sprite.h"
 
 #include <genesis.h>
 

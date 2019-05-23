@@ -8,9 +8,9 @@
 #ifndef INC_ELEMENTS_H_
 #define INC_ELEMENTS_H_
 
-#include "physics.h"
-
 #include <genesis.h>
+
+#include "fwk/physics.h"
 
 #define ALIVE		0x01
 #define DEAD		0x02

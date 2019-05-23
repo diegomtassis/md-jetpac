@@ -7,8 +7,8 @@
 
 #include "../inc/items.h"
 
-#include "../inc/commons.h"
-#include "../inc/physics.h"
+#include "../inc/fwk/commons.h"
+#include "../inc/fwk/physics.h"
 
 void dropFromSky(Object_f16* item, Box_s16* avoid) {
 

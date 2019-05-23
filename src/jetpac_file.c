@@ -7,7 +7,7 @@
 
 #include <genesis.h>
 
-#include "../inc/printer.h"
+#include "../inc/fwk/printer.h"
 
 #define WAIT_MS_BEFORE 	1100
 #define WAIT_MS_BETWEEN	750
