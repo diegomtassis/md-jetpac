@@ -17,8 +17,7 @@
 #include "../inc/hud.h"
 #include "../inc/jetman.h"
 #include "../inc/level.h"
-#include "../inc/planets/level_zx_01.h"
-#include "../inc/planets/level_md_01.h"
+#include "../inc/planets.h"
 #include "../inc/fwk/physics.h"
 
 static void handleCollisionsBetweenElementsAlive(Level*);

@@ -23,11 +23,11 @@ int main() {
 	VDP_setScreenHeight224();
 
 	// jetpac file
-//	printDisclaimer();
-//	JOY_waitPress(JOY_1, BUTTON_BTN);
-//	clearDisclaimer();
-//
-//	waitMs(50);
+	printDisclaimer();
+	JOY_waitPress(JOY_1, BUTTON_BTN);
+	clearDisclaimer();
+
+	waitMs(50);
 
 	// splash screen
 	showSplashScreen();

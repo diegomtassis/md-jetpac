@@ -5,7 +5,7 @@
  *      Author: diegomtassis
  */
 
-#include "../../inc/planets/level_md_02.h"
+#include "../../inc/planets.h"
 
 #include <genesis.h>
 
@@ -15,6 +15,7 @@
 
 static void createPlatforms(Level* level);
 static void defineEnemies(Enemies* enemies);
+static void defineJetman(Level* level);
 static void defineSpaceship(Level* level);
 
 Level* createLevelMD02() {
@@ -24,9 +25,7 @@ Level* createLevelMD02() {
 	createPlatforms(level);
 	defineEnemies(&level->enemies);
 	defineSpaceship(level);
-
-	level->def.jetman_init_pos = MEM_alloc(sizeof *level->def.jetman_init_pos);
-	setV2s16(level->def.jetman_init_pos, 88, 72);
+	defineJetman(level);
 
 	level->def.mind_bottom = TRUE;
 
@@ -39,6 +38,12 @@ static void createPlatforms(Level* level) {
 
 	level->num_platforms = 0;
 	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform*));
+}
+
+static void defineJetman(Level* level) {
+
+	level->def.jetman_init_pos = MEM_alloc(sizeof *level->def.jetman_init_pos);
+	setV2s16(level->def.jetman_init_pos, 88, 72);
 }
 
 static void defineEnemies(Enemies* enemies) {

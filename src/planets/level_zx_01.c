@@ -5,7 +5,7 @@
  *      Author: diegomtassis
  */
 
-#include "../../inc/planets/level_zx_01.h"
+#include "../../inc/planets.h"
 
 #include <genesis.h>
 

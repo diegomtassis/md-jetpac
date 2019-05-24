@@ -9,11 +9,7 @@
 
 #include <genesis.h>
 
-#include "../inc/planets/level_zx_01.h"
-#include "../inc/planets/level_zx_02.h"
-#include "../inc/planets/level_md_01.h"
-#include "../inc/planets/level_md_02.h"
-#include "../inc/planets/level_md_03.h"
+#include "../inc/planets.h"
 
 #define NUM_MODES		2
 
@@ -111,11 +107,12 @@ static void setGameConfig(Game* game) {
 		game->createLevel[1] = createLevelZX02;
 	} else {
 		game->mode = MODE_MD;
-		game->num_levels = 3;
+		game->num_levels = 4;
 		game->createLevel = MEM_alloc(game->num_levels * sizeof(Level*));
 		game->createLevel[0] = createLevelMD01;
 		game->createLevel[1] = createLevelMD02;
 		game->createLevel[2] = createLevelMD03;
+		game->createLevel[3] = createLevelMD04;
 	}
 
 	game->lives = 3;

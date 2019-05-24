@@ -5,7 +5,7 @@
  *      Author: diegomtassis
  */
 
-#include "../../inc/planets/level_md_03.h"
+#include "../../inc/planets.h"
 
 #include <genesis.h>
 

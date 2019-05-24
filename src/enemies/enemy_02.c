@@ -1,11 +1,9 @@
 /*
- * enemies.c
+ * enemy_02.c
  *
  *  Created on: Apr 24, 2019
  *      Author: diegomtassis
  */
-
-#include "../../inc/enemies/enemy_02.h"
 
 #include <genesis.h>
 
