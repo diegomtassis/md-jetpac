@@ -35,6 +35,11 @@ typedef struct {
 } Jetman;
 
 typedef struct {
+	V2u16 size_t;
+	const SpriteDefinition* sprite_def;
+} EnemyDefinition;
+
+typedef struct {
 	Object_f16 object;
 	u8 health;
 	Sprite* sprite;
@@ -85,6 +90,7 @@ typedef struct {
 	u8 mind_bottom;
 	V2s16* jetman_init_pos;
 	SpaceshipDefinition spaceship_def;
+	EnemyDefinition enemy_def;
 } LevelDefinition;
 
 typedef struct {

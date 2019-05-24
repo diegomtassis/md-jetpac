@@ -9,7 +9,7 @@
 
 #include <genesis.h>
 
-#include "../inc/enemies/enemy_01.h"
+#include "../inc/enemies.h"
 #include "../inc/explosions.h"
 #include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
@@ -33,7 +33,7 @@
 #define MAX_POS_START_V_PX_F16	FIX16(MAX_POS_V_PX_S16 - 32)
 
 static void addEnemy(Level*, u8 pos);
-static Enemy* createEnemy();
+static Enemy* createEnemy(EnemyDefinition);
 static void releaseDeadEnemies(Level* level);
 static void releaseEnemy(Enemy*);
 static void enemiesJoin(Level* level);
@@ -42,7 +42,6 @@ static void moveEnemy(Enemy*, Level*);
 static void calculateNextMovement(Enemy*);
 static void updatePosition(Enemy*, Level*);
 static u8 crashedIntoPlatform(Box_s16 subject_box, const Level* level);
-static Sprite* createSprite(Enemy* enemy);
 
 static void detectNuclearBomb();
 
@@ -156,13 +155,32 @@ static void releaseEnemy(Enemy* enemy) {
 
 static void addEnemy(Level* level, u8 pos) {
 
-	Enemy* enemy = createEnemy();
+	// object
+	Enemy* enemy = createEnemy(level->def.enemy_def);
 	level->enemies.objects[pos] = enemy;
-	enemy->sprite = createSprite(enemy);
+
+	// sprite
+	const SpriteDefinition* sprite_definition;
+	if (level->def.enemy_def.sprite_def) {
+		sprite_definition = level->def.enemy_def.sprite_def;
+	} else {
+		sprite_definition = &enemy_01_sprite;
+	}
+
+	Sprite* enemySprite = SPR_addSprite(sprite_definition, fix16ToInt(enemy->object.pos.x),
+			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	SPR_setAnim(enemySprite, (abs(random())) % 4);
+	SPR_setFrame(enemySprite, (abs(random())) % 2);
+	enemy->sprite = enemySprite;
+
+	if (enemy->object.mov.x > 0) {
+		SPR_setHFlip(enemySprite, TRUE);
+	}
+
 	level->enemies.current_num_enemies++;
 }
 
-static Enemy* createEnemy() {
+static Enemy* createEnemy(EnemyDefinition enemy_def) {
 
 	Enemy* enemy = MEM_alloc(sizeof *enemy);
 	enemy->health = ALIVE;
@@ -186,8 +204,18 @@ static Enemy* createEnemy() {
 	}
 
 	// box
-	enemy->object.box.w = ENEMY_01_WIDTH;
-	enemy->object.box.h = ENEMY_01_HEIGHT;
+	if (enemy_def.size_t.x) {
+		enemy->object.box.w = enemy_def.size_t.x;
+	} else {
+		enemy->object.box.w = ENEMY_01_WIDTH;
+	}
+
+	if (enemy_def.size_t.y) {
+		enemy->object.box.w = enemy_def.size_t.y;
+	} else {
+		enemy->object.box.h = ENEMY_01_HEIGHT;
+	}
+
 	enemy->object.box.pos.x = fix16ToInt(enemy->object.pos.x);
 	enemy->object.box.pos.y = fix16ToInt(enemy->object.pos.y);
 
@@ -265,20 +293,6 @@ static u8 crashedIntoPlatform(Box_s16 subject_box, const Level* level) {
 	}
 
 	return FALSE;
-}
-
-static Sprite* createSprite(Enemy* enemy) {
-
-	Sprite* enemySprite = SPR_addSprite(&enemy_01_sprite, fix16ToInt(enemy->object.pos.x),
-			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-	SPR_setAnim(enemySprite, (abs(random())) % 4);
-	SPR_setFrame(enemySprite, (abs(random())) % 2);
-
-	if (enemy->object.mov.x > 0) {
-		SPR_setHFlip(enemySprite, TRUE);
-	}
-
-	return enemySprite;
 }
 
 static void detectNuclearBomb() {
