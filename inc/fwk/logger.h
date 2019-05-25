@@ -13,4 +13,6 @@
 void log_info_xy(const char *message, u16 x, u16 y);
 void log_info_x(const char *message, u16 x);
 
+void log_memory();
+
 #endif /* INC_LOGGER_H_ */
