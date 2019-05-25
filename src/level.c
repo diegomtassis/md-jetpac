@@ -71,6 +71,7 @@ void releaseLevel(Level* level) {
 			releasePlatform(level->platforms[i]);
 			level->platforms[i] = 0;
 		}
+		MEM_free(level->platforms);
 		level->platforms = 0;
 	}
 

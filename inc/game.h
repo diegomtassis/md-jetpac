@@ -21,5 +21,6 @@ typedef struct {
 } Game;
 
 void runGame(Game*);
+void releaseGame(Game* game);
 
 #endif /* INC_GAME_H_ */

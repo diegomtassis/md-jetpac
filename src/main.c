@@ -37,14 +37,16 @@ int main() {
 	resetTileMemory();
 	initHud();
 
-	Game* game = MEM_alloc(sizeof *game);
+	Game* game = 0;
 	while (1) {
 
-		// run game
+		game = MEM_alloc(sizeof *game);
 		setUpGame(game);
 		runGame(game);
 
 		registerScore(game->score);
+
+		releaseGame(game);
 
 		VDP_waitVSync();
 	}

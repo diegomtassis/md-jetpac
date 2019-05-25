@@ -147,6 +147,24 @@ void runGame(Game* game) {
 	return;
 }
 
+void releaseGame(Game* game) {
+
+	if (!game) {
+		return;
+	}
+
+	for (int idx = 0; idx < game->num_levels; ++idx) {
+		if (game->createLevel[idx]) {
+			MEM_free(game->createLevel[idx]);
+			game->createLevel[idx] = 0;
+		}
+	}
+	MEM_free(game->createLevel);
+	game->createLevel = 0;
+
+	MEM_free(game);
+}
+
 static void handleCollisionsBetweenElementsAlive(Level level[static 1]) {
 
 	for (u8 enemy_idx = 0; enemy_idx < level->enemies.max_num_enemies; enemy_idx++) {
