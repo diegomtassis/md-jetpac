@@ -51,7 +51,9 @@ void startEnemies(Level level[static 1]) {
 
 	// First time
 	level->enemies.objects = MEM_alloc(sizeof(Enemy*) * level->enemies.max_num_enemies);
-	memset(level->enemies.objects, 0, level->enemies.max_num_enemies);
+	for (int idx = 0; idx < level->enemies.max_num_enemies; idx++) {
+		level->enemies.objects[idx] = 0;
+	}
 
 	setRandomSeed(getTick());
 
@@ -174,6 +176,7 @@ static void addEnemy(Level level[static 1], u8 pos) {
 static Enemy* createEnemy(EnemyDefinition enemy_def) {
 
 	Enemy* enemy = MEM_alloc(sizeof *enemy);
+	memset(enemy, 0, sizeof *enemy);
 	enemy->health = ALIVE;
 
 	// position & direction

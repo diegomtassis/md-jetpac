@@ -26,7 +26,9 @@ void initExplosions(Level level[static 1]) {
 	level->booms.current_num_booms = 0;
 	level->booms.max_num_booms = 1 + level->enemies.max_num_enemies;
 	level->booms.objects = MEM_alloc(sizeof(Explosion*) * level->booms.max_num_booms);
-	memset(level->booms.objects, 0, level->booms.max_num_booms);
+	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
+		level->booms.objects[idx] = 0;
+	}
 }
 
 void updateExplosions(Level level[static 1]) {
@@ -61,11 +63,14 @@ void releaseExplosions(Level level[static 1]) {
 		if (boom) {
 			SPR_releaseSprite(boom->sprite);
 			MEM_free(boom);
+			level->booms.objects[idx] = 0;
 		}
 	}
 
+	MEM_free(level->booms.objects);
+	level->booms.objects = 0;
+
 	level->booms.current_num_booms = 0;
-	memset(boom, 0, level->booms.max_num_booms);
 }
 
 static void releaseFinishedExplosions(Level level[static 1]) {
@@ -108,6 +113,7 @@ static void boom(Box_s16 what, Level level[static 1], u8 style) {
 
 	// Create the explosion
 	Explosion* boom = MEM_alloc(sizeof *boom);
+	memset(boom, 0, sizeof *boom);
 	level->booms.objects[boom_idx] = boom;
 	boom->step = 0;
 	level->booms.current_num_booms++;

@@ -200,7 +200,7 @@ static bool isJetmanAlive(Level level[static 1]) {
 
 static bool isMissionFinished(Level level[static 1]) {
 
-	return (level->spaceship->step == READY) && shareBase(level->jetman->object.box, level->spaceship->base_object.box);
+	return (level->spaceship->step == READY) && shareBase(level->jetman->object.box, level->spaceship->base_object->box);
 }
 
 static void waitForLanding(Level level[static 1]) {

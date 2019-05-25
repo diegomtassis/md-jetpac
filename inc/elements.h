@@ -75,13 +75,13 @@ typedef struct {
 	u8 type;
 	u16 step;
 	u16 substep;
-	Object_f16 base_object;
-	Object_f16 mid_object;
-	Object_f16 top_object;
+	Object_f16* base_object;
+	Object_f16* mid_object;
+	Object_f16* top_object;
 	Sprite* base_sprite;
 	Sprite* mid_sprite;
 	Sprite* top_sprite;
-	Object_f16 fuel_object;
+	Object_f16* fuel_object;
 	Sprite* fuel_sprite;
 	Sprite* fire_sprite;
 } Spaceship;

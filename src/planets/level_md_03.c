@@ -39,6 +39,7 @@ static void createPlatforms(Level level[static 1]) {
 
 	level->num_platforms = 4;
 	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform*));
+	memset(level->platforms, 0, level->num_platforms * sizeof(Platform*));
 
 	level->platforms[0] = createPlatform(0, 7, 4);
 	level->platforms[1] = createPlatform(8, 7, 2);
