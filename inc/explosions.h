@@ -14,9 +14,9 @@
 
 #define BOOM_ANIMATION_SPEED SUBTICKPERSECOND / 16
 
-void initExplosions(Level*);
-void updateExplosions(Level*);
-void releaseExplosions(Level*);
+void initExplosions(Level level[static 1]);
+void updateExplosions(Level level[static 1]);
+void releaseExplosions(Level level[static 1]);
 
 void explode(Box_s16 what, Level level[static 1]);
 

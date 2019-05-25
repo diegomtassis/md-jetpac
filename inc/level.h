@@ -15,7 +15,7 @@
 
 Level* allocLevel();
 void startLevel (Level level[static 1]);
-void releaseLevel(Level* level);
+void releaseLevel(Level*);
 
 Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
 f16 landed(Box_s16, const Level*);

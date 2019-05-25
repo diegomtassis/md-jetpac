@@ -32,7 +32,7 @@
 #define MAX_POS_V_PX_F16	FIX16(MAX_POS_V_PX_S16)
 #define MAX_POS_START_V_PX_F16	FIX16(MAX_POS_V_PX_S16 - 32)
 
-static void addEnemy(Level*, u8 pos);
+static void addEnemy(Level level[static 1], u8 pos);
 static Enemy* createEnemy(EnemyDefinition);
 static void releaseDeadEnemies(Level level[static 1]);
 static void releaseEnemy(Enemy*);

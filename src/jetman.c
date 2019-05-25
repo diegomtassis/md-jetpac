@@ -41,7 +41,7 @@
 #define FUEL_MAX_POS_H_PX_F16	FIX16(FUEL_MAX_POS_H_PX_S16)
 #define MIN_POS_V_PX_F16	FIX16(MIN_POS_V_PX_S16)
 
-static void createPlayer1(Level*);
+static void createPlayer1(Level level[static 1]);
 static void handleInputJetman(Jetman*);
 
 static void moveToStart(Jetman* jetman, const Level level[static 1]);
@@ -81,7 +81,7 @@ void resetJetman(Level level[static 1]) {
 	level->jetman->health = ALIVE;
 }
 
-void killJetman(Level level[static 1], u8 exploding) {
+void killJetman(Level level[static 1], bool exploding) {
 
 	if (exploding) {
 		explode(level->jetman->object.box, level);

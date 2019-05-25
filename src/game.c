@@ -20,13 +20,13 @@
 #include "../inc/planets.h"
 #include "../inc/fwk/physics.h"
 
-static void handleCollisionsBetweenElementsAlive(Level*);
-static void handleElementsLeavingScreenUnder(Level*);
-static bool isJetmanAlive(Level*);
-static bool isMissionFinished(Level*);
+static void handleCollisionsBetweenElementsAlive(Level level[static 1]);
+static void handleElementsLeavingScreenUnder(Level level[static 1]);
+static bool isJetmanAlive(Level level[static 1]);
+static bool isMissionFinished(Level level[static 1]);
 
-static void waitForLanding(Level*);
-static void leavePlanet(Level*);
+static void waitForLanding(Level level[static 1]);
+static void leavePlanet(Level level[static 1]);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
@@ -195,19 +195,19 @@ static void waitForLanding(Level level[static 1]) {
 	}
 }
 
-static void leavePlanet(Level* current_level) {
+static void leavePlanet(Level level[static 1]) {
 
-	launch(current_level->spaceship);
+	launch(level->spaceship);
 	do {
 		// keep life going while the orbiter lifts
-		handleSpaceship(current_level);
-		enemiesAct(current_level);
-		updateExplosions(current_level);
+		handleSpaceship(level);
+		enemiesAct(level);
+		updateExplosions(level);
 
 		SPR_update();
 		VDP_waitVSync();
 
-	} while (current_level->spaceship->step == LIFTING);
+	} while (level->spaceship->step == LIFTING);
 }
 
 static void joyEvent(u16 joy, u16 changed, u16 state) {

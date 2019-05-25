@@ -19,7 +19,7 @@
 #define BOOST 0
 
 static void boom(Box_s16 what, Level level[static 1], u8 style);
-static void releaseFinishedExplosions(Level*);
+static void releaseFinishedExplosions(Level level[static 1]);
 
 void initExplosions(Level level[static 1]) {
 

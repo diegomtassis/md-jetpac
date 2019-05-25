@@ -12,7 +12,7 @@
 
 void startJetman(Level level[static 1]);
 void releaseJetman(Level level[static 1]);
-void killJetman(Level level[static 1], u8 exploding);
+void killJetman(Level level[static 1], bool exploding);
 void resetJetman(Level level[static 1]);
 
 void jetmanActs(Level level[static 1]);

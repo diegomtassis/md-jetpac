@@ -28,7 +28,7 @@
 void startSpaceship(Level level[static 1]);
 void releaseSpaceship(Level level[static 1]);
 
-void handleSpaceship(Level*);
+void handleSpaceship(Level level[static 1]);
 void dropIfGrabbed(Spaceship*);
 void launch(Spaceship*);
 
