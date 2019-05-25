@@ -9,6 +9,7 @@
 
 #include "../inc/config.h"
 #include "../inc/fwk/vdp_utils.h"
+#include "../inc/fwk/logger.h"
 #include "../inc/game.h"
 #include "../inc/hud.h"
 #include "../inc/jetpac_file.h"
@@ -23,11 +24,11 @@ int main() {
 	VDP_setScreenHeight224();
 
 	// jetpac file
-	printDisclaimer();
-	JOY_waitPress(JOY_1, BUTTON_BTN);
-	clearDisclaimer();
-
-	waitMs(50);
+//	printDisclaimer();
+//	JOY_waitPress(JOY_1, BUTTON_BTN);
+//	clearDisclaimer();
+//
+//	waitMs(50);
 
 	// splash screen
 	showSplashScreen();
@@ -40,12 +41,13 @@ int main() {
 	Game* game = 0;
 	while (1) {
 
+		log_memory();
+
 		game = MEM_alloc(sizeof *game);
 		setUpGame(game);
 		runGame(game);
 
 		registerScore(game->score);
-
 		releaseGame(game);
 
 		VDP_waitVSync();

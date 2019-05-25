@@ -28,10 +28,9 @@ void log_info_x(const char *message, u16 x) {
 
 void log_memory() {
 
-	u16 mem_free = MEM_getFree();
-	char message[30];
-	sprintf(message, "%06u", mem_free);
+	char message[20];
+	sprintf(message, "Free %06u", MEM_getFree());
 
 	VDP_clearTextLine(DEFAULT_LOGGING_LINE);
-	VDP_drawText(message, 10, DEFAULT_LOGGING_LINE);
+	VDP_drawText(message, 1, DEFAULT_LOGGING_LINE);
 }

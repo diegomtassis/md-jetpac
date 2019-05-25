@@ -57,7 +57,7 @@ static void defineSpaceship(Level level[static 1]) {
 static void defineJetman(Level level[static 1]) {
 
 	level->def.jetman_init_pos = MEM_alloc(sizeof *level->def.jetman_init_pos);
-	setV2s16(level->def.jetman_init_pos, 88, 72);
+	setV2s16(level->def.jetman_init_pos, 140, 72);
 }
 
 static void defineEnemies(Level level[static 1]) {
