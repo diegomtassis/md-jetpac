@@ -18,20 +18,18 @@
 
 #define BOOST 0
 
-static void boom(Box_s16 what, Level* level, u8 style);
+static void boom(Box_s16 what, Level level[static 1], u8 style);
 static void releaseFinishedExplosions(Level*);
 
-void initExplosions(Level* level) {
+void initExplosions(Level level[static 1]) {
 
 	level->booms.current_num_booms = 0;
 	level->booms.max_num_booms = 1 + level->enemies.max_num_enemies;
 	level->booms.objects = MEM_alloc(sizeof(Explosion*) * level->booms.max_num_booms);
-	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
-		level->booms.objects[idx] = 0;
-	}
+	memset(level->booms.objects, 0, level->booms.max_num_booms);
 }
 
-void updateExplosions(Level* level) {
+void updateExplosions(Level level[static 1]) {
 
 	if (getTimer(EXPLOSIONS_TIMER, FALSE) > BOOM_ANIMATION_SPEED) {
 
@@ -56,7 +54,7 @@ void updateExplosions(Level* level) {
 	releaseFinishedExplosions(level);
 }
 
-void releaseExplosions(Level* level) {
+void releaseExplosions(Level level[static 1]) {
 
 	if (!level->booms.objects) {
 		return;
@@ -68,13 +66,14 @@ void releaseExplosions(Level* level) {
 		if (boom) {
 			SPR_releaseSprite(boom->sprite);
 			MEM_free(boom);
-			level->booms.objects[idx] = 0;
-			level->booms.current_num_booms--;
 		}
 	}
+
+	level->booms.current_num_booms = 0;
+	memset(boom, 0, level->booms.max_num_booms);
 }
 
-static void releaseFinishedExplosions(Level* level) {
+static void releaseFinishedExplosions(Level level[static 1]) {
 
 	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
 
@@ -88,17 +87,17 @@ static void releaseFinishedExplosions(Level* level) {
 	}
 }
 
-void explode(Box_s16 what, Level* level) {
+void explode(Box_s16 what, Level level[static 1]) {
 
 	boom(what, level, abs(random()) % 3 + 1);
 }
 
-void boost(Box_s16 what, Level* level) {
+void boost(Box_s16 what, Level level[static 1]) {
 
 	boom(what, level, BOOST);
 }
 
-static void boom(Box_s16 what, Level* level, u8 style) {
+static void boom(Box_s16 what, Level level[static 1], u8 style) {
 
 	// Find an empty slot
 	u8 num_booms = level->booms.max_num_booms;

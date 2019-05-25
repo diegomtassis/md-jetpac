@@ -10,11 +10,11 @@
 
 #include "elements.h"
 
-void startJetman(Level* level);
-void releaseJetman(Level* level);
-void killJetman(Level* level, u8 exploding);
-void resetJetman(Level* level);
+void startJetman(Level level[static 1]);
+void releaseJetman(Level level[static 1]);
+void killJetman(Level level[static 1], u8 exploding);
+void resetJetman(Level level[static 1]);
 
-void jetmanActs(Level* level);
+void jetmanActs(Level level[static 1]);
 
 #endif /* INC_JETMAN_H_ */

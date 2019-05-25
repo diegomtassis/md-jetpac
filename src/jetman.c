@@ -44,7 +44,7 @@
 static void createPlayer1(Level*);
 static void handleInputJetman(Jetman*);
 
-static void moveToStart(Jetman* jetman, const Level* level);
+static void moveToStart(Jetman* jetman, const Level level[static 1]);
 static void moveJetman(Jetman*, Level*);
 static u8 calculateNextMovement(Jetman*);
 static void updatePosition(Jetman*, Level*);
@@ -54,14 +54,14 @@ static f16 blockedByRight(Box_s16, const Level*);
 
 static void drawJetman(Jetman*);
 
-void startJetman(Level* level) {
+void startJetman(Level level[static 1]) {
 
 	createPlayer1(level);
 	level->jetman->sprite = SPR_addSprite(&jetman_sprite, fix16ToInt(level->jetman->object.pos.x),
 			fix16ToInt(level->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 }
 
-void releaseJetman(Level* level) {
+void releaseJetman(Level level[static 1]) {
 
 	Jetman* jetman = level->jetman;
 	if (!jetman) {
@@ -75,13 +75,13 @@ void releaseJetman(Level* level) {
 	level->jetman = 0;
 }
 
-void resetJetman(Level* level) {
+void resetJetman(Level level[static 1]) {
 
 	moveToStart(level->jetman, level);
 	level->jetman->health = ALIVE;
 }
 
-void killJetman(Level* level, u8 exploding) {
+void killJetman(Level level[static 1], u8 exploding) {
 
 	if (exploding) {
 		explode(level->jetman->object.box, level);
@@ -90,7 +90,7 @@ void killJetman(Level* level, u8 exploding) {
 	level->jetman->health = DEAD;
 }
 
-void jetmanActs(Level* level) {
+void jetmanActs(Level level[static 1]) {
 
 	Jetman* jetman = level->jetman;
 	if (jetman->health & ALIVE) {
@@ -100,7 +100,7 @@ void jetmanActs(Level* level) {
 	}
 }
 
-static void createPlayer1(Level* level) {
+static void createPlayer1(Level level[static 1]) {
 
 	Jetman* jetman = MEM_alloc(sizeof *jetman);
 
@@ -116,7 +116,7 @@ static void createPlayer1(Level* level) {
 	level->jetman = jetman;
 }
 
-static void moveToStart(Jetman* jetman, const Level* level) {
+static void moveToStart(Jetman* jetman, const Level level[static 1]) {
 
 	if (level->def.jetman_init_pos) {
 		jetman->object.pos.x = FIX16(level->def.jetman_init_pos->x);
@@ -132,7 +132,7 @@ static void moveToStart(Jetman* jetman, const Level* level) {
 	updateBox(&jetman->object);
 }
 
-static void moveJetman(Jetman* jetman, Level* level) {
+static void moveJetman(Jetman* jetman, Level level[static 1]) {
 
 	if (BOOST & calculateNextMovement(jetman)) {
 		boost(jetman->object.box, level);
@@ -175,7 +175,7 @@ static u8 calculateNextMovement(Jetman* jetman) {
 	return movement;
 }
 
-static void updatePosition(Jetman* jetman, Level* level) {
+static void updatePosition(Jetman* jetman, Level level[static 1]) {
 
 	// horizontal position
 	Box_s16 target_h = targetHBox(jetman->object, JETMAN_WIDTH, JETMAN_HEIGHT);
@@ -221,7 +221,7 @@ static void updatePosition(Jetman* jetman, Level* level) {
 	updateBox(&jetman->object);
 }
 
-static f16 reachedTop(Box_s16 subject_box, const Level* level) {
+static f16 reachedTop(Box_s16 subject_box, const Level level[static 1]) {
 
 	if (subject_box.pos.y <= MIN_POS_V_PX_S16) {
 		return MIN_POS_V_PX_F16;
@@ -241,7 +241,7 @@ static f16 reachedTop(Box_s16 subject_box, const Level* level) {
 	return FIX16_0;
 }
 
-static f16 blockedByLeft(Box_s16 target_box, const Level* level) {
+static f16 blockedByLeft(Box_s16 target_box, const Level level[static 1]) {
 
 	if (hitLeft(target_box, level->floor->object.box)) {
 		return FIX16(adjacentXOnTheLeft(target_box, level->floor->object.box));
@@ -257,7 +257,7 @@ static f16 blockedByLeft(Box_s16 target_box, const Level* level) {
 	return FIX16_0;
 }
 
-static f16 blockedByRight(Box_s16 target_box, const Level* level) {
+static f16 blockedByRight(Box_s16 target_box, const Level level[static 1]) {
 
 	if (hitRight(target_box, level->floor->object.box)) {
 		return FIX16(adjacentXOnTheRight(target_box, level->floor->object.box));

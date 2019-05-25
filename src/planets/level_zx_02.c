@@ -13,9 +13,9 @@
 #include "../../inc/level.h"
 #include "../../inc/spaceship.h"
 
-static void createPlatforms(Level* level);
+static void createPlatforms(Level level[static 1]);
 static void defineEnemies(Enemies* enemies);
-static void defineSpaceship(Level* level);
+static void defineSpaceship(Level level[static 1]);
 
 Level* createLevelZX02() {
 
@@ -32,7 +32,7 @@ Level* createLevelZX02() {
 	return level;
 }
 
-static void createPlatforms(Level* level) {
+static void createPlatforms(Level level[static 1]) {
 
 	level->floor = createPlatform(0, 25, 32);
 
@@ -50,7 +50,7 @@ static void defineEnemies(Enemies* enemies) {
 	enemies->max_num_enemies = 10;
 }
 
-static void defineSpaceship(Level* level) {
+static void defineSpaceship(Level level[static 1]) {
 
 	level->def.spaceship_def.type = U1;
 	level->def.spaceship_def.init_step = ASSEMBLED;

@@ -11,7 +11,7 @@
 
 #include "../../inc/level.h"
 
-static void createPlatforms(Level* level);
+static void createPlatforms(Level level[static 1]);
 static void defineEnemies(Enemies* enemies);
 
 Level* createLevel00() {
@@ -24,7 +24,7 @@ Level* createLevel00() {
 	return level;
 }
 
-static void createPlatforms(Level* level) {
+static void createPlatforms(Level level[static 1]) {
 
 	level->floor = createPlatform(0, 25, 32);
 

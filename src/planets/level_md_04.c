@@ -13,10 +13,10 @@
 #include "../../inc/level.h"
 #include "../../inc/spaceship.h"
 
-static void createPlatforms(Level* level);
+static void createPlatforms(Level level[static 1]);
 static void defineEnemies(Enemies* enemies);
-static void defineJetman(Level* level);
-static void defineSpaceship(Level* level);
+static void defineJetman(Level level[static 1]);
+static void defineSpaceship(Level level[static 1]);
 
 Level* createLevelMD04() {
 
@@ -32,7 +32,7 @@ Level* createLevelMD04() {
 	return level;
 }
 
-static void createPlatforms(Level* level) {
+static void createPlatforms(Level level[static 1]) {
 
 	level->floor = createPlatform(0, 25, 32);
 
@@ -62,7 +62,7 @@ static void createPlatforms(Level* level) {
 	level->platforms[15] = createPlatform(26, 13, 4);
 }
 
-static void defineSpaceship(Level* level) {
+static void defineSpaceship(Level level[static 1]) {
 
 	level->def.spaceship_def.type = U1;
 	level->def.spaceship_def.init_step = UNASSEMBLED;
@@ -71,7 +71,7 @@ static void defineSpaceship(Level* level) {
 	setV2s16(&level->def.spaceship_def.top_pos, 184, 184);
 }
 
-static void defineJetman(Level* level) {
+static void defineJetman(Level level[static 1]) {
 
 	level->def.jetman_init_pos = MEM_alloc(sizeof *level->def.jetman_init_pos);
 	setV2s16(level->def.jetman_init_pos, 92, 30);

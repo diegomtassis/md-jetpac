@@ -34,28 +34,26 @@
 
 static void addEnemy(Level*, u8 pos);
 static Enemy* createEnemy(EnemyDefinition);
-static void releaseDeadEnemies(Level* level);
+static void releaseDeadEnemies(Level level[static 1]);
 static void releaseEnemy(Enemy*);
-static void enemiesJoin(Level* level);
+static void enemiesJoin(Level level[static 1]);
 
 static void moveEnemy(Enemy*, Level*);
 static void calculateNextMovement(Enemy*);
 static void updatePosition(Enemy*, Level*);
-static u8 crashedIntoPlatform(Box_s16 subject_box, const Level* level);
+static u8 crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]);
 
 static void detectNuclearBomb();
 
 bool nuclear_bomb;
 
-void startEnemies(Level* level) {
+void startEnemies(Level level[static 1]) {
 
 	// First time
 	level->enemies.objects = MEM_alloc(sizeof(Enemy*) * level->enemies.max_num_enemies);
-	setRandomSeed(getTick());
+	memset(level->enemies.objects, 0, level->enemies.max_num_enemies);
 
-	for (u8 idx = 0; idx < level->enemies.max_num_enemies; idx++) {
-		level->enemies.objects[idx] = 0;
-	}
+	setRandomSeed(getTick());
 
 	// start with a portion of the maximum enemies
 	for (u8 enemy_idx = 0; enemy_idx < level->enemies.max_num_enemies / 3; enemy_idx++) {
@@ -63,7 +61,7 @@ void startEnemies(Level* level) {
 	}
 }
 
-void enemiesAct(Level* level) {
+void enemiesAct(Level level[static 1]) {
 
 	detectNuclearBomb();
 
@@ -97,7 +95,7 @@ void enemiesAct(Level* level) {
 	nuclear_bomb = FALSE;
 }
 
-void killEnemy(Enemy* enemy, Level* level, u8 exploding) {
+void killEnemy(Enemy* enemy, Level level[static 1], u8 exploding) {
 
 	if (exploding) {
 		explode(enemy->object.box, level);
@@ -106,7 +104,7 @@ void killEnemy(Enemy* enemy, Level* level, u8 exploding) {
 	enemy->health = DEAD;
 }
 
-void releaseEnemies(Level* level) {
+void releaseEnemies(Level level[static 1]) {
 
 	if (!level->enemies.objects) {
 		return;
@@ -116,18 +114,17 @@ void releaseEnemies(Level* level) {
 
 		Enemy* enemy = level->enemies.objects[idx];
 		if (enemy) {
-
 			releaseEnemy(enemy);
-			level->enemies.objects[idx] = 0;
-			level->enemies.current_num_enemies--;
 		}
 	}
 
+	level->enemies.current_num_enemies = 0;
 	MEM_free(level->enemies.objects);
+	memset(level->enemies.objects, 0, level->enemies.max_num_enemies);
 	level->enemies.objects = 0;
 }
 
-void releaseDeadEnemies(Level* level) {
+void releaseDeadEnemies(Level level[static 1]) {
 
 	if (!level->enemies.objects) {
 		return;
@@ -153,7 +150,7 @@ static void releaseEnemy(Enemy* enemy) {
 	startTimer(ENEMY_CREATION_TIMER);
 }
 
-static void addEnemy(Level* level, u8 pos) {
+static void addEnemy(Level level[static 1], u8 pos) {
 
 	// object
 	Enemy* enemy = createEnemy(level->def.enemy_def);
@@ -223,7 +220,7 @@ static Enemy* createEnemy(EnemyDefinition enemy_def) {
 	return enemy;
 }
 
-static void enemiesJoin(Level* level) {
+static void enemiesJoin(Level level[static 1]) {
 
 	if (level->enemies.current_num_enemies
 			< level->enemies.max_num_enemies&& getTimer(ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND) {
@@ -243,7 +240,7 @@ static void enemiesJoin(Level* level) {
 	}
 }
 
-static void moveEnemy(Enemy* enemy, Level* level) {
+static void moveEnemy(Enemy* enemy, Level level[static 1]) {
 
 	calculateNextMovement(enemy);
 	updatePosition(enemy, level);
@@ -253,7 +250,7 @@ static void calculateNextMovement(Enemy* enemy) {
 	// nothing for the moment
 }
 
-static void updatePosition(Enemy* enemy, Level* level) {
+static void updatePosition(Enemy* enemy, Level level[static 1]) {
 
 	// horizontal position
 	Box_s16 target = targetBox(enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
@@ -278,7 +275,7 @@ static void updatePosition(Enemy* enemy, Level* level) {
 	updateBox(&enemy->object);
 }
 
-static u8 crashedIntoPlatform(Box_s16 subject_box, const Level* level) {
+static u8 crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]) {
 
 	u8 crashed = overlap(subject_box, level->floor->object.box);
 	if (crashed) {

@@ -14,10 +14,10 @@
 #include "../../inc/spaceship.h"
 #include "../../res/sprite.h"
 
-static void createPlatforms(Level* level);
-static void defineEnemies(Level* level);
-static void defineSpaceship(Level* level);
-static void defineJetman(Level* level);
+static void createPlatforms(Level level[static 1]);
+static void defineEnemies(Level level[static 1]);
+static void defineSpaceship(Level level[static 1]);
+static void defineJetman(Level level[static 1]);
 
 Level* createLevelMD01() {
 
@@ -33,7 +33,7 @@ Level* createLevelMD01() {
 	return level;
 }
 
-static void createPlatforms(Level* level) {
+static void createPlatforms(Level level[static 1]) {
 
 	level->floor = createPlatform(3, 16, 9);
 
@@ -45,7 +45,7 @@ static void createPlatforms(Level* level) {
 	level->platforms[2] = createPlatform(22, 22, 5);
 }
 
-static void defineSpaceship(Level* level) {
+static void defineSpaceship(Level level[static 1]) {
 
 	level->def.spaceship_def.type = U1;
 	level->def.spaceship_def.init_step = UNASSEMBLED;
@@ -54,13 +54,13 @@ static void defineSpaceship(Level* level) {
 	setV2s16(&level->def.spaceship_def.top_pos, 188, 160);
 }
 
-static void defineJetman(Level* level) {
+static void defineJetman(Level level[static 1]) {
 
 	level->def.jetman_init_pos = MEM_alloc(sizeof *level->def.jetman_init_pos);
 	setV2s16(level->def.jetman_init_pos, 88, 72);
 }
 
-static void defineEnemies(Level* level) {
+static void defineEnemies(Level level[static 1]) {
 
 	level->def.enemy_def.size_t.x = ENEMY_01_WIDTH;
 	level->def.enemy_def.size_t.y = ENEMY_01_HEIGHT;

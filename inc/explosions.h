@@ -18,8 +18,8 @@ void initExplosions(Level*);
 void updateExplosions(Level*);
 void releaseExplosions(Level*);
 
-void explode(Box_s16 what, Level* level);
+void explode(Box_s16 what, Level level[static 1]);
 
-void boost(Box_s16 what, Level* level);
+void boost(Box_s16 what, Level level[static 1]);
 
 #endif /* INC_EXPLOSIONS_H_ */

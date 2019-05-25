@@ -23,7 +23,7 @@ static void releasePlatform(Platform*);
 
 static void loadLevelResources();
 
-static void drawPlatforms(VDPPlan plan, const Level * level);
+static void drawPlatforms(VDPPlan plan, const Level level[static 1]);
 static void drawPlatform(VDPPlan plan, const Platform * platform, u16 idx_tile);
 
 Level* allocLevel() {
@@ -31,7 +31,7 @@ Level* allocLevel() {
 	return (Level*) MEM_alloc(sizeof(Level));
 }
 
-void startLevel(Level* level) {
+void startLevel(Level level[static 1]) {
 
 	SYS_disableInts();
 
@@ -54,6 +54,10 @@ void startLevel(Level* level) {
 }
 
 void releaseLevel(Level* level) {
+
+	if (!level) {
+		return;
+	}
 
 	// floor
 	if (level->floor) {
@@ -104,7 +108,7 @@ Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 	return platform;
 }
 
-f16 landed(Box_s16 subject_box, const Level* level) {
+f16 landed(Box_s16 subject_box, const Level level[static 1]) {
 
 	if (hitAbove(subject_box, level->floor->object.box)) {
 		return FIX16(adjacentYAbove(subject_box, level->floor->object.box));
@@ -132,7 +136,7 @@ static void loadLevelResources() {
 	idx_tile_platform = loadTile(&platform, &idx_tile_malloc);
 }
 
-static void drawPlatforms(VDPPlan plan, const Level * level) {
+static void drawPlatforms(VDPPlan plan, const Level level[static 1]) {
 
 	// draw floor
 	drawPlatform(PLAN_B, level->floor, idx_tile_floor);

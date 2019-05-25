@@ -146,7 +146,7 @@ void runGame(Game* game) {
 	return;
 }
 
-static void handleCollisionsBetweenElementsAlive(Level* level) {
+static void handleCollisionsBetweenElementsAlive(Level level[static 1]) {
 
 	for (u8 enemy_idx = 0; enemy_idx < level->enemies.max_num_enemies; enemy_idx++) {
 
@@ -159,7 +159,7 @@ static void handleCollisionsBetweenElementsAlive(Level* level) {
 	}
 }
 
-static void handleElementsLeavingScreenUnder(Level* level) {
+static void handleElementsLeavingScreenUnder(Level level[static 1]) {
 
 	if ((ALIVE & level->jetman->health) && level->jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
 		killJetman(level, FALSE);
@@ -174,17 +174,17 @@ static void handleElementsLeavingScreenUnder(Level* level) {
 	}
 }
 
-static bool isJetmanAlive(Level* level) {
+static bool isJetmanAlive(Level level[static 1]) {
 
 	return ALIVE & level->jetman->health;
 }
 
-static bool isMissionFinished(Level* level) {
+static bool isMissionFinished(Level level[static 1]) {
 
 	return (level->spaceship->step == READY) && shareBase(level->jetman->object.box, level->spaceship->base_object.box);
 }
 
-static void waitForLanding(Level* level) {
+static void waitForLanding(Level level[static 1]) {
 
 	while (level->spaceship->step == LANDING) {
 

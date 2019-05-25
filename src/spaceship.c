@@ -31,18 +31,18 @@
 
 static Object_f16* createModule(u8 module, V2s16 pos);
 
-static void handleAssembly(Level* level);
-static void handleFuelling(Level* level);
-static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 height, Level* level);
+static void handleAssembly(Level level[static 1]);
+static void handleFuelling(Level level[static 1]);
+static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 height, Level level[static 1]);
 static void mergeParts(Spaceship* spaceship);
-static void handleFlight(Spaceship* spaceship, Level* level);
-static void handleLanding(Spaceship* spaceship, Level* level);
+static void handleFlight(Spaceship* spaceship, Level level[static 1]);
+static void handleLanding(Spaceship* spaceship, Level level[static 1]);
 
 static bool leftPlanet(Spaceship* spaceship);
 
 u16 default_sprite_attrs = TILE_ATTR(PAL0, TRUE, FALSE, FALSE);
 
-void startSpaceship(Level* level) {
+void startSpaceship(Level level[static 1]) {
 
 	Spaceship* spaceship = MEM_alloc(sizeof *spaceship);
 	level->spaceship = spaceship;
@@ -89,7 +89,7 @@ void startSpaceship(Level* level) {
 	spaceship->fuel_sprite = 0;
 }
 
-void releaseSpaceship(Level* level) {
+void releaseSpaceship(Level level[static 1]) {
 
 	if (!level->spaceship) {
 		return;
@@ -124,7 +124,7 @@ void releaseSpaceship(Level* level) {
 	level->spaceship = 0;
 }
 
-void handleSpaceship(Level* level) {
+void handleSpaceship(Level level[static 1]) {
 
 	Spaceship* spaceship = level->spaceship;
 
@@ -182,7 +182,7 @@ static Object_f16* createModule(u8 module, V2s16 pos) {
 	return object;
 }
 
-static void handleAssembly(Level* level) {
+static void handleAssembly(Level level[static 1]) {
 
 	Spaceship* spaceship = level->spaceship;
 
@@ -200,7 +200,7 @@ static void handleAssembly(Level* level) {
 	}
 }
 
-static void handleFuelling(Level* level) {
+static void handleFuelling(Level level[static 1]) {
 
 	Spaceship* spaceship = level->spaceship;
 
@@ -286,7 +286,7 @@ static void handleFuelling(Level* level) {
 			fix16ToInt(spaceship->fuel_object.pos.y));
 }
 
-static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offset_px, Level* level) {
+static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offset_px, Level level[static 1]) {
 
 	Spaceship* spaceship = level->spaceship;
 	V2f16 jetman_pos = level->jetman->object.pos;
@@ -335,7 +335,7 @@ static void mergeParts(Spaceship* spaceship) {
 			fix16ToInt(spaceship->base_object.pos.y), TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
 }
 
-static void handleLanding(Spaceship* spaceship, Level* level) {
+static void handleLanding(Spaceship* spaceship, Level level[static 1]) {
 
 	if (spaceship->step != LANDING) {
 		return;
@@ -372,7 +372,7 @@ static void handleLanding(Spaceship* spaceship, Level* level) {
 	}
 }
 
-static void handleFlight(Spaceship* spaceship, Level* level) {
+static void handleFlight(Spaceship* spaceship, Level level[static 1]) {
 
 	if (spaceship->step == LIFTING) {
 

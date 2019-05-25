@@ -16,10 +16,10 @@
 #define ENEMY_02_WIDTH    16
 #define ENEMY_02_HEIGHT    14
 
-void startEnemies(Level* level);
-void releaseEnemies(Level* level);
+void startEnemies(Level level[static 1]);
+void releaseEnemies(Level level[static 1]);
 
-void enemiesAct(Level* level);
-void killEnemy(Enemy* enemy, Level* level, u8 exploding);
+void enemiesAct(Level level[static 1]);
+void killEnemy(Enemy* enemy, Level level[static 1], u8 exploding);
 
 #endif /* INC_ENEMIES_H_ */
