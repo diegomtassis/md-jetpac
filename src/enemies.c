@@ -65,13 +65,9 @@ void enemiesAct(Level level[static 1]) {
 
 	detectNuclearBomb();
 
-	u8 num_enemies = level->enemies.current_num_enemies;
-	u8 current_enemy = 0;
-	u8 enemy_idx = 0;
+	for (u8 idx = 0; idx < level->enemies.max_num_enemies; idx++) {
 
-	while (current_enemy < num_enemies) {
-
-		Enemy* enemy = level->enemies.objects[enemy_idx++];
+		Enemy* enemy = level->enemies.objects[idx];
 		if (enemy) {
 
 			if (ALIVE & enemy->health) {
@@ -82,8 +78,6 @@ void enemiesAct(Level level[static 1]) {
 					SPR_setPosition(enemy->sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y));
 				}
 			}
-
-			current_enemy++;
 		}
 	}
 

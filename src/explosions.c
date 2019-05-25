@@ -33,18 +33,13 @@ void updateExplosions(Level level[static 1]) {
 
 	if (getTimer(EXPLOSIONS_TIMER, FALSE) > BOOM_ANIMATION_SPEED) {
 
-		u8 num_booms = level->booms.current_num_booms;
-		u8 current_boom = 0;
-		u8 idx = 0;
+		for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
 
-		while (current_boom < num_booms) {
-
-			Explosion* boom = level->booms.objects[idx++];
+			Explosion* boom = level->booms.objects[idx];
 			if (boom) {
 				if (boom->step < FINISHED) {
 					SPR_setFrame(boom->sprite, ++boom->step);
 				}
-				current_boom++;
 			}
 		}
 
