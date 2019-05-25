@@ -24,7 +24,7 @@ static void releasePlatform(Platform*);
 static void loadLevelResources();
 
 static void drawPlatforms(VDPPlan plan, const Level level[static 1]);
-static void drawPlatform(VDPPlan plan, const Platform * platform, u16 idx_tile);
+static void drawPlatform(VDPPlan plan, Platform platform[static 1], u16 idx_tile);
 
 Level* allocLevel() {
 
@@ -147,7 +147,7 @@ static void drawPlatforms(VDPPlan plan, const Level level[static 1]) {
 	}
 }
 
-static void drawPlatform(VDPPlan plan, const Platform* platform, u16 idx_tile) {
+static void drawPlatform(VDPPlan plan, Platform platform[static 1], u16 idx_tile) {
 
 	// left edge
 	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->pos_t.x, platform->pos_t.y);

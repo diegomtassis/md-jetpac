@@ -58,6 +58,7 @@ void runGame(Game* game) {
 
 		startJetman(current_level);
 		startEnemies(current_level);
+
 		initExplosions(current_level);
 
 		SPR_update();
@@ -137,7 +138,7 @@ void runGame(Game* game) {
 
 		SPR_update();
 
-		VDP_clearTextLine(5); // Game over text
+		VDP_clearTextLine(game_over_text_pos.y); // Game over text
 		VDP_clearPlan(PLAN_B, TRUE);
 	}
 
