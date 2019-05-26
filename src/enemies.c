@@ -291,7 +291,7 @@ static u8 crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]) 
 
 static void detectNuclearBomb() {
 
-	if (JOY_readJoypad(JOY_1) & BUTTON_A) {
+	if (JOY_readJoypad(JOY_1) & BUTTON_C) {
 		nuclear_bomb = TRUE;
 	}
 }

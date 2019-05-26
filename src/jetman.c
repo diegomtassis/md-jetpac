@@ -12,6 +12,7 @@
 #include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
 #include "../inc/level.h"
+#include "../inc/shooting.h"
 #include "../inc/explosions.h"
 #include "../res/sprite.h"
 
@@ -54,11 +55,14 @@ static f16 blockedByRight(Box_s16, const Level*);
 
 static void drawJetman(Jetman*);
 
+bool shoot_order;
+
 void startJetman(Level level[static 1]) {
 
 	createPlayer1(level);
 	level->jetman->sprite = SPR_addSprite(&jetman_sprite, fix16ToInt(level->jetman->object.pos.x),
 			fix16ToInt(level->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	shoot_order = FALSE;
 }
 
 void releaseJetman(Level level[static 1]) {
@@ -97,6 +101,11 @@ void jetmanActs(Level level[static 1]) {
 		handleInputJetman(jetman);
 		moveJetman(level->jetman, level);
 		drawJetman(level->jetman);
+
+		if (shoot_order) {
+			shoot(level->jetman->object.box.pos, level->jetman->object.mov.x > 0, level);
+			shoot_order = FALSE;
+		}
 	}
 }
 
@@ -318,5 +327,9 @@ static void handleInputJetman(Jetman* jetman) {
 		jetman->order.x = +1;
 	} else {
 		jetman->order.x = 0;
+	}
+
+	if (value & BUTTON_A) {
+		shoot_order = TRUE;
 	}
 }

@@ -32,7 +32,7 @@ void releaseShots(Level level[static 1]) {
 	level->shots.e = 0;
 }
 
-void shoot(Level level[static 1]) {
+void shoot(V2s16 where, bool right, Level level[static 1]) {
 
 }
 
