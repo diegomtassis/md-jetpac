@@ -171,9 +171,9 @@ void releaseGame(Game* game) {
 
 static void handleCollisionsBetweenElementsAlive(Level level[static 1]) {
 
-	for (u8 enemy_idx = 0; enemy_idx < level->enemies.max_num_enemies; enemy_idx++) {
+	for (u8 enemy_idx = 0; enemy_idx < level->enemies.size; enemy_idx++) {
 
-		Enemy* enemy = level->enemies.objects[enemy_idx];
+		Enemy* enemy = level->enemies.e[enemy_idx];
 		if (enemy && (ALIVE & enemy->health) && overlap(level->jetman->object.box, enemy->object.box)) {
 			killJetman(level, TRUE);
 			killEnemy(enemy, level, TRUE);
@@ -188,9 +188,9 @@ static void handleElementsLeavingScreenUnder(Level level[static 1]) {
 		killJetman(level, FALSE);
 	}
 
-	for (u8 enemy_idx = 0; enemy_idx < level->enemies.max_num_enemies; enemy_idx++) {
+	for (u8 enemy_idx = 0; enemy_idx < level->enemies.size; enemy_idx++) {
 
-		Enemy* enemy = level->enemies.objects[enemy_idx];
+		Enemy* enemy = level->enemies.e[enemy_idx];
 		if (enemy && (ALIVE & enemy->health) && enemy->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
 			killEnemy(enemy, level, FALSE);
 		}

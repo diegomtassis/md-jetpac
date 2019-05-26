@@ -39,7 +39,7 @@ Level* allocLevel() {
 	level->jetman = 0;
 	level->spaceship = 0;
 
-	level->enemies.objects = 0;
+	level->enemies.e = 0;
 	level->booms.objects = 0;
 
 	return level;

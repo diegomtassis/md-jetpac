@@ -80,7 +80,7 @@ static void defineJetman(Level level[static 1]) {
 
 static void defineEnemies(Enemies* enemies) {
 
-	enemies->current_num_enemies = 0;
-	enemies->max_num_enemies = 12;
+	enemies->count = 0;
+	enemies->size = 12;
 }
 

@@ -50,15 +50,15 @@ bool nuclear_bomb;
 void startEnemies(Level level[static 1]) {
 
 	// First time
-	level->enemies.objects = MEM_alloc(sizeof(Enemy*) * level->enemies.max_num_enemies);
-	for (int idx = 0; idx < level->enemies.max_num_enemies; idx++) {
-		level->enemies.objects[idx] = 0;
+	level->enemies.e = MEM_alloc(sizeof(Enemy*) * level->enemies.size);
+	for (int idx = 0; idx < level->enemies.size; idx++) {
+		level->enemies.e[idx] = 0;
 	}
 
 	setRandomSeed(getTick());
 
 	// start with a portion of the maximum enemies
-	for (u8 enemy_idx = 0; enemy_idx < level->enemies.max_num_enemies / 3; enemy_idx++) {
+	for (u8 enemy_idx = 0; enemy_idx < level->enemies.size / 3; enemy_idx++) {
 		addEnemy(level, enemy_idx);
 	}
 }
@@ -67,9 +67,9 @@ void enemiesAct(Level level[static 1]) {
 
 	detectNuclearBomb();
 
-	for (u8 idx = 0; idx < level->enemies.max_num_enemies; idx++) {
+	for (u8 idx = 0; idx < level->enemies.size; idx++) {
 
-		Enemy* enemy = level->enemies.objects[idx];
+		Enemy* enemy = level->enemies.e[idx];
 		if (enemy) {
 
 			if (ALIVE & enemy->health) {
@@ -102,38 +102,38 @@ void killEnemy(Enemy* enemy, Level level[static 1], u8 exploding) {
 
 void releaseEnemies(Level level[static 1]) {
 
-	if (!level->enemies.objects) {
+	if (!level->enemies.e) {
 		return;
 	}
 
-	for (u8 idx = 0; idx < level->enemies.max_num_enemies; idx++) {
+	for (u8 idx = 0; idx < level->enemies.size; idx++) {
 
-		Enemy* enemy = level->enemies.objects[idx];
+		Enemy* enemy = level->enemies.e[idx];
 		if (enemy) {
 			releaseEnemy(enemy);
 		}
 	}
 
-	level->enemies.current_num_enemies = 0;
-	MEM_free(level->enemies.objects);
-	memset(level->enemies.objects, 0, level->enemies.max_num_enemies);
-	level->enemies.objects = 0;
+	level->enemies.count = 0;
+	MEM_free(level->enemies.e);
+	memset(level->enemies.e, 0, level->enemies.size);
+	level->enemies.e = 0;
 }
 
 void releaseDeadEnemies(Level level[static 1]) {
 
-	if (!level->enemies.objects) {
+	if (!level->enemies.e) {
 		return;
 	}
 
-	for (u8 idx = 0; idx < level->enemies.max_num_enemies; idx++) {
+	for (u8 idx = 0; idx < level->enemies.size; idx++) {
 
-		Enemy* enemy = level->enemies.objects[idx];
+		Enemy* enemy = level->enemies.e[idx];
 		if (enemy && (enemy->health & DEAD)) {
 
 			releaseEnemy(enemy);
-			level->enemies.objects[idx] = 0;
-			level->enemies.current_num_enemies--;
+			level->enemies.e[idx] = 0;
+			level->enemies.count--;
 		}
 	}
 }
@@ -150,7 +150,7 @@ static void addEnemy(Level level[static 1], u8 pos) {
 
 	// object
 	Enemy* enemy = createEnemy(level->def.enemy_def);
-	level->enemies.objects[pos] = enemy;
+	level->enemies.e[pos] = enemy;
 
 	// sprite
 	const SpriteDefinition* sprite_definition;
@@ -170,7 +170,7 @@ static void addEnemy(Level level[static 1], u8 pos) {
 		SPR_setHFlip(enemySprite, TRUE);
 	}
 
-	level->enemies.current_num_enemies++;
+	level->enemies.count++;
 }
 
 static Enemy* createEnemy(EnemyDefinition enemy_def) {
@@ -219,14 +219,14 @@ static Enemy* createEnemy(EnemyDefinition enemy_def) {
 
 static void enemiesJoin(Level level[static 1]) {
 
-	if (level->enemies.current_num_enemies
-			< level->enemies.max_num_enemies&& getTimer(ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND) {
+	if (level->enemies.count
+			< level->enemies.size&& getTimer(ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND) {
 
-		u8 num_enemies = level->enemies.max_num_enemies;
+		u8 num_enemies = level->enemies.size;
 		u8 idx;
 		while (num_enemies--) {
 			// find the first empty slot
-			Enemy* enemy = level->enemies.objects[num_enemies];
+			Enemy* enemy = level->enemies.e[num_enemies];
 			if (!enemy) {
 				idx = num_enemies;
 				break;

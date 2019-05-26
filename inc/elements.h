@@ -46,9 +46,9 @@ typedef struct {
 } Enemy;
 
 typedef struct {
-	u8 current_num_enemies;
-	u8 max_num_enemies;
-	Enemy** objects;
+	u8 count;
+	u8 size;
+	Enemy** e;
 } Enemies;
 
 typedef struct {
@@ -72,7 +72,7 @@ typedef struct {
 typedef struct {
 	u8 current_num_booms;
 	u8 max_num_booms;
-	Explosion** objects;
+	Explosion** e;
 } Explosions;
 
 typedef struct {

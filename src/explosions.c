@@ -24,7 +24,7 @@ static void releaseFinishedExplosions(Level level[static 1]);
 void initExplosions(Level level[static 1]) {
 
 	level->booms.current_num_booms = 0;
-	level->booms.max_num_booms = 1 + level->enemies.max_num_enemies;
+	level->booms.max_num_booms = 1 + level->enemies.size;
 	level->booms.objects = MEM_alloc(sizeof(Explosion*) * level->booms.max_num_booms);
 	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
 		level->booms.objects[idx] = 0;

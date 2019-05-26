@@ -67,6 +67,6 @@ static void defineEnemies(Level level[static 1]) {
 	level->def.enemy_def.size_t.y = ENEMY_01_HEIGHT;
 	level->def.enemy_def.sprite_def = &enemy_01_sprite;
 
-	level->enemies.current_num_enemies = 0;
-	level->enemies.max_num_enemies = 10;
+	level->enemies.count = 0;
+	level->enemies.size = 10;
 }
