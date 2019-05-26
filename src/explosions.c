@@ -23,11 +23,11 @@ static void releaseFinishedExplosions(Level level[static 1]);
 
 void initExplosions(Level level[static 1]) {
 
-	level->booms.current_num_booms = 0;
-	level->booms.max_num_booms = 1 + level->enemies.size;
-	level->booms.objects = MEM_alloc(sizeof(Explosion*) * level->booms.max_num_booms);
-	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
-		level->booms.objects[idx] = 0;
+	level->booms.count = 0;
+	level->booms.size = 1 + level->enemies.size;
+	level->booms.e = MEM_alloc(sizeof(Explosion*) * level->booms.size);
+	for (u8 idx = 0; idx < level->booms.size; idx++) {
+		level->booms.e[idx] = 0;
 	}
 }
 
@@ -35,9 +35,9 @@ void updateExplosions(Level level[static 1]) {
 
 	if (getTimer(EXPLOSIONS_TIMER, FALSE) > BOOM_ANIMATION_SPEED) {
 
-		for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
+		for (u8 idx = 0; idx < level->booms.size; idx++) {
 
-			Explosion* boom = level->booms.objects[idx];
+			Explosion* boom = level->booms.e[idx];
 			if (boom) {
 				if (boom->step < FINISHED) {
 					SPR_setFrame(boom->sprite, ++boom->step);
@@ -53,36 +53,36 @@ void updateExplosions(Level level[static 1]) {
 
 void releaseExplosions(Level level[static 1]) {
 
-	if (!level->booms.objects) {
+	if (!level->booms.e) {
 		return;
 	}
 
-	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
+	for (u8 idx = 0; idx < level->booms.size; idx++) {
 
-		Explosion* boom = level->booms.objects[idx];
+		Explosion* boom = level->booms.e[idx];
 		if (boom) {
 			SPR_releaseSprite(boom->sprite);
 			MEM_free(boom);
-			level->booms.objects[idx] = 0;
+			level->booms.e[idx] = 0;
 		}
 	}
 
-	MEM_free(level->booms.objects);
-	level->booms.objects = 0;
+	MEM_free(level->booms.e);
+	level->booms.e = 0;
 
-	level->booms.current_num_booms = 0;
+	level->booms.count = 0;
 }
 
 static void releaseFinishedExplosions(Level level[static 1]) {
 
-	for (u8 idx = 0; idx < level->booms.max_num_booms; idx++) {
+	for (u8 idx = 0; idx < level->booms.size; idx++) {
 
-		Explosion* boom = level->booms.objects[idx];
+		Explosion* boom = level->booms.e[idx];
 		if (boom && boom->step == FINISHED) {
 			SPR_releaseSprite(boom->sprite);
 			MEM_free(boom);
-			level->booms.objects[idx] = 0;
-			level->booms.current_num_booms--;
+			level->booms.e[idx] = 0;
+			level->booms.count--;
 		}
 	}
 }
@@ -100,11 +100,11 @@ void boost(Box_s16 what, Level level[static 1]) {
 static void boom(Box_s16 what, Level level[static 1], u8 style) {
 
 	// Find an empty slot
-	u8 num_booms = level->booms.max_num_booms;
+	u8 num_booms = level->booms.size;
 	u8 boom_idx;
 	while (num_booms--) {
 		// find the first empty slot
-		Explosion* boom = level->booms.objects[num_booms];
+		Explosion* boom = level->booms.e[num_booms];
 		if (!boom) {
 			boom_idx = num_booms;
 			break;
@@ -114,9 +114,9 @@ static void boom(Box_s16 what, Level level[static 1], u8 style) {
 	// Create the explosion
 	Explosion* boom = MEM_alloc(sizeof *boom);
 	memset(boom, 0, sizeof *boom);
-	level->booms.objects[boom_idx] = boom;
+	level->booms.e[boom_idx] = boom;
 	boom->step = 0;
-	level->booms.current_num_booms++;
+	level->booms.count++;
 	boom->where.x = what.pos.x;
 	boom->where.y = what.pos.y + what.h - BOOM_H_PX;
 

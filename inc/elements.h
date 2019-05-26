@@ -70,8 +70,8 @@ typedef struct {
 } Explosion;
 
 typedef struct {
-	u8 current_num_booms;
-	u8 max_num_booms;
+	u8 count;
+	u8 size;
 	Explosion** e;
 } Explosions;
 

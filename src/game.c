@@ -100,7 +100,7 @@ void runGame(Game* game) {
 				} else {
 
 					// Smart dying, wait for explosions to finish
-					if (!current_level->booms.current_num_booms) {
+					if (!current_level->booms.count) {
 
 						waitMs(100);
 
@@ -116,7 +116,7 @@ void runGame(Game* game) {
 				updateShots(current_level);
 				updateExplosions(current_level);
 
-				game_over = !game->lives && !current_level->booms.current_num_booms;
+				game_over = !game->lives && !current_level->booms.count;
 				SPR_update();
 			}
 
