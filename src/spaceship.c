@@ -233,9 +233,11 @@ static void handleFuelling(Level level[static 1]) {
 
 	if (spaceship->substep & NONE) {
 
-		// initialize a new fuel load
-		spaceship->fuel_object = MEM_alloc(sizeof *spaceship->fuel_object);
-		memset(spaceship->fuel_object, 0, sizeof *spaceship->fuel_object);
+		if (!spaceship->fuel_object) {
+			// first time, initialize a new fuel load
+			spaceship->fuel_object = MEM_alloc(sizeof *spaceship->fuel_object);
+			memset(spaceship->fuel_object, 0, sizeof *spaceship->fuel_object);
+		}
 		dropFromSky(spaceship->fuel_object, &spaceship->base_object->box);
 		if (isAbove(spaceship->fuel_object->box, spaceship->base_object->box)) {
 			spaceship->substep = ASSEMBLING;

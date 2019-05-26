@@ -20,7 +20,7 @@
 #include "../inc/level.h"
 #include "../inc/planets.h"
 #include "../inc/fwk/physics.h"
-#include "../inc/fwk/logger.h"
+//#include "../inc/fwk/logger.h"
 
 static void handleCollisionsBetweenElementsAlive(Level level[static 1]);
 static void handleElementsLeavingScreenUnder(Level level[static 1]);
@@ -48,7 +48,7 @@ void runGame(Game* game) {
 
 	while (!game_over) {
 
-//		log_memory();
+		//	log_memory();
 
 		Level* current_level = game->createLevel[level_number]();
 		if (++level_number == game->num_levels) {
@@ -90,9 +90,7 @@ void runGame(Game* game) {
 					handleSpaceship(current_level);
 
 					jetman_alive = isJetmanAlive(current_level);
-					if (jetman_alive) {
-						mission_finished = isMissionFinished(current_level);
-					} else {
+					if (!jetman_alive) {
 						dropIfGrabbed(current_level->spaceship);
 						game->lives--;
 					}
@@ -119,6 +117,7 @@ void runGame(Game* game) {
 				updateShots(current_level);
 				updateExplosions(current_level);
 
+				mission_finished = jetman_alive && isMissionFinished(current_level);
 				game_over = !game->lives && !current_level->booms.count;
 				SPR_update();
 			}
