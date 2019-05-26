@@ -38,6 +38,14 @@ void shoot(V2s16 where, bool right, Level level[static 1]) {
 
 void updateShots(Level level[static 1]) {
 
+	Shot* shot = 0;
+	for (int idx = 0; idx < level->shots.size; idx++) {
+
+		shot = level->shots.e[idx];
+		if (shot) {
+
+		}
+	}
 }
 
 static void releaseShot(Shot* shot) {
@@ -46,20 +54,20 @@ static void releaseShot(Shot* shot) {
 		return;
 	}
 
-	for (int idx = 0; idx < shot->grapes_count; idx++) {
+	for (int idx = 0; idx < shot->grapes_size; idx++) {
 
-		Object_f16* grape = shot->grapes[idx];
+		Grape* grape = shot->grapes[idx];
 		if (grape) {
+			SPR_releaseSprite(grape->sprite);
+			grape->sprite = 0;
+			MEM_free(grape->object);
+			grape->object = 0;
 			MEM_free(grape);
 			shot->grapes[idx] = 0;
-		}
-
-		Sprite* grape_sprite = shot->sprites[idx];
-		if (grape_sprite) {
-			SPR_releaseSprite(grape_sprite);
-			shot->sprites[idx] = 0;
 		}
 	}
 
 	shot->grapes_count = 0;
+	shot->grapes_size = 0;
+	MEM_free(shot);
 }

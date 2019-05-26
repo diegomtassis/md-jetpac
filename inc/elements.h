@@ -52,10 +52,15 @@ typedef struct {
 } Enemies;
 
 typedef struct {
+	Object_f16* object;
+	Sprite* sprite;
+} Grape;
+
+typedef struct {
 	u8 type;
 	u8 grapes_count;
-	Object_f16** grapes;
-	Sprite** sprites;
+	u8 grapes_size;
+	Grape** grapes;
 } Shot;
 
 typedef struct {
