@@ -12,5 +12,6 @@ extern const SpriteDefinition fuel_sprite;
 extern const SpriteDefinition boom_sprite;
 extern const SpriteDefinition cursor_sprite;
 extern const SpriteDefinition fire_sprite;
+extern const SpriteDefinition shot_sprite;
 
 #endif // _RES_SPRITE_H_

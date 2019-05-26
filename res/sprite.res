@@ -9,3 +9,4 @@ SPRITE fuel_sprite "sprite/fuel.png" 2 2 NONE 0
 SPRITE boom_sprite "sprite/boom.png" 3 2 NONE 0
 SPRITE cursor_sprite "sprite/cursor.png" 1 1 NONE 0
 SPRITE fire_sprite "sprite/fire.png" 2 2 NONE 5
+SPRITE shot_sprite "sprite/shot.png" 2 1 NONE 0
