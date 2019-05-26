@@ -52,6 +52,18 @@ typedef struct {
 } Enemies;
 
 typedef struct {
+	u8 grapes_count;
+	Object_f16** grapes;
+	Sprite** sprites;
+} Shot;
+
+typedef struct {
+	u8 count;
+	u8 size;
+	Shot** e;
+} Shots;
+
+typedef struct {
 	V2s16 where;
 	u8 step;
 	Sprite* sprite;
@@ -101,6 +113,7 @@ typedef struct {
 	Jetman* jetman;
 	Spaceship* spaceship;
 	Explosions booms;
+	Shots shots;
 	LevelDefinition def;
 } Level;
 

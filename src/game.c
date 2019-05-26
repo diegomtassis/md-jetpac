@@ -14,6 +14,7 @@
 #include "../inc/enemies.h"
 #include "../inc/spaceship.h"
 #include "../inc/explosions.h"
+#include "../inc/shooting.h"
 #include "../inc/hud.h"
 #include "../inc/jetman.h"
 #include "../inc/level.h"
@@ -59,6 +60,7 @@ void runGame(Game* game) {
 		startJetman(current_level);
 		startEnemies(current_level);
 
+		initShots(current_level);
 		initExplosions(current_level);
 
 		SPR_update();
@@ -111,6 +113,7 @@ void runGame(Game* game) {
 					}
 				}
 
+				updateShots(current_level);
 				updateExplosions(current_level);
 
 				game_over = !game->lives && !current_level->booms.current_num_booms;
@@ -130,6 +133,7 @@ void runGame(Game* game) {
 		}
 
 		releaseExplosions(current_level);
+		releaseShots(current_level);
 		releaseEnemies(current_level);
 		releaseJetman(current_level);
 		releaseSpaceship(current_level);
