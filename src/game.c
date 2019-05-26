@@ -20,6 +20,7 @@
 #include "../inc/level.h"
 #include "../inc/planets.h"
 #include "../inc/fwk/physics.h"
+#include "../inc/fwk/logger.h"
 
 static void handleCollisionsBetweenElementsAlive(Level level[static 1]);
 static void handleElementsLeavingScreenUnder(Level level[static 1]);
@@ -46,6 +47,8 @@ void runGame(Game* game) {
 	u8 level_number = 0;
 
 	while (!game_over) {
+
+//		log_memory();
 
 		Level* current_level = game->createLevel[level_number]();
 		if (++level_number == game->num_levels) {

@@ -52,6 +52,7 @@ typedef struct {
 } Enemies;
 
 typedef struct {
+	u8 type;
 	u8 grapes_count;
 	Object_f16** grapes;
 	Sprite** sprites;
