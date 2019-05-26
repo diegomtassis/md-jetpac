@@ -13,7 +13,7 @@
 void initShots(Level level[static 1]);
 void releaseShots(Level level[static 1]);
 
-void shoot(V2s16 where, bool right, Level level[static 1]);
+void shoot(V2s16 where, bool go_right, Level level[static 1]);
 void updateShots(Level level[static 1]);
 
 #endif /* INC_SHOOTING_H_ */

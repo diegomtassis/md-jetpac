@@ -55,6 +55,7 @@ static f16 blockedByRight(Box_s16, const Level*);
 
 static void drawJetman(Jetman*);
 
+bool shoot_pushed;
 bool shoot_order;
 
 void startJetman(Level level[static 1]) {
@@ -62,6 +63,7 @@ void startJetman(Level level[static 1]) {
 	createPlayer1(level);
 	level->jetman->sprite = SPR_addSprite(&jetman_sprite, fix16ToInt(level->jetman->object.pos.x),
 			fix16ToInt(level->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	shoot_pushed = FALSE;
 	shoot_order = FALSE;
 }
 
@@ -330,6 +332,12 @@ static void handleInputJetman(Jetman* jetman) {
 	}
 
 	if (value & BUTTON_A) {
-		shoot_order = TRUE;
+		if (!shoot_pushed) {
+			// detect flank
+			shoot_order = TRUE;
+		}
+		shoot_pushed = TRUE;
+	} else {
+		shoot_pushed = FALSE;
 	}
 }

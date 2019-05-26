@@ -58,6 +58,7 @@ typedef struct {
 
 typedef struct {
 	u8 type;
+	bool goes_right;
 	u8 grapes_count;
 	u8 grapes_size;
 	Grape** grapes;
