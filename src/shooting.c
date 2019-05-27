@@ -28,7 +28,9 @@
 #define MIN_POS_H_PX_F16	FIX16(MIN_POS_H_PX_S16)
 #define MAX_POS_H_PX_F16	FIX16(MAX_POS_H_PX_S16)
 
+static void releaseShotIfNoGrapes(Level level[static 1], u8 shot_idx);
 static void releaseShot(Shot* shot);
+static void releaseGrapeInShot(Level level[static 1], u8 idx_shot, u8 idx_grape);
 static void releaseGrape(Grape* grape);
 
 void initShots(Level level[static 1]) {
@@ -137,19 +139,47 @@ void updateShots(Level level[static 1]) {
 
 					} else {
 						// release
-						releaseGrape(grape);
-						shot->grapes[idx_grape] = 0;
-						shot->grapes_count--;
+						releaseGrapeInShot(level, idx_shot, idx_grape);
 					}
 				}
 			}
+		}
+	}
+}
 
-			if (!shot->grapes_count) {
-				releaseShot(shot);
-				level->shots.e[idx_shot] = 0;
-				level->shots.count--;
+bool checkHit(Box_s16 subject, Level level[static 1]) {
+
+	Shot* shot = 0;
+	Grape* grape = 0;
+
+	for (int idx_shot = 0; idx_shot < level->shots.size; idx_shot++) {
+		shot = level->shots.e[idx_shot];
+		if (shot) {
+			for (int idx_grape = 0; idx_grape < shot->grapes_size; idx_grape++) {
+				grape = shot->grapes[idx_grape];
+				if (grape && overlap(grape->object->box, subject)) {
+					releaseGrapeInShot(level, idx_shot, idx_grape);
+					return TRUE;
+				}
 			}
 		}
+	}
+
+	return FALSE;
+}
+
+static void releaseShotIfNoGrapes(Level level[static 1], u8 idx_shot) {
+
+	if (!level->shots.count) {
+		return;
+	}
+
+	Shot* shot = level->shots.e[idx_shot];
+	if (shot && !shot->grapes_count) {
+
+		releaseShot(shot);
+		level->shots.e[idx_shot] = 0;
+		level->shots.count--;
 	}
 }
 
@@ -172,6 +202,24 @@ static void releaseShot(Shot* shot) {
 	shot->grapes_count = 0;
 	shot->grapes_size = 0;
 	MEM_free(shot);
+}
+
+static void releaseGrapeInShot(Level level[static 1], u8 idx_shot, u8 idx_grape) {
+
+	Shot* shot = level->shots.e[idx_shot];
+	if (!shot) {
+		return;
+	}
+
+	Grape* grape = shot->grapes[idx_grape];
+	if (!grape) {
+		return;
+	}
+
+	releaseGrape(grape);
+	shot->grapes[idx_grape] = 0;
+	shot->grapes_count--;
+	releaseShotIfNoGrapes(level, idx_shot);
 }
 
 static void releaseGrape(Grape* grape) {

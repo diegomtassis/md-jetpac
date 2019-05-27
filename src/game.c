@@ -186,24 +186,8 @@ static void handleCollisionsBetweenElementsAlive(Level level[static 1]) {
 			}
 
 			// enemy & shot
-			Shot* shot = 0;
-			Grape* grape = 0;
-			bool killed = FALSE;
-			for (int idx_shot = 0; idx_shot < level->shots.size; idx_shot++) {
-				shot = level->shots.e[idx_shot];
-				if (shot) {
-					for (int idx_grape = 0; idx_grape < shot->grapes_size; idx_grape++) {
-						grape = shot->grapes[idx_grape];
-						if (grape && overlap(grape->object->box, enemy->object.box)) {
-							killEnemy(enemy, level, TRUE);
-							killed = TRUE;
-							break;
-						}
-					}
-					if (killed) {
-						break;
-					}
-				}
+			if (checkHit(enemy->object.box, level)) {
+				killEnemy(enemy, level, TRUE);
 			}
 		}
 	}
