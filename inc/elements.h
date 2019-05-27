@@ -31,6 +31,7 @@ typedef struct {
 	V2s16 order;
 	u8 walk_step_counter;
 	u8 health;
+	bool head_back;
 	Sprite* sprite;
 } Jetman;
 
@@ -53,12 +54,13 @@ typedef struct {
 
 typedef struct {
 	Object_f16* object;
+	u16 life_left;
 	Sprite* sprite;
 } Grape;
 
 typedef struct {
 	u8 type;
-	bool goes_right;
+	bool to_left;
 	u8 grapes_count;
 	u8 grapes_size;
 	Grape** grapes;

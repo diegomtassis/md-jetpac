@@ -9,11 +9,11 @@
 
 #include <genesis.h>
 
+#include "../inc/explosions.h"
 #include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
 #include "../inc/level.h"
 #include "../inc/shooting.h"
-#include "../inc/explosions.h"
 #include "../res/sprite.h"
 
 #define ANIM_WALK		0
@@ -34,12 +34,12 @@
 #define JETMAN_HEIGHT 24
 #define JETMAN_WIDTH 16
 
-#define FUEL_MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16 - 8
-#define FUEL_MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
+#define MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16 - 8
+#define MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
 #define MIN_POS_V_PX_S16	TOP_POS_V_PX_S16
 
-#define FUEL_MIN_POS_H_PX_F16	FIX16(FUEL_MIN_POS_H_PX_S16)
-#define FUEL_MAX_POS_H_PX_F16	FIX16(FUEL_MAX_POS_H_PX_S16)
+#define MIN_POS_H_PX_F16	FIX16(MIN_POS_H_PX_S16)
+#define MAX_POS_H_PX_F16	FIX16(MAX_POS_H_PX_S16)
 #define MIN_POS_V_PX_F16	FIX16(MIN_POS_V_PX_S16)
 
 static void createPlayer1(Level level[static 1]);
@@ -105,7 +105,12 @@ void jetmanActs(Level level[static 1]) {
 		drawJetman(level->jetman);
 
 		if (shoot_order) {
-			shoot(level->jetman->object.box.pos, level->jetman->object.mov.x > 0, level);
+
+			V2s16 where = { 0 };
+			where.x = level->jetman->object.box.pos.x + (level->jetman->head_back ? 0 : 16);
+			where.y = level->jetman->object.box.pos.y + 11;
+
+			shoot(where, level->jetman->head_back, level);
 			shoot_order = FALSE;
 		}
 	}
@@ -160,10 +165,12 @@ static u8 calculateNextMovement(Jetman* jetman) {
 	// horizontal movement
 	if (jetman->order.x > 0) {
 		jetman->object.mov.x = SPEED_H_NORMAL;
+		jetman->head_back = FALSE;
 		movement |= RIGHT;
 
 	} else if (jetman->order.x < 0) {
 		jetman->object.mov.x = -SPEED_H_NORMAL;
+		jetman->head_back = TRUE;
 		movement |= LEFT;
 
 	} else {
@@ -191,11 +198,11 @@ static void updatePosition(Jetman* jetman, Level level[static 1]) {
 
 	// horizontal position
 	Box_s16 target_h = targetHBox(jetman->object, JETMAN_WIDTH, JETMAN_HEIGHT);
-	if (target_h.pos.x > FUEL_MAX_POS_H_PX_S16) {
-		jetman->object.pos.x = FUEL_MIN_POS_H_PX_F16;
+	if (target_h.pos.x > MAX_POS_H_PX_S16) {
+		jetman->object.pos.x = MIN_POS_H_PX_F16;
 
-	} else if (target_h.pos.x < FUEL_MIN_POS_H_PX_S16) {
-		jetman->object.pos.x = FUEL_MAX_POS_H_PX_F16;
+	} else if (target_h.pos.x < MIN_POS_H_PX_S16) {
+		jetman->object.pos.x = MAX_POS_H_PX_F16;
 
 	} else {
 
@@ -306,11 +313,7 @@ static void drawJetman(Jetman* jetman) {
 		}
 	}
 
-	if (jetman->object.mov.x < 0) {
-		SPR_setHFlip(sprite, TRUE);
-	} else if (jetman->object.mov.x > 0) {
-		SPR_setHFlip(sprite, FALSE);
-	}
+	SPR_setHFlip(sprite, jetman->head_back);
 }
 
 static void handleInputJetman(Jetman* jetman) {
