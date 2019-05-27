@@ -68,5 +68,5 @@ static void defineEnemies(Level level[static 1]) {
 	level->def.enemy_def.sprite_def = &enemy_01_sprite;
 
 	level->enemies.count = 0;
-	level->enemies.size = 10;
+	level->enemies.size = 7;
 }

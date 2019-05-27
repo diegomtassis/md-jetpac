@@ -55,7 +55,7 @@ static void defineEnemies(Level level[static 1]) {
 	level->def.enemy_def.sprite_def = &enemy_02_sprite;
 
 	level->enemies.count = 0;
-	level->enemies.size = 10;
+	level->enemies.size = 8;
 }
 
 static void defineSpaceship(Level level[static 1]) {

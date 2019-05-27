@@ -237,6 +237,7 @@ static void leavePlanet(Level level[static 1]) {
 		handleSpaceship(level);
 		enemiesAct(level);
 		updateExplosions(level);
+		updateShots(level);
 
 		SPR_update();
 		VDP_waitVSync();

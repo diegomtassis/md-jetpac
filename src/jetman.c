@@ -334,7 +334,7 @@ static void handleInputJetman(Jetman* jetman) {
 		jetman->order.x = 0;
 	}
 
-	if (value & BUTTON_A) {
+	if (value & BUTTON_C) {
 		if (!shoot_pushed) {
 			// detect flank
 			shoot_order = TRUE;

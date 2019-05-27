@@ -32,6 +32,8 @@
 #define MAX_POS_V_PX_F16	FIX16(MAX_POS_V_PX_S16)
 #define MAX_POS_START_V_PX_F16	FIX16(MAX_POS_V_PX_S16 - 32)
 
+static const int REST_BETWEEN_ENEMIES = SUBTICKPERSECOND * 1.5;
+
 static void addEnemy(Level level[static 1], u8 pos);
 static Enemy* createEnemy(EnemyDefinition);
 static void releaseDeadEnemies(Level level[static 1]);
@@ -219,8 +221,7 @@ static Enemy* createEnemy(EnemyDefinition enemy_def) {
 
 static void enemiesJoin(Level level[static 1]) {
 
-	if (level->enemies.count
-			< level->enemies.size&& getTimer(ENEMY_CREATION_TIMER, FALSE) > SUBTICKPERSECOND) {
+	if (level->enemies.count < level->enemies.size && getTimer(ENEMY_CREATION_TIMER, FALSE) > REST_BETWEEN_ENEMIES) {
 
 		u8 num_enemies = level->enemies.size;
 		u8 idx;
@@ -291,7 +292,7 @@ static u8 crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]) 
 
 static void detectNuclearBomb() {
 
-	if (JOY_readJoypad(JOY_1) & BUTTON_C) {
+	if (JOY_readJoypad(JOY_1) & BUTTON_A) {
 		nuclear_bomb = TRUE;
 	}
 }

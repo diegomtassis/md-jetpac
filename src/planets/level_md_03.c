@@ -50,7 +50,7 @@ static void createPlatforms(Level level[static 1]) {
 static void defineEnemies(Enemies* enemies) {
 
 	enemies->count = 0;
-	enemies->size = 12;
+	enemies->size = 8;
 }
 
 static void defineSpaceship(Level level[static 1]) {
