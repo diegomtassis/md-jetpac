@@ -13,7 +13,7 @@
 #include "../inc/fwk/physics.h"
 #include "../res/sprite.h"
 
-#define MAX_SHOTS 	5
+#define MAX_SHOTS 	3
 
 #define RANGE_MEDIUM 55
 
@@ -91,10 +91,10 @@ void shoot(V2s16 where, bool to_left, Level level[static 1]) {
 	grape->object->pos.y = FIX16(where.y);
 	grape->object->mov.x = to_left ? -SPEED_H_NORMAL : SPEED_H_NORMAL;
 	grape->object->mov.y = FIX16_0;
-	grape->object->size.x = 16;
-	grape->object->size.y = 1;
-	grape->object->box.w = 16;
-	grape->object->box.h = 1;
+	grape->object->size.x = GRAPE_WIDTH;
+	grape->object->size.y = GRAPE_HEIGHT;
+	grape->object->box.w = GRAPE_WIDTH;
+	grape->object->box.h = GRAPE_HEIGHT;
 	updateBox(grape->object);
 
 	grape->life_left = RANGE_MEDIUM;

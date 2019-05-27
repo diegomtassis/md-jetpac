@@ -67,7 +67,7 @@ void startEnemies(Level level[static 1]) {
 
 void enemiesAct(Level level[static 1]) {
 
-	detectNuclearBomb();
+//	detectNuclearBomb();
 
 	for (u8 idx = 0; idx < level->enemies.size; idx++) {
 
@@ -207,7 +207,7 @@ static Enemy* createEnemy(EnemyDefinition enemy_def) {
 	}
 
 	if (enemy_def.size_t.y) {
-		enemy->object.box.w = enemy_def.size_t.y;
+		enemy->object.box.h = enemy_def.size_t.y;
 	} else {
 		enemy->object.box.h = ENEMY_01_HEIGHT;
 	}
