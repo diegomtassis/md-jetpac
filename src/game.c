@@ -176,10 +176,35 @@ static void handleCollisionsBetweenElementsAlive(Level level[static 1]) {
 	for (u8 enemy_idx = 0; enemy_idx < level->enemies.size; enemy_idx++) {
 
 		Enemy* enemy = level->enemies.e[enemy_idx];
-		if (enemy && (ALIVE & enemy->health) && overlap(level->jetman->object.box, enemy->object.box)) {
-			killJetman(level, TRUE);
-			killEnemy(enemy, level, TRUE);
-			break;
+		if (enemy && (ALIVE & enemy->health)) {
+
+			// enemy & jetman
+			if (overlap(level->jetman->object.box, enemy->object.box)) {
+				killJetman(level, TRUE);
+				killEnemy(enemy, level, TRUE);
+				break;
+			}
+
+			// enemy & shot
+			Shot* shot = 0;
+			Grape* grape = 0;
+			bool killed = FALSE;
+			for (int idx_shot = 0; idx_shot < level->shots.size; idx_shot++) {
+				shot = level->shots.e[idx_shot];
+				if (shot) {
+					for (int idx_grape = 0; idx_grape < shot->grapes_size; idx_grape++) {
+						grape = shot->grapes[idx_grape];
+						if (grape && overlap(grape->object->box, enemy->object.box)) {
+							killEnemy(enemy, level, TRUE);
+							killed = TRUE;
+							break;
+						}
+					}
+					if (killed) {
+						break;
+					}
+				}
+			}
 		}
 	}
 }
