@@ -58,13 +58,15 @@ static void drawJetman(Jetman*);
 bool shoot_pushed;
 bool shoot_order;
 
-void startJetman(Level level[static 1]) {
+void startJetman(Level level[static 1], bool limit_ammo) {
 
 	createPlayer1(level);
 	level->jetman->sprite = SPR_addSprite(&jetman_sprite, fix16ToInt(level->jetman->object.pos.x),
 			fix16ToInt(level->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	shoot_pushed = FALSE;
 	shoot_order = FALSE;
+	level->jetman->limited_ammo = limit_ammo;
+	level->jetman->ammo = level->def.ammo;
 }
 
 void releaseJetman(Level level[static 1]) {
@@ -104,13 +106,14 @@ void jetmanActs(Level level[static 1]) {
 		moveJetman(level->jetman, level);
 		drawJetman(level->jetman);
 
-		if (shoot_order) {
+		if (shoot_order && (!jetman->limited_ammo || jetman->ammo)) {
 
 			V2s16 where = { 0 };
 			where.x = level->jetman->object.box.pos.x + (level->jetman->head_back ? 0 : 16);
 			where.y = level->jetman->object.box.pos.y + 11;
 
 			shoot(where, level->jetman->head_back, level);
+			jetman->ammo--;
 			shoot_order = FALSE;
 		}
 	}

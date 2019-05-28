@@ -28,6 +28,7 @@ Level* createLevelMD04() {
 	defineJetman(level);
 
 	level->def.mind_bottom = TRUE;
+	level->def.ammo = 5;
 
 	return level;
 }

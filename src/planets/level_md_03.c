@@ -29,6 +29,7 @@ Level* createLevelMD03() {
 	setV2s16(level->def.jetman_init_pos, 68, 176);
 
 	level->def.mind_bottom = TRUE;
+	level->def.ammo = 20;
 
 	return level;
 }

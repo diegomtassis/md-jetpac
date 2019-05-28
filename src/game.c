@@ -46,6 +46,8 @@ void runGame(Game* game) {
 
 	u8 level_number = 0;
 
+	displayAmmo(game->mode & MODE_MD);
+
 	while (!game_over) {
 
 		//	log_memory();
@@ -60,7 +62,7 @@ void runGame(Game* game) {
 		startSpaceship(current_level);
 		waitForLanding(current_level);
 
-		startJetman(current_level);
+		startJetman(current_level, game->mode & MODE_MD);
 		startEnemies(current_level);
 
 		initShots(current_level);
@@ -96,7 +98,7 @@ void runGame(Game* game) {
 					}
 
 					game->score++;
-					updateHud(game);
+					updateHud(game, current_level->jetman);
 
 				} else {
 

@@ -32,6 +32,8 @@ typedef struct {
 	u8 walk_step_counter;
 	u8 health;
 	bool head_back;
+	bool limited_ammo;
+	u16 ammo;
 	Sprite* sprite;
 } Jetman;
 
@@ -110,6 +112,7 @@ typedef struct {
 typedef struct {
 	u8 mind_bottom;
 	V2s16* jetman_init_pos;
+	u16 ammo;
 	SpaceshipDefinition spaceship_def;
 	EnemyDefinition enemy_def;
 } LevelDefinition;

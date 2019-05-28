@@ -6,5 +6,6 @@ extern const TileSet floor;
 extern const TileSet platform;
 extern const Image splash_image;
 extern const Image oneup;
+extern const Image laser;
 
 #endif // _RES_GFX_H_

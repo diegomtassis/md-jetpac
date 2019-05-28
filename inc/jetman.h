@@ -10,7 +10,7 @@
 
 #include "elements.h"
 
-void startJetman(Level level[static 1]);
+void startJetman(Level level[static 1], bool limit_ammo);
 void releaseJetman(Level level[static 1]);
 void killJetman(Level level[static 1], bool exploding);
 void resetJetman(Level level[static 1]);

@@ -26,6 +26,7 @@ Level* createLevelZX01() {
 	defineSpaceship(level);
 
 	level->def.jetman_init_pos = 0;
+	level->def.ammo = 99;
 
 	level->def.mind_bottom = FALSE;
 

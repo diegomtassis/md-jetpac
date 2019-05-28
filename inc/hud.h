@@ -11,7 +11,8 @@
 #include "game.h"
 
 void initHud();
-void updateHud(Game*);
+void displayAmmo(bool showAmmo);
+void updateHud(Game* game, Jetman* jetman);
 void registerScore(u16 highest_score);
 
 #endif /* INC_HUD_H_ */

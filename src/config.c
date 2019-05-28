@@ -107,15 +107,17 @@ static void setGameConfig(Game* game) {
 		game->createLevel[1] = createLevelZX02;
 	} else {
 		game->mode = MODE_MD;
-		game->num_levels = 4;
+		game->num_levels = 5;
 		game->createLevel = MEM_alloc(game->num_levels * sizeof(Level*));
-		game->createLevel[0] = createLevelMD01;
-		game->createLevel[1] = createLevelMD02;
-		game->createLevel[2] = createLevelMD03;
-		game->createLevel[3] = createLevelMD04;
+		u8 level = 0;
+		game->createLevel[level++] = createLevelZX01;
+		game->createLevel[level++] = createLevelMD01;
+		game->createLevel[level++] = createLevelMD02;
+		game->createLevel[level++] = createLevelMD03;
+		game->createLevel[level++] = createLevelMD04;
 	}
 
-	game->lives = 3;
+	game->lives = 4;
 	game->score = 0;
 }
 
