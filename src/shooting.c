@@ -15,14 +15,16 @@
 
 #define MAX_SHOTS 	3
 
-#define RANGE_MEDIUM 30
+#define RANGE_SHORT 10
+#define RANGE_MEDIUM 20
+#define RANGE_LONG 30
 
 #define BURST_A 0
 #define BURST_B 1
 #define BURST_C 2
 
-#define SPEED_H_NORMAL_U16	6
-#define SPEED_H_NORMAL	FIX16(SPEED_H_NORMAL_U16)
+#define SPEED_LASER	6
+#define SPEED_LASER_F16	FIX16(SPEED_LASER)
 
 #define GRAPE_WIDTH 16
 #define GRAPE_HEIGHT 1
@@ -35,7 +37,7 @@
 
 static void releaseShotIfNoGrapes(Level level[static 1], u8 shot_idx);
 static void releaseShot(Shot* shot);
-static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 burst);
+static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst);
 static void releaseGrapeInShot(Level level[static 1], u8 idx_shot, u8 idx_grape);
 static void releaseGrape(Grape* grape);
 
@@ -82,13 +84,23 @@ void shoot(V2s16 where, bool to_left, Level level[static 1]) {
 	shot->where.y = where.y;
 	shot->to_left = to_left;
 	shot->type = abs(random()) % 3;
-	shot->grapes_size = 5;
+
+	u8 range = abs(random()) % 3;
+	if (range == 0) {
+		shot->range = RANGE_SHORT;
+	} else if (range == 1) {
+		shot->range = RANGE_MEDIUM;
+	} else {
+		shot->range = RANGE_LONG;
+	}
+
+	shot->grapes_size = 2;
 	shot->grapes_count = 0;
 	shot->grapes_created = 0;
 	shot->grapes = MEM_alloc(shot->grapes_size * sizeof(Grape*));
 	memset(shot->grapes, 0, shot->grapes_size);
 
-	shot->grapes[0] = createGrape(where, to_left, BURST_A, shot->type);
+	shot->grapes[0] = createGrape(where, to_left, shot->type, shot->range, BURST_A);
 	shot->grapes_count++;
 	shot->grapes_created++;
 	shot->distance_to_last = 0;
@@ -132,17 +144,17 @@ void updateShots(Level level[static 1]) {
 				}
 			}
 
-			shot->distance_to_last += SPEED_H_NORMAL_U16;
-			if (shot->grapes_created < shot->grapes_size && shot->distance_to_last >= 16) {
+			shot->distance_to_last += SPEED_LASER;
+			if (shot->grapes_created < shot->grapes_size && shot->distance_to_last >= GRAPE_WIDTH) {
 
 				u8 burst = BURST_A;
 				if (shot->grapes_created > 1) {
-					burst = shot->grapes_created > 3 ? BURST_C : BURST_B;
+					burst = shot->grapes_created < 5 ? BURST_B : BURST_C;
 				}
 
-				shot->grapes[shot->grapes_created] = createGrape(shot->where, shot->to_left, shot->type, burst);
+				shot->grapes[shot->grapes_created++] = createGrape(shot->where, shot->to_left, shot->type, shot->range,
+						burst);
 				shot->grapes_count++;
-				shot->grapes_created++;
 				shot->distance_to_last = 0;
 			}
 		}
@@ -209,11 +221,12 @@ static void releaseShot(Shot* shot) {
 	}
 
 	shot->grapes_count = 0;
+	shot->grapes_created = 0;
 	shot->grapes_size = 0;
 	MEM_free(shot);
 }
 
-static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 burst) {
+static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst) {
 
 	Grape* grape = 0;
 	grape = MEM_alloc(sizeof(Grape));
@@ -224,7 +237,7 @@ static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 burst) {
 	grape->object = object;
 	grape->object->pos.x = FIX16(where.x - (to_left ? 16 : 0));
 	grape->object->pos.y = FIX16(where.y);
-	grape->object->mov.x = to_left ? -SPEED_H_NORMAL : SPEED_H_NORMAL;
+	grape->object->mov.x = to_left ? -SPEED_LASER_F16 : SPEED_LASER_F16;
 	grape->object->mov.y = FIX16_0;
 	grape->object->size.x = GRAPE_WIDTH;
 	grape->object->size.y = GRAPE_HEIGHT;
@@ -232,7 +245,7 @@ static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 burst) {
 	grape->object->box.h = GRAPE_HEIGHT;
 	updateBox(grape->object);
 
-	grape->life_left = RANGE_MEDIUM;
+	grape->life_left = range;
 
 	grape->sprite = SPR_addSprite(&shot_sprite, grape->object->box.pos.x, grape->object->box.pos.y,
 			TILE_ATTR(PAL0, TRUE, FALSE, to_left));

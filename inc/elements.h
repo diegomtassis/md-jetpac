@@ -56,14 +56,15 @@ typedef struct {
 
 typedef struct {
 	Object_f16* object;
-	u16 life_left;
+	u8 life_left;
 	Sprite* sprite;
 } Grape;
 
 typedef struct {
-	u8 type;
 	V2s16 where;
 	bool to_left;
+	u8 type;
+	u8 range;
 	u8 grapes_count;
 	u8 grapes_created;
 	u8 grapes_size;
