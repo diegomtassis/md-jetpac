@@ -62,9 +62,12 @@ typedef struct {
 
 typedef struct {
 	u8 type;
+	V2s16 where;
 	bool to_left;
 	u8 grapes_count;
+	u8 grapes_created;
 	u8 grapes_size;
+	u16 distance_to_last;
 	Grape** grapes;
 } Shot;
 
