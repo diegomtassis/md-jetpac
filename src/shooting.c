@@ -15,15 +15,15 @@
 
 #define MAX_SHOTS 	3
 
-#define RANGE_SHORT 10
-#define RANGE_MEDIUM 20
-#define RANGE_LONG 30
+#define RANGE_SHORT 15
+#define RANGE_MEDIUM 25
+#define RANGE_LONG 35
 
 #define BURST_A 0
 #define BURST_B 1
 #define BURST_C 2
 
-#define SPEED_LASER	6
+#define SPEED_LASER	5
 #define SPEED_LASER_F16	FIX16(SPEED_LASER)
 
 #define GRAPE_WIDTH 16
@@ -94,11 +94,11 @@ void shoot(V2s16 where, bool to_left, Level level[static 1]) {
 		shot->range = RANGE_LONG;
 	}
 
-	shot->grapes_size = 2;
+	shot->grapes_size = 6;
 	shot->grapes_count = 0;
 	shot->grapes_created = 0;
 	shot->grapes = MEM_alloc(shot->grapes_size * sizeof(Grape*));
-	memset(shot->grapes, 0, shot->grapes_size);
+	memset(shot->grapes, 0, shot->grapes_size * sizeof(Grape*));
 
 	shot->grapes[0] = createGrape(where, to_left, shot->type, shot->range, BURST_A);
 	shot->grapes_count++;
@@ -215,13 +215,12 @@ static void releaseShot(Shot* shot) {
 
 		grape = shot->grapes[idx];
 		if (grape) {
-			releaseGrape(shot->grapes[idx]);
+			releaseGrape(grape);
 			shot->grapes[idx] = 0;
 		}
 	}
 
 	shot->grapes_count = 0;
-	shot->grapes_created = 0;
 	shot->grapes_size = 0;
 	MEM_free(shot);
 }
