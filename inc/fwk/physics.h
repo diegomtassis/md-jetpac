@@ -33,25 +33,26 @@ typedef struct {
 	Box_s16 box;
 } Object_f16;
 
-void updateBox(Object_f16*);
+void updateBox(Object_f16* object);
 
-Box_s16 targetBox(Object_f16, u8, u8);
-Box_s16 targetHBox(Object_f16, u8, u8);
-Box_s16 targetVBox(Object_f16, u8, u8);
+Box_s16 targetBox(Object_f16 subject, u8 width, u8 height);
+Box_s16 targetHBox(Object_f16 subject, u8 width, u8 height);
+Box_s16 targetVBox(Object_f16 subject, u8 width, u8 height);
 
-bool overlap(Box_s16, Box_s16);
+bool contained(V2s16 subject_pos, Box_s16 object_box);
+bool overlap(Box_s16 subject_box, Box_s16 object_box);
 
-bool isAbove(Box_s16, Box_s16);
+bool isAbove(Box_s16 subject_box, Box_s16 object_box);
 bool shareBase(Box_s16 subject_box, Box_s16 object_box);
 
-bool hitAbove(Box_s16, Box_s16);
-bool hitUnder(Box_s16, Box_s16);
-bool hitLeft(Box_s16, Box_s16);
-bool hitRight(Box_s16, Box_s16);
+bool hitAbove(Box_s16 subject_box, Box_s16 object_box);
+bool hitUnder(Box_s16 subject_box, Box_s16 object_box);
+bool hitLeft(Box_s16 subject_box, Box_s16 object_box);
+bool hitRight(Box_s16 subject_box, Box_s16 object_box);
 
-s16 adjacentYAbove(Box_s16, Box_s16);
-s16 adjacentYUnder(Box_s16, Box_s16);
-s16 adjacentXOnTheLeft(Box_s16, Box_s16);
-s16 adjacentXOnTheRight(Box_s16, Box_s16);
+s16 adjacentYAbove(Box_s16 subject_box, Box_s16 object_box);
+s16 adjacentYUnder(Box_s16 subject_box, Box_s16 object_box);
+s16 adjacentXOnTheLeft(Box_s16 subject_box, Box_s16 object_box);
+s16 adjacentXOnTheRight(Box_s16 subject_box, Box_s16 object_box);
 
 #endif /* INC_PHYSICS_H_ */

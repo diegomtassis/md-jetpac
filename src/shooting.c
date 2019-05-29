@@ -157,9 +157,16 @@ bool checkHit(Box_s16 subject, Level level[static 1]) {
 		if (shot) {
 			for (int idx_grape = 0; idx_grape < shot->grapes_size; idx_grape++) {
 				grape = shot->grapes[idx_grape];
-				if (grape && overlap(grape->object->box, subject)) {
-					releaseGrapeInShot(level, idx_shot, idx_grape);
-					return TRUE;
+				if (grape) {
+					Box_s16 grape_box = grape->object->box;
+					V2s16 grape_tip = { .x = grape_box.pos.x, .y = grape_box.pos.y };
+					if (!shot->to_left) {
+						grape_tip.x += grape_box.w - 1;
+					}
+					if (contained(grape_tip, subject)) {
+						releaseGrapeInShot(level, idx_shot, idx_grape);
+						return TRUE;
+					}
 				}
 			}
 		}

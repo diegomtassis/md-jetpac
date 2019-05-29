@@ -53,6 +53,12 @@ Box_s16 targetVBox(Object_f16 object, u8 width, u8 height) {
 	return box;
 }
 
+bool contained(V2s16 subject_pos, Box_s16 object_box) {
+
+	return (IN_BETWEEN & axisXPxRelativePos(subject_pos.x, object_box))
+			&& (IN_BETWEEN & axisYPxRelativePos(subject_pos.y, object_box));
+}
+
 bool overlap(Box_s16 subject_box, Box_s16 object_box) {
 
 	return (OVERLAPPED & axisXBoxRelativePos(subject_box, object_box))

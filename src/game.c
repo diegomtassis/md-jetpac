@@ -22,7 +22,7 @@
 #include "../inc/fwk/physics.h"
 //#include "../inc/fwk/logger.h"
 
-static void handleCollisionsBetweenElementsAlive(Level level[static 1]);
+static void handleCollisionsBetweenMovingObjects(Level level[static 1]);
 static void handleElementsLeavingScreenUnder(Level level[static 1]);
 static bool isJetmanAlive(Level level[static 1]);
 static bool isMissionFinished(Level level[static 1]);
@@ -84,7 +84,7 @@ void runGame(Game* game) {
 
 					jetmanActs(current_level);
 					enemiesAct(current_level);
-					handleCollisionsBetweenElementsAlive(current_level);
+					handleCollisionsBetweenMovingObjects(current_level);
 					if (current_level->def.mind_bottom) {
 						handleElementsLeavingScreenUnder(current_level);
 					}
@@ -173,23 +173,24 @@ void releaseGame(Game* game) {
 	MEM_free(game);
 }
 
-static void handleCollisionsBetweenElementsAlive(Level level[static 1]) {
+static void handleCollisionsBetweenMovingObjects(Level level[static 1]) {
 
 	for (u8 enemy_idx = 0; enemy_idx < level->enemies.size; enemy_idx++) {
 
 		Enemy* enemy = level->enemies.e[enemy_idx];
 		if (enemy && (ALIVE & enemy->health)) {
 
+			// enemy & shot
+			if (checkHit(enemy->object.box, level)) {
+				killEnemy(enemy, level, TRUE);
+				continue;
+			}
+
 			// enemy & jetman
 			if (overlap(level->jetman->object.box, enemy->object.box)) {
 				killJetman(level, TRUE);
 				killEnemy(enemy, level, TRUE);
 				break;
-			}
-
-			// enemy & shot
-			if (checkHit(enemy->object.box, level)) {
-				killEnemy(enemy, level, TRUE);
 			}
 		}
 	}
