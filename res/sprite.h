@@ -4,6 +4,7 @@
 extern const SpriteDefinition jetman_sprite;
 extern const SpriteDefinition enemy_01_sprite;
 extern const SpriteDefinition enemy_02_sprite;
+extern const SpriteDefinition enemy_03_sprite;
 extern const SpriteDefinition u1_base_sprite;
 extern const SpriteDefinition u1_middle_sprite;
 extern const SpriteDefinition u1_top_sprite;

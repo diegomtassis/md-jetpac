@@ -11,10 +11,13 @@
 #include "elements.h"
 
 #define ENEMY_01_WIDTH    16
-#define ENEMY_01_HEIGHT    11
+#define ENEMY_01_HEIGHT    12
 
 #define ENEMY_02_WIDTH    16
 #define ENEMY_02_HEIGHT    14
+
+#define ENEMY_03_WIDTH    16
+#define ENEMY_03_HEIGHT    14
 
 void startEnemies(Level level[static 1]);
 void releaseEnemies(Level level[static 1]);

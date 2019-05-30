@@ -1,6 +1,7 @@
 SPRITE jetman_sprite "sprite/jetman.png" 2 4 NONE 0
 SPRITE enemy_01_sprite "sprite/enemy_01.png" 2 2 NONE 0
 SPRITE enemy_02_sprite "sprite/enemy_02.png" 2 2 NONE 0
+SPRITE enemy_03_sprite "sprite/enemy_03.png" 2 2 NONE 0
 SPRITE u1_base_sprite "sprite/u1_base.png" 2 2 NONE 0
 SPRITE u1_middle_sprite "sprite/u1_middle.png" 2 2 NONE 0
 SPRITE u1_top_sprite "sprite/u1_top.png" 2 2 NONE 0

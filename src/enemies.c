@@ -43,7 +43,7 @@ static void enemiesJoin(Level level[static 1]);
 static void moveEnemy(Enemy*, Level*);
 static void calculateNextMovement(Enemy*);
 static void updatePosition(Enemy*, Level*);
-static u8 crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]);
+static bool crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]);
 
 static void detectNuclearBomb();
 
@@ -273,9 +273,9 @@ static void updatePosition(Enemy* enemy, Level level[static 1]) {
 	updateBox(&enemy->object);
 }
 
-static u8 crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]) {
+static bool crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]) {
 
-	u8 crashed = overlap(subject_box, level->floor->object.box);
+	bool crashed = overlap(subject_box, level->floor->object.box);
 	if (crashed) {
 		return TRUE;
 	}

@@ -15,8 +15,8 @@
 
 #define MAX_SHOTS 	3
 
-#define RANGE_SHORT 15
-#define RANGE_MEDIUM 25
+#define RANGE_SHORT 22
+#define RANGE_MEDIUM 28
 #define RANGE_LONG 35
 
 #define BURST_A 0
@@ -34,6 +34,9 @@
 
 #define MIN_POS_H_PX_F16	FIX16(MIN_POS_H_PX_S16)
 #define MAX_POS_H_PX_F16	FIX16(MAX_POS_H_PX_S16)
+
+static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Level level[static 1]);
+static bool checkCollision(Shot shot[static 1], Grape grape[static 1], Box_s16 object_box);
 
 static void releaseShotIfNoGrapes(Level level[static 1], u8 shot_idx);
 static void releaseShot(Shot* shot);
@@ -134,8 +137,15 @@ void updateShots(Level level[static 1]) {
 							grape->object->pos.x += grape->object->mov.x;
 						}
 
-						updateBox(grape->object);
-						SPR_setPosition(grape->sprite, grape->object->box.pos.x, grape->object->box.pos.y);
+						if (crashedIntoPlatform(shot, grape, level)) {
+							releaseShot(shot);
+							level->shots.e[idx_shot] = 0;
+							level->shots.count--;
+
+						} else {
+							updateBox(grape->object);
+							SPR_setPosition(grape->sprite, grape->object->box.pos.x, grape->object->box.pos.y);
+						}
 
 					} else {
 						// release
@@ -172,13 +182,10 @@ bool checkHit(Box_s16 subject, Level level[static 1]) {
 			for (int idx_grape = 0; idx_grape < shot->grapes_size; idx_grape++) {
 				grape = shot->grapes[idx_grape];
 				if (grape) {
-					Box_s16 grape_box = grape->object->box;
-					V2s16 grape_tip = { .x = grape_box.pos.x, .y = grape_box.pos.y };
-					if (!shot->to_left) {
-						grape_tip.x += grape_box.w - 1;
-					}
-					if (contained(grape_tip, subject)) {
-						releaseGrapeInShot(level, idx_shot, idx_grape);
+					if (checkCollision(shot, grape, subject)) {
+						releaseShot(shot);
+						level->shots.e[idx_shot] = 0;
+						level->shots.count--;
 						return TRUE;
 					}
 				}
@@ -252,6 +259,35 @@ static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst
 	SPR_setFrame(grape->sprite, burst);
 
 	return grape;
+}
+
+static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Level level[static 1]) {
+
+	Box_s16 grape_box = grape->object->box;
+	bool crashed = overlap(grape_box, level->floor->object.box);
+	if (crashed) {
+		return TRUE;
+	}
+
+	for (u8 i = 0; i < level->num_platforms; i++) {
+		crashed = overlap(grape->object->box, level->platforms[i]->object.box);
+		if (crashed) {
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+static bool checkCollision(Shot shot[static 1], Grape grape[static 1], Box_s16 object_box) {
+
+	Box_s16 grape_box = grape->object->box;
+	V2s16 grape_tip = { .x = grape_box.pos.x, .y = grape_box.pos.y };
+	if (!shot->to_left) {
+		grape_tip.x += grape_box.w - 1;
+	}
+
+	return contained(grape_tip, object_box);
 }
 
 static void releaseGrapeInShot(Level level[static 1], u8 idx_shot, u8 idx_grape) {

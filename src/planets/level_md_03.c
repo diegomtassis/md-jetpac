@@ -12,9 +12,11 @@
 #include "../../inc/fwk/commons.h"
 #include "../../inc/level.h"
 #include "../../inc/spaceship.h"
+#include "../../inc/enemies.h"
+#include "../../res/sprite.h"
 
 static void createPlatforms(Level level[static 1]);
-static void defineEnemies(Enemies* enemies);
+static void defineEnemies(Level level[static 1]);
 static void defineSpaceship(Level level[static 1]);
 
 Level* createLevelMD03() {
@@ -22,7 +24,7 @@ Level* createLevelMD03() {
 	Level* level = allocLevel();
 
 	createPlatforms(level);
-	defineEnemies(&level->enemies);
+	defineEnemies(level);
 	defineSpaceship(level);
 
 	level->def.jetman_init_pos = MEM_alloc(sizeof *level->def.jetman_init_pos);
@@ -48,10 +50,14 @@ static void createPlatforms(Level level[static 1]) {
 	level->platforms[3] = createPlatform(30, 7, 2);
 }
 
-static void defineEnemies(Enemies* enemies) {
+static void defineEnemies(Level level[static 1]) {
 
-	enemies->count = 0;
-	enemies->size = 8;
+	level->def.enemy_def.size_t.x = ENEMY_03_WIDTH;
+	level->def.enemy_def.size_t.y = ENEMY_03_HEIGHT;
+	level->def.enemy_def.sprite_def = &enemy_03_sprite;
+
+	level->enemies.count = 0;
+	level->enemies.size = 8;
 }
 
 static void defineSpaceship(Level level[static 1]) {
