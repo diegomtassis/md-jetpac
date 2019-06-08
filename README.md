@@ -1,10 +1,5 @@
 # Sega Mega Drive JetPac
 
-
-![JetPac MD](res/cover/Jetpac_MD.png?raw=true "Cover")
-
-
-
 ### JetPac
 
 [JetPac](https://en.wikipedia.org/wiki/Jetpac) was created originally in 1983 by Tim and Chris Stamper for the ZX Spectrum and published by [Ultimate Play the Game](https://en.wikipedia.org/wiki/Ultimate_Play_the_Game).
@@ -16,12 +11,33 @@ It is a property of [RARE](https://en.wikipedia.org/wiki/Rare_(company)).
 
 Sega Mega Drive / Genesis port written by diegomtassis using SGDK.
 
+It's currently work in progress.
+
+This port includes 2 modes:
+* ZX mode, trying to be as faith as possible to the original ZX Sinclair game.
+* MD mode, maintaining the same visual aspect and playability while adding new level layouts.
+
+Jetpac and the jetman are a RARE property. The same applies to all the artwork in this port, which has been extracted directly from the original game. This port is free and is been built without RARE permission.
+
 https://github.com/diegomtassis/md-jetpac
 
-All the artwork in this port has been extracted directly from the original game and thus is a RARE property. This port is free and is been built without RARE permission.
+
+#### To be implemented
+* Enemies IAs.
+* Sound.
+* 2nd player.
+* Different spaceships.
+* More levels in MD mode.
+* Jetman acceleration.
+* Polishing and optimization. 
 
 
-### SGDK
+#### Cover
+
+![JetPac MD](res/cover/Jetpac_MD.png?raw=true "Cover")
+
+
+#### SGDK
 
 SGDK is a development kit for Sega Mega Drive created by Stephane Dallongeville
 https://stephane-d.github.io/SGDK/
