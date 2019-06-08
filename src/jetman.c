@@ -9,6 +9,7 @@
 
 #include <genesis.h>
 
+#include "../inc/constants.h"
 #include "../inc/explosions.h"
 #include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
@@ -33,14 +34,6 @@
 
 #define JETMAN_HEIGHT 24
 #define JETMAN_WIDTH 16
-
-#define MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16 - 8
-#define MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
-#define MIN_POS_V_PX_S16	TOP_POS_V_PX_S16
-
-#define MIN_POS_H_PX_F16	FIX16(MIN_POS_H_PX_S16)
-#define MAX_POS_H_PX_F16	FIX16(MAX_POS_H_PX_S16)
-#define MIN_POS_V_PX_F16	FIX16(MIN_POS_V_PX_S16)
 
 static void createPlayer1(Level level[static 1]);
 static void handleInputJetman(Jetman*);

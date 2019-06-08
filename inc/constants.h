@@ -1,0 +1,23 @@
+/*
+ * constants.h
+ *
+ *  Created on: Jun 8, 2019
+ *      Author: diegomtassis
+ */
+
+#ifndef INC_CONSTANTS_H_
+#define INC_CONSTANTS_H_
+
+#define MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16 - 8
+#define MIN_POS_H_PX_F16	FIX16(MIN_POS_H_PX_S16)
+
+#define MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
+#define MAX_POS_H_PX_F16	FIX16(MAX_POS_H_PX_S16)
+
+#define MIN_POS_V_PX_S16	TOP_POS_V_PX_S16
+#define MIN_POS_V_PX_F16	FIX16(MIN_POS_V_PX_S16)
+
+#define LEVEL_WIDTH_PX_S16 RIGHT_POS_H_PX_S16 - LEFT_POS_H_PX_S16
+#define LEVEL_WIDTH_PX_F16 FIX16(LEVEL_WIDTH_PX_S16)
+
+#endif /* INC_CONSTANTS_H_ */

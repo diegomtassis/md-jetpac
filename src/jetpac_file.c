@@ -26,7 +26,8 @@ void printDisclaimer() {
 
 	println("", &pos);
 	println("", &pos);
-	print("Port by Diego Martin, 2019 (WIP)", &pos);
+	println("Port by Diego Martin, 2019", &pos);
+	print("Work in progress", &pos);
 	waitMs(WAIT_MS_BETWEEN);
 
 	println("", &pos);

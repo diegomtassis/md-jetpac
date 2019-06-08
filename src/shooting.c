@@ -9,6 +9,7 @@
 
 #include <genesis.h>
 
+#include "../inc/constants.h"
 #include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
 #include "../res/sprite.h"
@@ -28,12 +29,6 @@
 
 #define GRAPE_WIDTH 16
 #define GRAPE_HEIGHT 1
-
-#define MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16 - 8
-#define MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
-
-#define MIN_POS_H_PX_F16	FIX16(MIN_POS_H_PX_S16)
-#define MAX_POS_H_PX_F16	FIX16(MAX_POS_H_PX_S16)
 
 static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Level level[static 1]);
 static bool checkCollision(Shot shot[static 1], Grape grape[static 1], Box_s16 object_box);
@@ -128,10 +123,10 @@ void updateShots(Level level[static 1]) {
 						// move
 						Box_s16 target_h = targetHBox(*grape->object, GRAPE_WIDTH, GRAPE_HEIGHT);
 						if (target_h.pos.x > MAX_POS_H_PX_S16) {
-							grape->object->pos.x = MIN_POS_H_PX_F16 + FIX16(target_h.pos.x) - MAX_POS_H_PX_F16; // optimize
+							grape->object->pos.x = FIX16(target_h.pos.x - LEVEL_WIDTH_PX_S16);
 
 						} else if (target_h.pos.x < MIN_POS_H_PX_S16) {
-							grape->object->pos.x = MAX_POS_H_PX_F16 - MIN_POS_H_PX_F16 + FIX16(target_h.pos.x); // optimize
+							grape->object->pos.x = FIX16(LEVEL_WIDTH_PX_S16 + target_h.pos.x);
 
 						} else {
 							grape->object->pos.x += grape->object->mov.x;
