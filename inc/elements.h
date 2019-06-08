@@ -20,6 +20,9 @@
 #define U3		0x04
 #define U4		0x08
 
+typedef struct Game Game;
+typedef struct Level Level;
+
 typedef struct {
 	V2u16 pos_t;
 	V2u16 size_t;
@@ -38,14 +41,16 @@ typedef struct {
 } Jetman;
 
 typedef struct {
+	u8 type;
 	V2u16 size_t;
 	const SpriteDefinition* sprite_def;
 } EnemyDefinition;
 
 typedef struct {
 	Object_f16 object;
-	u8 health;
 	Sprite* sprite;
+	u8 type;
+	u8 health;
 } Enemy;
 
 typedef struct {
@@ -121,7 +126,7 @@ typedef struct {
 	EnemyDefinition enemy_def;
 } LevelDefinition;
 
-typedef struct {
+struct Level {
 	Platform* floor;
 	Platform** platforms;
 	u8 num_platforms;
@@ -131,6 +136,16 @@ typedef struct {
 	Explosions booms;
 	Shots shots;
 	LevelDefinition def;
-} Level;
+	Game* game;
+};
+
+struct Game {
+	u8 mode;
+	u8 lives;
+	u8 level;
+	u16 score;
+	Level* (**createLevel)(void);
+	u8 num_levels;
+};
 
 #endif /* INC_ELEMENTS_H_ */

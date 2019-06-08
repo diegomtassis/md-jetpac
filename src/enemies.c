@@ -179,6 +179,8 @@ static Enemy* createEnemy(EnemyDefinition enemy_def) {
 
 	Enemy* enemy = MEM_alloc(sizeof *enemy);
 	memset(enemy, 0, sizeof *enemy);
+
+	enemy->type = enemy_def.type;
 	enemy->health = ALIVE;
 
 	// position & direction

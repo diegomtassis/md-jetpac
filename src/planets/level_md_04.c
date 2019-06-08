@@ -5,16 +5,17 @@
  *      Author: diegomtassis
  */
 
-#include "../../inc/planets.h"
-
 #include <genesis.h>
 
+#include "../../inc/elements.h"
+#include "../../inc/enemies.h"
 #include "../../inc/fwk/commons.h"
 #include "../../inc/level.h"
 #include "../../inc/spaceship.h"
+#include "../../res/sprite.h"
 
 static void createPlatforms(Level level[static 1]);
-static void defineEnemies(Enemies* enemies);
+static void defineEnemies(Level level[static 1]);
 static void defineJetman(Level level[static 1]);
 static void defineSpaceship(Level level[static 1]);
 
@@ -23,7 +24,7 @@ Level* createLevelMD04() {
 	Level* level = allocLevel();
 
 	createPlatforms(level);
-	defineEnemies(&level->enemies);
+	defineEnemies(level);
 	defineSpaceship(level);
 	defineJetman(level);
 
@@ -79,9 +80,14 @@ static void defineJetman(Level level[static 1]) {
 	setV2s16(level->def.jetman_init_pos, 92, 30);
 }
 
-static void defineEnemies(Enemies* enemies) {
+static void defineEnemies(Level level[static 1]) {
 
-	enemies->count = 0;
-	enemies->size = 9;
+	level->def.enemy_def.type = ENEMY_02;
+	level->def.enemy_def.size_t.x = ENEMY_02_WIDTH;
+	level->def.enemy_def.size_t.y = ENEMY_02_HEIGHT;
+	level->def.enemy_def.sprite_def = &enemy_02_sprite;
+
+	level->enemies.count = 0;
+	level->enemies.size = 9;
 }
 

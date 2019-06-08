@@ -53,6 +53,7 @@ void runGame(Game* game) {
 		//	log_memory();
 
 		Level* current_level = game->createLevel[level_number]();
+		current_level->game = game;
 		if (++level_number == game->num_levels) {
 			level_number = 0;
 		}
@@ -97,9 +98,6 @@ void runGame(Game* game) {
 						game->lives--;
 					}
 
-					game->score++;
-					updateHud(game, current_level->jetman);
-
 				} else {
 
 					// Smart dying, wait for explosions to finish
@@ -124,6 +122,7 @@ void runGame(Game* game) {
 				SPR_update();
 			}
 
+			updateHud(game, current_level->jetman);
 			VDP_waitVSync();
 		}
 
@@ -173,6 +172,35 @@ void releaseGame(Game* game) {
 	MEM_free(game);
 }
 
+void score(Game* game, GameEvent event) {
+
+	switch (event) {
+
+	case KILLED_ENEMY_01:
+		game->score += 25;
+		break;
+
+	case KILLED_ENEMY_02:
+		game->score += 80;
+		break;
+
+	case GRABBED_SPACESHIP_PART:
+		game->score += 100;
+		break;
+
+	case GRABBED_FUEL:
+		game->score += 100;
+		break;
+
+	case GRABBED_BONUS:
+		game->score += 250;
+		break;
+
+	default:
+		break;
+	}
+}
+
 static void handleCollisionsBetweenMovingObjects(Level level[static 1]) {
 
 	for (u8 enemy_idx = 0; enemy_idx < level->enemies.size; enemy_idx++) {
@@ -182,7 +210,18 @@ static void handleCollisionsBetweenMovingObjects(Level level[static 1]) {
 
 			// enemy & shot
 			if (checkHit(enemy->object.box, level)) {
+
 				killEnemy(enemy, level, TRUE);
+				switch (enemy->type) {
+				case ENEMY_01:
+					score(level->game, KILLED_ENEMY_01);
+					break;
+
+				default:
+					score(level->game, KILLED_ENEMY_02);
+					break;
+				}
+
 				continue;
 			}
 

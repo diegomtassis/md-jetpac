@@ -97,6 +97,10 @@ void releaseLevel(Level* level) {
 		level->def.jetman_init_pos = 0;
 	}
 
+	if (level->game) {
+		level->game = 0;
+	}
+
 	MEM_free(level);
 }
 

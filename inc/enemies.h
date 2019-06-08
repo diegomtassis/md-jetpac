@@ -10,6 +10,19 @@
 
 #include "elements.h"
 
+typedef enum {
+	ENEMY_01, //
+	ENEMY_02, //
+	ENEMY_03, //
+	ENEMY_04, //
+	ENEMY_05, //
+} EnemyType;
+
+#define ENEMY_01    16
+#define ENEMY_01    16
+#define ENEMY_01    16
+#define ENEMY_01    16
+
 #define ENEMY_01_WIDTH    16
 #define ENEMY_01_HEIGHT    12
 

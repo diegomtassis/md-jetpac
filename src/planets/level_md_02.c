@@ -51,6 +51,7 @@ static void defineJetman(Level level[static 1]) {
 
 static void defineEnemies(Level level[static 1]) {
 
+	level->def.enemy_def.type = ENEMY_02;
 	level->def.enemy_def.size_t.x = ENEMY_02_WIDTH;
 	level->def.enemy_def.size_t.y = ENEMY_02_HEIGHT;
 	level->def.enemy_def.sprite_def = &enemy_02_sprite;

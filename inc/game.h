@@ -11,16 +11,18 @@
 #include <genesis.h>
 #include "elements.h"
 
-typedef struct {
-	u8 mode;
-	u8 lives;
-	u8 level;
-	u16 score;
-	Level* (**createLevel)(void);
-	u8 num_levels;
-} Game;
+typedef enum {
+	KILLED_ENEMY_01, //
+	KILLED_ENEMY_02, //
+	KILLED_ENEMY_03, //
+	GRABBED_SPACESHIP_PART, //
+	GRABBED_FUEL, //
+	GRABBED_BONUS, //
+} GameEvent;
 
-void runGame(Game*);
+void runGame(Game* game);
 void releaseGame(Game* game);
+
+void score(Game* game, GameEvent event);
 
 #endif /* INC_GAME_H_ */
