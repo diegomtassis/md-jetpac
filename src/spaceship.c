@@ -13,6 +13,7 @@
 #include "../inc/fwk/physics.h"
 #include "../inc/level.h"
 #include "../inc/items.h"
+#include "../inc/events.h"
 #include "../res/sprite.h"
 
 #define BASE	0x01
@@ -255,6 +256,7 @@ static void handleFuelling(Level level[static 1]) {
 		if (grab(&level->jetman->object, spaceship->fuel_object)) {
 			// fuel grabbed while waiting
 			spaceship->substep = GRABBED;
+			onEvent(GRABBED_FUEL);
 		}
 
 	} else if (spaceship->substep & GRABBED) {
@@ -338,8 +340,12 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 
 	} else if ((spaceship->substep & GRABBED) || overlap(level->jetman->object.box, part->box)) {
 
-		// The jetman has grabbed the a section of the rocket
-		spaceship->substep = GRABBED;
+		// The jetman is already in possession or has just grabbed the a section of the rocket
+		if (!(spaceship->substep & GRABBED)) {
+			spaceship->substep = GRABBED;
+			onEvent(GRABBED_SPACESHIP_PART);
+		}
+
 		part->pos.x = jetman_pos.x;
 		part->pos.y = fix16Add(jetman_pos.y, FIX16_8); // the rocket part is 8px shorter than the jetman
 	}

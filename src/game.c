@@ -16,11 +16,11 @@
 #include "../inc/explosions.h"
 #include "../inc/shooting.h"
 #include "../inc/hud.h"
+#include "../inc/events.h"
 #include "../inc/jetman.h"
 #include "../inc/level.h"
 #include "../inc/planets.h"
 #include "../inc/fwk/physics.h"
-//#include "../inc/fwk/logger.h"
 
 static void handleCollisionsBetweenMovingObjects(Level level[static 1]);
 static void handleElementsLeavingScreenUnder(Level level[static 1]);
@@ -36,7 +36,11 @@ volatile bool paused = FALSE;
 
 static const V2u16 game_over_text_pos = { .x = 12, .y = 5 };
 
+Game * current_game;
+
 void runGame(Game* game) {
+
+	current_game = game;
 
 	SPR_init();
 
@@ -151,6 +155,7 @@ void runGame(Game* game) {
 
 	SPR_end();
 
+	current_game = 0;
 	return;
 }
 
@@ -172,28 +177,32 @@ void releaseGame(Game* game) {
 	MEM_free(game);
 }
 
-void score(Game* game, GameEvent event) {
+void score(GameEvent event) {
+
+	if (!current_game) {
+		return;
+	}
 
 	switch (event) {
 
 	case KILLED_ENEMY_01:
-		game->score += 25;
+		current_game->score += 25;
 		break;
 
 	case KILLED_ENEMY_02:
-		game->score += 80;
+		current_game->score += 80;
 		break;
 
 	case GRABBED_SPACESHIP_PART:
-		game->score += 100;
+		current_game->score += 100;
 		break;
 
 	case GRABBED_FUEL:
-		game->score += 100;
+		current_game->score += 100;
 		break;
 
 	case GRABBED_BONUS:
-		game->score += 250;
+		current_game->score += 250;
 		break;
 
 	default:
@@ -214,11 +223,11 @@ static void handleCollisionsBetweenMovingObjects(Level level[static 1]) {
 				killEnemy(enemy, level, TRUE);
 				switch (enemy->type) {
 				case ENEMY_01:
-					score(level->game, KILLED_ENEMY_01);
+					onEvent(KILLED_ENEMY_01);
 					break;
 
 				default:
-					score(level->game, KILLED_ENEMY_02);
+					onEvent(KILLED_ENEMY_02);
 					break;
 				}
 
