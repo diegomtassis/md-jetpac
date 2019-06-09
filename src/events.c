@@ -11,5 +11,5 @@
 
 void onEvent(GameEvent game_event) {
 
-	score(game_event);
+	scoreByEvent(game_event);
 }

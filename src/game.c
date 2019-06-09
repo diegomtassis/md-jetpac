@@ -22,6 +22,8 @@
 #include "../inc/planets.h"
 #include "../inc/fwk/physics.h"
 
+#define FLASH_WAIT	2000
+
 static void handleCollisionsBetweenMovingObjects(Level level[static 1]);
 static void handleElementsLeavingScreenUnder(Level level[static 1]);
 static bool isJetmanAlive(Level level[static 1]);
@@ -30,11 +32,16 @@ static bool isMissionFinished(Level level[static 1]);
 static void waitForLanding(Level level[static 1]);
 static void leavePlanet(Level level[static 1]);
 
+static void scoreBonus(Level level[static 1]);
+static void scorePoints(u16 points);
+
+static void flashMessage(const char *message);
+
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
 volatile bool paused = FALSE;
 
-static const V2u16 game_over_text_pos = { .x = 12, .y = 5 };
+static const V2u16 flash_message_pos = { .x = 16, .y = 7 };
 
 Game * current_game;
 
@@ -133,10 +140,13 @@ void runGame(Game* game) {
 		if (mission_finished) {
 			SPR_setVisibility(current_level->jetman->sprite, HIDDEN);
 			leavePlanet(current_level);
+			scoreBonus(current_level);
+			updateHud(current_game, current_level->jetman);
+
 			waitMs(500);
+
 		} else {
-			VDP_drawText("Game Over", game_over_text_pos.x, game_over_text_pos.y);
-			waitMs(1000);
+			flashMessage("Game Over");
 		}
 
 		releaseExplosions(current_level);
@@ -149,7 +159,6 @@ void runGame(Game* game) {
 
 		SPR_update();
 
-		VDP_clearTextLine(game_over_text_pos.y); // Game over text
 		VDP_clearPlan(PLAN_B, TRUE);
 	}
 
@@ -177,7 +186,7 @@ void releaseGame(Game* game) {
 	MEM_free(game);
 }
 
-void score(GameEvent event) {
+void scoreByEvent(GameEvent event) {
 
 	if (!current_game) {
 		return;
@@ -203,6 +212,10 @@ void score(GameEvent event) {
 
 	case GRABBED_BONUS:
 		current_game->score += 250;
+		break;
+
+	case LOST_FUEL:
+		current_game->score -= 50;
 		break;
 
 	default:
@@ -294,6 +307,38 @@ static void leavePlanet(Level level[static 1]) {
 		VDP_waitVSync();
 
 	} while (level->spaceship->step == LIFTING);
+}
+
+void static scoreBonus(Level level[static 1]) {
+
+	if (current_game->mode & MODE_MD) {
+
+		u16 ammo_bonus = level->jetman->ammo * 10;
+		char bonus_message[19];
+		sprintf(bonus_message, "Bonus %03d", ammo_bonus);
+		flashMessage(bonus_message);
+
+		level->jetman->ammo = 0;
+		scorePoints(ammo_bonus);
+	}
+}
+
+static void scorePoints(u16 points) {
+
+	if (!current_game) {
+		return;
+	}
+
+	current_game->score += points;
+}
+
+static void flashMessage(const char *message) {
+
+	// center the message
+	u8 x_pos = flash_message_pos.x - strlen(message) / 2;
+	VDP_drawText(message, x_pos, flash_message_pos.y);
+	waitMs(FLASH_WAIT);
+	VDP_clearTextLine(flash_message_pos.y);
 }
 
 static void joyEvent(u16 joy, u16 changed, u16 state) {

@@ -15,6 +15,7 @@ typedef enum {
 	GRABBED_SPACESHIP_PART, //
 	GRABBED_FUEL, //
 	GRABBED_BONUS, //
+	LOST_FUEL, //
 } GameEvent;
 
 void onEvent(GameEvent event);

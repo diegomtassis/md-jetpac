@@ -239,12 +239,9 @@ static void handleFuelling(Level level[static 1]) {
 			spaceship->fuel_object = MEM_alloc(sizeof *spaceship->fuel_object);
 			memset(spaceship->fuel_object, 0, sizeof *spaceship->fuel_object);
 		}
+
 		dropFromSky(spaceship->fuel_object, &spaceship->base_object->box);
-		if (isAbove(spaceship->fuel_object->box, spaceship->base_object->box)) {
-			spaceship->substep = ASSEMBLING;
-		} else {
-			spaceship->substep = FALLING;
-		}
+		spaceship->substep = FALLING;
 
 		if (!spaceship->fuel_sprite) {
 			spaceship->fuel_sprite = SPR_addSprite(&fuel_sprite, fix16ToInt(spaceship->fuel_object->pos.x),
@@ -278,6 +275,7 @@ static void handleFuelling(Level level[static 1]) {
 		if (grab(&level->jetman->object, spaceship->fuel_object)) {
 			// fuel grabbed while falling
 			spaceship->substep = GRABBED;
+			onEvent(GRABBED_FUEL);
 
 		} else {
 			Box_s16 target_v = targetVBox(*spaceship->fuel_object, ITEM_WIDTH, ITEM_HEIGHT);
@@ -288,6 +286,7 @@ static void handleFuelling(Level level[static 1]) {
 			} else if (level->def.mind_bottom && target_v.pos.y > BOTTOM_POS_V_PX_S16) {
 				// fuel lost
 				spaceship->substep = NONE;
+				onEvent(LOST_FUEL);
 
 			} else {
 				spaceship->fuel_object->pos.y += spaceship->fuel_object->mov.y;
