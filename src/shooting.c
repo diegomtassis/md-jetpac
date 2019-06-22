@@ -43,8 +43,7 @@ void initShots(Level level[static 1]) {
 
 	level->shots.count = 0;
 	level->shots.size = MAX_SHOTS;
-	level->shots.e = MEM_alloc(level->shots.size * sizeof(Shot*));
-	memset(level->shots.e, 0, level->shots.size * sizeof(Shot*));
+	level->shots.e = MEM_calloc(level->shots.size * sizeof(Shot*));
 }
 
 void releaseShots(Level level[static 1]) {
@@ -66,8 +65,7 @@ void shoot(V2s16 where, bool to_left, Level level[static 1]) {
 		return;
 	}
 
-	Shot* shot = MEM_alloc(sizeof *shot);
-	memset(shot, 0, sizeof *shot);
+	Shot* shot = MEM_calloc(sizeof *shot);
 
 	for (int idx = 0; idx < level->shots.size; idx++) {
 		// Find an empty spot for the shot
@@ -95,8 +93,7 @@ void shoot(V2s16 where, bool to_left, Level level[static 1]) {
 	shot->grapes_size = 6;
 	shot->grapes_count = 0;
 	shot->grapes_created = 0;
-	shot->grapes = MEM_alloc(shot->grapes_size * sizeof(Grape*));
-	memset(shot->grapes, 0, shot->grapes_size * sizeof(Grape*));
+	shot->grapes = MEM_calloc(shot->grapes_size * sizeof(Grape*));
 
 	shot->grapes[0] = createGrape(where, to_left, shot->type, shot->range, BURST_A);
 	shot->grapes_count++;
@@ -230,11 +227,9 @@ static void releaseShot(Shot* shot) {
 static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst) {
 
 	Grape* grape = 0;
-	grape = MEM_alloc(sizeof(Grape));
-	memset(grape, 0, sizeof(Grape));
+	grape = MEM_calloc(sizeof(Grape));
 
-	Object_f16* object = MEM_alloc(sizeof(Object_f16));
-	memset(grape->object, 0, sizeof(Object_f16));
+	Object_f16* object = MEM_calloc(sizeof(Object_f16));
 	grape->object = object;
 	grape->object->pos.x = FIX16(where.x - (to_left ? 16 : 0));
 	grape->object->pos.y = FIX16(where.y);

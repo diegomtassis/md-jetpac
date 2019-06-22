@@ -9,6 +9,7 @@
 
 #include "../inc/config.h"
 #include "../inc/fwk/vdp_utils.h"
+#include "../inc/fwk/commons.h"
 #include "../inc/game.h"
 #include "../inc/hud.h"
 #include "../inc/jetpac_file.h"
@@ -43,8 +44,7 @@ int main() {
 
 		//	log_memory();
 
-		game = MEM_alloc(sizeof *game);
-		memset(game, 0, sizeof *game);
+		game = MEM_calloc(sizeof *game);
 		setUpGame(game);
 		runGame(game);
 

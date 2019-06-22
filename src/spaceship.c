@@ -45,8 +45,7 @@ u16 default_sprite_attrs = TILE_ATTR(PAL0, TRUE, FALSE, FALSE);
 
 void startSpaceship(Level level[static 1]) {
 
-	Spaceship* spaceship = MEM_alloc(sizeof *spaceship);
-	memset(spaceship, 0, sizeof *spaceship);
+	Spaceship* spaceship = MEM_calloc(sizeof *spaceship);
 
 	level->spaceship = spaceship;
 
@@ -185,8 +184,7 @@ void launch(Spaceship* spaceship) {
 
 static Object_f16* createModule(u8 module, V2s16 pos) {
 
-	Object_f16* object = MEM_alloc(sizeof *object);
-	memset(object, 0, sizeof *object);
+	Object_f16* object = MEM_calloc(sizeof *object);
 
 	object->pos.x = FIX16(pos.x);
 	object->pos.y = FIX16(pos.y);
@@ -236,8 +234,7 @@ static void handleFuelling(Level level[static 1]) {
 
 		if (!spaceship->fuel_object) {
 			// first time, initialize a new fuel load
-			spaceship->fuel_object = MEM_alloc(sizeof *spaceship->fuel_object);
-			memset(spaceship->fuel_object, 0, sizeof *spaceship->fuel_object);
+			spaceship->fuel_object = MEM_calloc(sizeof *spaceship->fuel_object);
 		}
 
 		dropFromSky(spaceship->fuel_object, &spaceship->base_object->box);

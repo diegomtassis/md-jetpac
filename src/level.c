@@ -28,8 +28,7 @@ static void drawPlatform(VDPPlan plan, Platform platform[static 1], u16 idx_tile
 
 Level* allocLevel() {
 
-	Level* level = (Level*) MEM_alloc(sizeof(Level));
-	memset(level, 0, sizeof *level);
+	Level* level = (Level*) MEM_calloc(sizeof(Level));
 
 	level->def.jetman_init_pos = 0;
 	level->def.enemy_def.sprite_def = 0;
@@ -106,8 +105,7 @@ void releaseLevel(Level* level) {
 
 Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 
-	Platform* platform = MEM_alloc(sizeof *platform);
-	memset(platform, 0, sizeof *platform);
+	Platform* platform = MEM_calloc(sizeof *platform);
 
 	V2u16 pos_t = { .x = pos_x_t, .y = pos_y_t };
 	platform->pos_t = pos_t;

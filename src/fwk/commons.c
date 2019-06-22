@@ -9,6 +9,14 @@
 
 #include <genesis.h>
 
+void* MEM_calloc(u16 size) {
+
+	void* ptr = MEM_alloc(size);
+	memset(ptr, 0, size);
+
+	return ptr;
+}
+
 void setV2u16(V2u16* pos, u16 x, u16 y) {
 
 	pos->x = x;

@@ -39,8 +39,7 @@ static void createPlatforms(Level level[static 1]) {
 	level->floor = createPlatform(14, 18, 5);
 
 	level->num_platforms = 0;
-	level->platforms = MEM_alloc(level->num_platforms * sizeof(Platform*));
-	memset(level->platforms, 0, sizeof(Platform*));
+	level->platforms = MEM_calloc(level->num_platforms * sizeof(Platform*));
 }
 
 static void defineJetman(Level level[static 1]) {

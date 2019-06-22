@@ -51,10 +51,7 @@ bool nuclear_bomb;
 void startEnemies(Level level[static 1]) {
 
 	// First time
-	level->enemies.e = MEM_alloc(sizeof(Enemy*) * level->enemies.size);
-	for (int idx = 0; idx < level->enemies.size; idx++) {
-		level->enemies.e[idx] = 0;
-	}
+	level->enemies.e = MEM_calloc(sizeof(Enemy*) * level->enemies.size);
 
 	setRandomSeed(getTick());
 
@@ -176,9 +173,7 @@ static void addEnemy(Level level[static 1], u8 pos) {
 
 static Enemy* createEnemy(EnemyDefinition enemy_def) {
 
-	Enemy* enemy = MEM_alloc(sizeof *enemy);
-	memset(enemy, 0, sizeof *enemy);
-
+	Enemy* enemy = MEM_calloc(sizeof *enemy);
 	enemy->type = enemy_def.type;
 	enemy->health = ALIVE;
 

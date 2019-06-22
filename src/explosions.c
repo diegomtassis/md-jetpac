@@ -9,6 +9,7 @@
 
 #include <genesis.h>
 
+#include "../inc/fwk/commons.h"
 #include "../res/sprite.h"
 #include "../inc/timers.h"
 
@@ -25,10 +26,7 @@ void initExplosions(Level level[static 1]) {
 
 	level->booms.count = 0;
 	level->booms.size = 1 + level->enemies.size;
-	level->booms.e = MEM_alloc(sizeof(Explosion*) * level->booms.size);
-	for (u8 idx = 0; idx < level->booms.size; idx++) {
-		level->booms.e[idx] = 0;
-	}
+	level->booms.e = MEM_calloc(sizeof(Explosion*) * level->booms.size);
 }
 
 void updateExplosions(Level level[static 1]) {
@@ -112,8 +110,7 @@ static void boom(Box_s16 what, Level level[static 1], u8 style) {
 	}
 
 	// Create the explosion
-	Explosion* boom = MEM_alloc(sizeof *boom);
-	memset(boom, 0, sizeof *boom);
+	Explosion* boom = MEM_calloc(sizeof *boom);
 	level->booms.e[boom_idx] = boom;
 	boom->step = 0;
 	level->booms.count++;

@@ -7,6 +7,8 @@
 
 #include "../../inc/fwk/vdp_utils.h"
 
+#include <genesis.h>
+
 void resetTileMemory() {
 
 	idx_tile_malloc = TILE_USERINDEX;
