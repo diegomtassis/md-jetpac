@@ -24,8 +24,6 @@ static u16 idx_tile_laser;
 static u16 highest_score = 0;
 static bool showing_ammo = FALSE;
 
-static void updateAmmo(Jetman* jetman);
-
 void initHud() {
 
 	VDP_setTextPalette(PAL1);
@@ -71,9 +69,18 @@ void updateHud(Game* game, Jetman* jetman) {
 	sprintf(score, "%06d", game->score);
 	VDP_drawText(score, 1, 3);
 
-	if (showing_ammo) {
-		updateAmmo(jetman);
+	updateAmmo(jetman);
+}
+
+void updateAmmo(Jetman* jetman) {
+
+	if (!jetman || !showing_ammo) {
+		return;
 	}
+
+	char ammo[2];
+	sprintf(ammo, "%02d", jetman->ammo);
+	VDP_drawText(ammo, 8, 3);
 }
 
 void registerScore(u16 new_score) {
@@ -86,15 +93,4 @@ void registerScore(u16 new_score) {
 		sprintf(str_score, "%06d", new_score);
 		VDP_drawText(str_score, 13, 3);
 	}
-}
-
-static void updateAmmo(Jetman* jetman) {
-
-	if (!jetman) {
-		return;
-	}
-
-	char ammo[2];
-	sprintf(ammo, "%02d", jetman->ammo);
-	VDP_drawText(ammo, 8, 3);
 }

@@ -22,7 +22,7 @@
 #include "../inc/planets.h"
 #include "../inc/fwk/physics.h"
 
-#define FLASH_WAIT	2000
+#define DEFAULT_FLASH_WAIT	2000
 
 static void handleCollisionsBetweenMovingObjects(Level level[static 1]);
 static void handleElementsLeavingScreenUnder(Level level[static 1]);
@@ -35,13 +35,14 @@ static void leavePlanet(Level level[static 1]);
 static void scoreBonus(Level level[static 1]);
 static void scorePoints(u16 points);
 
-static void flashMessage(const char *message);
+static void printMessage(const char* message);
+static void flashMessage(const char *message, long wait);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
 volatile bool paused = FALSE;
 
-static const V2u16 flash_message_pos = { .x = 16, .y = 7 };
+static const V2u16 message_pos = { .x = 16, .y = 7 };
 
 Game * current_game;
 
@@ -146,7 +147,7 @@ void runGame(Game* game) {
 			waitMs(500);
 
 		} else {
-			flashMessage("Game Over");
+			flashMessage("Game Over", DEFAULT_FLASH_WAIT);
 		}
 
 		releaseExplosions(current_level);
@@ -313,11 +314,24 @@ void static scoreBonus(Level level[static 1]) {
 
 	if (current_game->mode & MODE_MD) {
 
-		u16 ammo_bonus = level->jetman->ammo * 10;
+		u16 ammo_bonus = 0;
 		char bonus_message[19];
-		sprintf(bonus_message, "Bonus %03d", ammo_bonus);
-		flashMessage(bonus_message);
 
+		sprintf(bonus_message, "Bonus %03d", ammo_bonus);
+		printMessage(bonus_message);
+		waitMs(500);
+
+		while (level->jetman->ammo--) {
+
+			ammo_bonus += 10;
+			sprintf(bonus_message, "Bonus %03d", ammo_bonus);
+			printMessage(bonus_message);
+			waitMs(25);
+			updateAmmo(level->jetman);
+			VDP_waitVSync();
+		}
+
+		flashMessage(bonus_message, 1000);
 		level->jetman->ammo = 0;
 		scorePoints(ammo_bonus);
 	}
@@ -332,13 +346,18 @@ static void scorePoints(u16 points) {
 	current_game->score += points;
 }
 
-static void flashMessage(const char *message) {
+static void printMessage(const char *message) {
 
 	// center the message
-	u8 x_pos = flash_message_pos.x - strlen(message) / 2;
-	VDP_drawText(message, x_pos, flash_message_pos.y);
-	waitMs(FLASH_WAIT);
-	VDP_clearTextLine(flash_message_pos.y);
+	u8 x_pos = message_pos.x - strlen(message) / 2;
+	VDP_drawText(message, x_pos, message_pos.y);
+}
+
+static void flashMessage(const char *message, long wait) {
+
+	printMessage(message);
+	waitMs(wait);
+	VDP_clearTextLine(message_pos.y);
 }
 
 static void joyEvent(u16 joy, u16 changed, u16 state) {

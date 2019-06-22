@@ -13,6 +13,7 @@
 void initHud();
 void displayAmmo(bool showAmmo);
 void updateHud(Game* game, Jetman* jetman);
+void updateAmmo(Jetman* jetman);
 void registerScore(u16 highest_score);
 
 #endif /* INC_HUD_H_ */

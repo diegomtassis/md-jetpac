@@ -113,8 +113,8 @@ void releaseEnemies(Level level[static 1]) {
 	}
 
 	level->enemies.count = 0;
-	MEM_free(level->enemies.e);
 	memset(level->enemies.e, 0, level->enemies.size);
+	MEM_free(level->enemies.e);
 	level->enemies.e = 0;
 }
 
