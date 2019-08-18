@@ -60,6 +60,18 @@ typedef struct {
 } Enemies;
 
 typedef struct {
+	Object_f16 object;
+	Sprite* sprite;
+	u8 type;
+} PowerUp;
+
+typedef struct {
+	u8 count;
+	u8 size;
+	PowerUp** e;
+} PowerUps;
+
+typedef struct {
 	Object_f16* object;
 	u8 life_left;
 	Sprite* sprite;
@@ -131,6 +143,7 @@ struct Level {
 	Platform** platforms;
 	u8 num_platforms;
 	Enemies enemies;
+	PowerUps power_ups;
 	Jetman* jetman;
 	Spaceship* spaceship;
 	Explosions booms;
