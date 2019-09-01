@@ -8,7 +8,7 @@ SPRITE u1_top_sprite "sprite/u1_top.png" 2 2 NONE 0
 SPRITE u1_sprite "sprite/u1.png" 2 6 NONE 0
 SPRITE fuel_sprite "sprite/fuel.png" 2 2 NONE 0
 SPRITE gold_sprite "sprite/gold.png" 2 1 NONE 0
-SPRITE radiation_sprite "sprite/radiation.png" 2 2 NONE 0
+SPRITE nuke_sprite "sprite/nuke.png" 2 2 NONE 0
 SPRITE bean_sprite "sprite/bean.png" 2 2 NONE 0
 SPRITE boom_sprite "sprite/boom.png" 3 2 NONE 0
 SPRITE cursor_sprite "sprite/cursor.png" 1 1 NONE 0

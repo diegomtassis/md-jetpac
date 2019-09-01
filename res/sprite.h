@@ -11,7 +11,7 @@ extern const SpriteDefinition u1_top_sprite;
 extern const SpriteDefinition u1_sprite;
 extern const SpriteDefinition fuel_sprite;
 extern const SpriteDefinition gold_sprite;
-extern const SpriteDefinition radiation_sprite;
+extern const SpriteDefinition nuke_sprite;
 extern const SpriteDefinition bean_sprite;
 extern const SpriteDefinition boom_sprite;
 extern const SpriteDefinition cursor_sprite;

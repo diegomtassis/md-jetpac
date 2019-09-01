@@ -10,6 +10,10 @@
 
 #include "elements.h"
 
+#define GOLD    1
+#define BEAN    2
+#define NUKE    3
+
 void startCollectables(Level level[static 1]);
 void releaseCollectables(Level*);
 
