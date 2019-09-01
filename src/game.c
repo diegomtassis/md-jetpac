@@ -9,6 +9,7 @@
 
 #include <genesis.h>
 
+#include "../inc/collectables.h"
 #include "../inc/config.h"
 #include "../inc/elements.h"
 #include "../inc/enemies.h"
@@ -78,6 +79,7 @@ void runGame(Game* game) {
 		startJetman(current_level, game->mode & MODE_MD);
 		startEnemies(current_level);
 
+		startCollectables(current_level);
 		initShots(current_level);
 		initExplosions(current_level);
 
@@ -152,6 +154,7 @@ void runGame(Game* game) {
 
 		releaseExplosions(current_level);
 		releaseShots(current_level);
+		releaseCollectables(current_level);
 		releaseEnemies(current_level);
 		releaseJetman(current_level);
 		releaseSpaceship(current_level);
