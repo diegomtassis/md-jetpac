@@ -63,6 +63,7 @@ typedef struct {
 	Object_f16 object;
 	Sprite* sprite;
 	u8 type;
+	u8 step;
 } Collectable;
 
 typedef struct {

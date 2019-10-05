@@ -10,19 +10,24 @@
 #include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
 
-void dropFromSky(Object_f16* item, Box_s16* avoid) {
+void dropFromSky(Object_f16* object, Box_s16* avoid) {
 
-	item->pos.y = TOP_POS_V_PX_F16;
-	item->size.x = ITEM_WIDTH;
-	item->size.y = ITEM_HEIGHT;
-	item->box.w = ITEM_WIDTH;
-	item->box.h = ITEM_HEIGHT;
-	item->mov.y = SPEED_V_DOWN;
+	dropFromSkyCustom(object, avoid, ITEM_WIDTH, ITEM_HEIGHT, ITEM_MIN_POS_H_PX_F16, ITEM_MAX_POS_H_PX_F16);
+}
+
+void dropFromSkyCustom(Object_f16* object, Box_s16* avoid, u16 itemWidth, u16 itemHeight, f16 minHPos, f16 maxHPos) {
+
+	object->pos.y = TOP_POS_V_PX_F16;
+	object->size.x = itemWidth;
+	object->size.y = itemHeight;
+	object->box.w = itemWidth;
+	object->box.h = itemHeight;
+	object->mov.y = SPEED_V_DOWN;
 
 	do {
-		item->pos.x = randomInRangeFix16(ITEM_MIN_POS_H_PX_F16, ITEM_MAX_POS_H_PX_F16);
-		updateBox(item);
-	} while (avoid && isAbove(item->box, *avoid));
+		object->pos.x = randomInRangeFix16(minHPos, maxHPos);
+		updateBox(object);
+	} while (avoid && isAbove(object->box, *avoid));
 }
 
 bool grab(Object_f16* subject, Object_f16* item) {

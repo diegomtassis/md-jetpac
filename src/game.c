@@ -77,7 +77,7 @@ void runGame(Game* game) {
 		waitForLanding(current_level);
 
 		startJetman(current_level, game->mode & MODE_MD);
-		startEnemies(current_level);
+//		startEnemies(current_level);
 
 		startCollectables(current_level);
 		initShots(current_level);
@@ -128,6 +128,7 @@ void runGame(Game* game) {
 					}
 				}
 
+				updateCollectables(current_level);
 				updateShots(current_level);
 				updateExplosions(current_level);
 
@@ -214,7 +215,7 @@ void scoreByEvent(GameEvent event) {
 		current_game->score += 100;
 		break;
 
-	case GRABBED_BONUS:
+	case GRABBED_COLLECTABLE:
 		current_game->score += 250;
 		break;
 

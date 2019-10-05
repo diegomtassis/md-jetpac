@@ -27,6 +27,8 @@ void initExplosions(Level level[static 1]) {
 	level->booms.count = 0;
 	level->booms.size = 1 + level->enemies.size;
 	level->booms.e = MEM_calloc(sizeof(Explosion*) * level->booms.size);
+
+	startTimer(EXPLOSIONS_TIMER);
 }
 
 void updateExplosions(Level level[static 1]) {

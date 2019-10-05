@@ -59,9 +59,15 @@ void startEnemies(Level level[static 1]) {
 	for (u8 enemy_idx = 0; enemy_idx < level->enemies.size / 3; enemy_idx++) {
 		addEnemy(level, enemy_idx);
 	}
+
+	startTimer(ENEMY_CREATION_TIMER);
 }
 
 void enemiesAct(Level level[static 1]) {
+
+	if (!level->enemies.e) {
+		return;
+	}
 
 //	detectNuclearBomb();
 
