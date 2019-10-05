@@ -223,6 +223,10 @@ void scoreByEvent(GameEvent event) {
 		current_game->score -= 50;
 		break;
 
+	case LOST_COLLECTABLE:
+		current_game->score -= 25;
+		break;
+
 	default:
 		break;
 	}

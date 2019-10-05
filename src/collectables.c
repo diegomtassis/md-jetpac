@@ -23,7 +23,7 @@
 #define GRABBED		3
 #define LOST		4
 
-static const int REST_BETWEEN_COLLECTABLES = SUBTICKPERSECOND * 5;
+static const int REST_BETWEEN_COLLECTABLES = SUBTICKPERSECOND * 8;
 
 static void addCollectables(Level level[static 1]);
 static void createCollectable(Level level[static 1], u8);
@@ -159,7 +159,11 @@ static void updateCollectable(Collectable* collectable, Level level[static 1]) {
 		}
 
 	} else if (collectable->step == WAITING) {
-
+		if (grab(&level->jetman->object, &collectable->object)) {
+			// collectable grabbed while waiting
+			collectable->step = GRABBED;
+			onEvent(GRABBED_COLLECTABLE);
+		}
 	}
 }
 
