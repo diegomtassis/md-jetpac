@@ -77,7 +77,7 @@ void runGame(Game* game) {
 		waitForLanding(current_level);
 
 		startJetman(current_level, game->mode & MODE_MD);
-//		startEnemies(current_level);
+		startEnemies(current_level);
 
 		startCollectables(current_level);
 		initShots(current_level);
@@ -311,6 +311,7 @@ static void leavePlanet(Level level[static 1]) {
 		enemiesAct(level);
 		updateExplosions(level);
 		updateShots(level);
+		updateCollectables(level);
 
 		SPR_update();
 		VDP_waitVSync();

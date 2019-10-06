@@ -18,12 +18,41 @@
 
 #define MAX_COLLECTABLES 5
 
-#define FALLING		1
-#define WAITING		2
-#define GRABBED		3
-#define LOST		4
+typedef enum {
+	GOLD, //
+	BEAN, //
+	NUKE, //
+} CollectableType;
 
-static const int REST_BETWEEN_COLLECTABLES = SUBTICKPERSECOND * 8;
+#define COLLECTABLE_FIRST GOLD
+#define COLLECTABLE_LAST NUKE
+
+typedef struct {
+	CollectableType type;
+	u16 width;
+	u16 height;
+	const SpriteDefinition* spriteDefinition;
+} CollectableDefinition;
+
+static const CollectableDefinition COLLECTABLE_DEFS[] = { //
+		{ GOLD, 16, 8, &gold_sprite }, //
+				{ BEAN, 16, 16, &bean_sprite }, //
+				{ NUKE, 16, 16, &nuke_sprite } };
+
+typedef enum {
+	FALLING = 1, //
+	WAITING = 2, //
+	GRABBED = 4, //
+	LOST = 8, //
+} CollectableStep;
+
+#define COLLECTABLE_MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16
+#define COLLECTABLE_MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - COLLECTABLE_WIDTH
+
+#define COLLECTABLE_MIN_POS_H_PX_F16	FIX16(COLLECTABLE_MIN_POS_H_PX_S16)
+#define COLLECTABLE_MAX_POS_H_PX_F16	FIX16(COLLECTABLE_MAX_POS_H_PX_S16)
+
+static const int REST_BETWEEN_COLLECTABLES = SUBTICKPERSECOND * 10;
 
 static void addCollectables(Level level[static 1]);
 static void createCollectable(Level level[static 1], u8);
@@ -110,13 +139,20 @@ static void addCollectables(Level level[static 1]) {
 static void createCollectable(Level level[static 1], u8 idx) {
 
 	Collectable* collectable = MEM_calloc(sizeof *collectable);
-	collectable->type = GOLD;
 
-	dropFromSky(&collectable->object, &level->spaceship->base_object->box);
+	collectable->type = randomInRangeU16(COLLECTABLE_FIRST, COLLECTABLE_LAST);
+
+	CollectableDefinition collectableDef = COLLECTABLE_DEFS[collectable->type];
+
+	dropFromSkyCustom(&collectable->object, &level->spaceship->base_object->box, collectableDef.width,
+			collectableDef.height, ITEM_MIN_POS_H_PX_F16,
+			ITEM_MAX_POS_H_PX_F16);
 	collectable->step = FALLING;
 
-	collectable->sprite = SPR_addSprite(&gold_sprite, fix16ToInt(collectable->object.pos.x),
-			fix16ToInt(collectable->object.pos.y), default_sprite_attrs);
+	collectable->sprite = SPR_addSprite(collectableDef.spriteDefinition, //
+			fix16ToInt(collectable->object.pos.x), //
+			fix16ToInt(collectable->object.pos.y), //
+			default_sprite_attrs);
 
 	level->collectables.e[idx] = collectable;
 	level->collectables.count++;
@@ -138,7 +174,7 @@ static void updateCollectable(Collectable* collectable, Level level[static 1]) {
 			onEvent(GRABBED_COLLECTABLE);
 
 		} else {
-			Box_s16 target_v = targetVBox(collectable->object, COLLECTABLE_WIDTH, COLLECTABLE_HEIGHT);
+			Box_s16 target_v = targetVBox(collectable->object, collectable->object.size.x, collectable->object.size.y);
 			if (landed(target_v, level)) {
 				collectable->step = WAITING;
 				collectable->object.mov.y = SPEED_0;
@@ -155,7 +191,6 @@ static void updateCollectable(Collectable* collectable, Level level[static 1]) {
 			updateBox(&collectable->object);
 			SPR_setPosition(collectable->sprite, fix16ToInt(collectable->object.pos.x),
 					fix16ToInt(collectable->object.pos.y));
-
 		}
 
 	} else if (collectable->step == WAITING) {

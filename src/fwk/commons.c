@@ -36,3 +36,8 @@ f16 randomInRangeFix16(f16 lower, f16 higher) {
 
 	return FIX16(min + random() % (max + 1 - min));
 }
+
+u16 randomInRangeU16(u16 lower, u16 higher) {
+
+	return lower + random() % (higher + 1 - lower);
+}
