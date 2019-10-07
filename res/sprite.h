@@ -13,6 +13,7 @@ extern const SpriteDefinition fuel_sprite;
 extern const SpriteDefinition gold_sprite;
 extern const SpriteDefinition nuke_sprite;
 extern const SpriteDefinition bean_sprite;
+extern const SpriteDefinition diamond_sprite;
 extern const SpriteDefinition boom_sprite;
 extern const SpriteDefinition cursor_sprite;
 extern const SpriteDefinition fire_sprite;

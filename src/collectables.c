@@ -22,10 +22,11 @@ typedef enum {
 	GOLD, //
 	BEAN, //
 	NUKE, //
+	DIAMOND, //
 } CollectableType;
 
 #define COLLECTABLE_FIRST GOLD
-#define COLLECTABLE_LAST NUKE
+#define COLLECTABLE_LAST DIAMOND
 
 typedef struct {
 	CollectableType type;
@@ -36,8 +37,9 @@ typedef struct {
 
 static const CollectableDefinition COLLECTABLE_DEFS[] = { //
 		{ GOLD, 16, 8, &gold_sprite }, //
-				{ BEAN, 16, 16, &bean_sprite }, //
-				{ NUKE, 16, 16, &nuke_sprite } };
+				{ BEAN, 16, 10, &bean_sprite }, //
+				{ NUKE, 16, 12, &nuke_sprite }, //
+				{ DIAMOND, 16, 13, &diamond_sprite } };
 
 typedef enum {
 	FALLING = 1, //

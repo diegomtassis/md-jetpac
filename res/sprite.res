@@ -10,6 +10,7 @@ SPRITE fuel_sprite "sprite/fuel.png" 2 2 NONE 0
 SPRITE gold_sprite "sprite/gold.png" 2 1 NONE 0
 SPRITE nuke_sprite "sprite/nuke.png" 2 2 NONE 0
 SPRITE bean_sprite "sprite/bean.png" 2 2 NONE 0
+SPRITE diamond_sprite "sprite/diamond.png" 2 2 NONE 5
 SPRITE boom_sprite "sprite/boom.png" 3 2 NONE 0
 SPRITE cursor_sprite "sprite/cursor.png" 1 1 NONE 0
 SPRITE fire_sprite "sprite/fire.png" 2 2 NONE 5
