@@ -37,9 +37,9 @@ typedef struct {
 
 static const CollectableDefinition COLLECTABLE_DEFS[] = { //
 		{ GOLD, 16, 8, &gold_sprite }, //
-				{ BEAN, 16, 10, &bean_sprite }, //
-				{ NUKE, 16, 12, &nuke_sprite }, //
-				{ DIAMOND, 16, 13, &diamond_sprite } };
+				{ BEAN, 16, 9, &bean_sprite }, //
+				{ NUKE, 16, 11, &nuke_sprite }, //
+				{ DIAMOND, 16, 12, &diamond_sprite } };
 
 typedef enum {
 	FALLING = 1, //
@@ -146,9 +146,9 @@ static void createCollectable(Level level[static 1], u8 idx) {
 
 	CollectableDefinition collectableDef = COLLECTABLE_DEFS[collectable->type];
 
-	dropFromSkyCustom(&collectable->object, &level->spaceship->base_object->box, collectableDef.width,
-			collectableDef.height, ITEM_MIN_POS_H_PX_F16,
-			ITEM_MAX_POS_H_PX_F16);
+	dropFromSky(&collectable->object, &level->spaceship->base_object->box, collectableDef.width,
+			collectableDef.height, ITEM_DEFAULT_MIN_POS_H_PX_F16,
+			ITEM_DEFAULT_MAX_POS_H_PX_F16);
 	collectable->step = FALLING;
 
 	collectable->sprite = SPR_addSprite(collectableDef.spriteDefinition, //

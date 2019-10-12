@@ -10,12 +10,7 @@
 #include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
 
-void dropFromSky(Object_f16* object, Box_s16* avoid) {
-
-	dropFromSkyCustom(object, avoid, ITEM_DEFAULT_WIDTH, ITEM_DEFAULT_HEIGHT, ITEM_MIN_POS_H_PX_F16, ITEM_MAX_POS_H_PX_F16);
-}
-
-void dropFromSkyCustom(Object_f16* object, Box_s16* avoid, u16 itemWidth, u16 itemHeight, f16 minHPos, f16 maxHPos) {
+void dropFromSky(Object_f16* object, Box_s16* avoid, u16 itemWidth, u16 itemHeight, f16 minHPos, f16 maxHPos) {
 
 	object->pos.y = TOP_POS_V_PX_F16;
 	object->size.x = itemWidth;

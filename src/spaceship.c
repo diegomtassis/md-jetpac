@@ -30,6 +30,9 @@
 
 #define SPACESHIP_SPEED_V	FIX16(0.6)
 
+#define FUEL_HEIGHT 12
+#define FUEL_WIDTH 16
+
 static Object_f16* createModule(u8 module, V2s16 pos);
 
 static void handleAssembly(Level level[static 1]);
@@ -237,7 +240,8 @@ static void handleFuelling(Level level[static 1]) {
 			spaceship->fuel_object = MEM_calloc(sizeof *spaceship->fuel_object);
 		}
 
-		dropFromSky(spaceship->fuel_object, &spaceship->base_object->box);
+		dropFromSky(spaceship->fuel_object, &spaceship->base_object->box, FUEL_WIDTH, FUEL_HEIGHT,
+				ITEM_DEFAULT_MIN_POS_H_PX_F16, ITEM_DEFAULT_MAX_POS_H_PX_F16);
 		spaceship->substep = FALLING;
 
 		if (!spaceship->fuel_sprite) {
