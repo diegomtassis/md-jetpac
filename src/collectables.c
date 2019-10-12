@@ -7,13 +7,18 @@
 
 #include "../inc/collectables.h"
 
-#include <genesis.h>
+#include <maths.h>
+#include <memory.h>
+#include <sprite_eng.h>
+#include <timer.h>
+#include <types.h>
 
-#include "../inc/fwk/commons.h"
-#include "../inc/items.h"
-#include "../inc/timers.h"
 #include "../inc/events.h"
+#include "../inc/fwk/commons.h"
+#include "../inc/fwk/physics.h"
+#include "../inc/items.h"
 #include "../inc/level.h"
+#include "../inc/timers.h"
 #include "../res/sprite.h"
 
 #define MAX_COLLECTABLES 5
@@ -54,7 +59,8 @@ typedef enum {
 #define COLLECTABLE_MIN_POS_H_PX_F16	FIX16(COLLECTABLE_MIN_POS_H_PX_S16)
 #define COLLECTABLE_MAX_POS_H_PX_F16	FIX16(COLLECTABLE_MAX_POS_H_PX_S16)
 
-static const int REST_BETWEEN_COLLECTABLES = SUBTICKPERSECOND * 10;
+static const int MIN_TIME_BETWEEN_COLLECTABLES = SUBTICKPERSECOND * 7;
+static const int MAX_TIME_BETWEEN_COLLECTABLES = SUBTICKPERSECOND * 12;
 
 static void addCollectables(Level level[static 1]);
 static void createCollectable(Level level[static 1], u8);
@@ -69,7 +75,7 @@ void startCollectables(Level level[static 1]) {
 	level->collectables.size = MAX_COLLECTABLES;
 	level->collectables.count = 0;
 
-	startTimer(COLLECTABLE_CREATION_TIMER);
+	startCountDownRandom(COLLECTABLE_CREATION_TIMER, MIN_TIME_BETWEEN_COLLECTABLES, MAX_TIME_BETWEEN_COLLECTABLES);
 }
 
 void releaseCollectables(Level level[static 1]) {
@@ -121,7 +127,7 @@ void updateCollectables(Level level[static 1]) {
 static void addCollectables(Level level[static 1]) {
 
 	if (level->collectables.count < level->collectables.size
-			&& getTimer(COLLECTABLE_CREATION_TIMER, FALSE) > REST_BETWEEN_COLLECTABLES) {
+			&& isCountDownFinished(COLLECTABLE_CREATION_TIMER, FALSE)) {
 
 		u8 num_collectables = level->collectables.size;
 		u8 idx;
@@ -146,9 +152,9 @@ static void createCollectable(Level level[static 1], u8 idx) {
 
 	CollectableDefinition collectableDef = COLLECTABLE_DEFS[collectable->type];
 
-	dropFromSky(&collectable->object, &level->spaceship->base_object->box, collectableDef.width,
-			collectableDef.height, ITEM_DEFAULT_MIN_POS_H_PX_F16,
-			ITEM_DEFAULT_MAX_POS_H_PX_F16);
+	dropFromSky(&collectable->object, &level->spaceship->base_object->box, collectableDef.width, collectableDef.height,
+	ITEM_DEFAULT_MIN_POS_H_PX_F16,
+	ITEM_DEFAULT_MAX_POS_H_PX_F16);
 	collectable->step = FALLING;
 
 	collectable->sprite = SPR_addSprite(collectableDef.spriteDefinition, //
@@ -159,7 +165,7 @@ static void createCollectable(Level level[static 1], u8 idx) {
 	level->collectables.e[idx] = collectable;
 	level->collectables.count++;
 
-	startTimer(COLLECTABLE_CREATION_TIMER);
+	startCountDownRandom(COLLECTABLE_CREATION_TIMER, MIN_TIME_BETWEEN_COLLECTABLES, MAX_TIME_BETWEEN_COLLECTABLES);
 }
 
 static void updateCollectable(Collectable* collectable, Level level[static 1]) {

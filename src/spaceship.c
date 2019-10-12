@@ -30,8 +30,8 @@
 
 #define SPACESHIP_SPEED_V	FIX16(0.6)
 
-#define FUEL_HEIGHT 12
 #define FUEL_WIDTH 16
+#define FUEL_HEIGHT 11
 
 static Object_f16* createModule(u8 module, V2s16 pos);
 
@@ -241,7 +241,7 @@ static void handleFuelling(Level level[static 1]) {
 		}
 
 		dropFromSky(spaceship->fuel_object, &spaceship->base_object->box, FUEL_WIDTH, FUEL_HEIGHT,
-				ITEM_DEFAULT_MIN_POS_H_PX_F16, ITEM_DEFAULT_MAX_POS_H_PX_F16);
+		ITEM_DEFAULT_MIN_POS_H_PX_F16, ITEM_DEFAULT_MAX_POS_H_PX_F16);
 		spaceship->substep = FALLING;
 
 		if (!spaceship->fuel_sprite) {
@@ -279,7 +279,7 @@ static void handleFuelling(Level level[static 1]) {
 			onEvent(GRABBED_FUEL);
 
 		} else {
-			Box_s16 target_v = targetVBox(*spaceship->fuel_object, ITEM_DEFAULT_WIDTH, ITEM_DEFAULT_HEIGHT);
+			Box_s16 target_v = targetVBox(*spaceship->fuel_object, FUEL_WIDTH, FUEL_HEIGHT);
 			if (landed(target_v, level)) {
 				spaceship->substep = WAITING;
 				spaceship->fuel_object->mov.y = SPEED_0;
@@ -296,7 +296,7 @@ static void handleFuelling(Level level[static 1]) {
 
 	} else if (spaceship->substep & ASSEMBLING) {
 
-		Box_s16 target_v = targetVBox(*spaceship->fuel_object, ITEM_DEFAULT_WIDTH, ITEM_DEFAULT_HEIGHT);
+		Box_s16 target_v = targetVBox(*spaceship->fuel_object, FUEL_WIDTH, FUEL_HEIGHT);
 		if (overlap(target_v, spaceship->base_object->box)) {
 			spaceship->step++;
 			spaceship->substep = NONE;

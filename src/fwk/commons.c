@@ -41,3 +41,8 @@ u16 randomInRangeU16(u16 lower, u16 higher) {
 
 	return lower + random() % (higher + 1 - lower);
 }
+
+u32 randomInRangeU32(u32 lower, u32 higher) {
+
+	return lower + random() % (higher + 1 - lower);
+}

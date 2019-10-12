@@ -23,4 +23,6 @@ f16 randomInRangeFix16(f16 lower, f16 higher);
 
 u16 randomInRangeU16(u16 lower, u16 higher);
 
+u32 randomInRangeU32(u32 lower, u32 higher);
+
 #endif /* INC_COMMONS_H_ */
