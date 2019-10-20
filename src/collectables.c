@@ -75,7 +75,7 @@ void startCollectables(Level level[static 1]) {
 	level->collectables.size = MAX_COLLECTABLES;
 	level->collectables.count = 0;
 
-	startCountDownRandom(COLLECTABLE_CREATION_TIMER, MIN_TIME_BETWEEN_COLLECTABLES, MAX_TIME_BETWEEN_COLLECTABLES);
+	startCountDownRandom(COLLECTABLE_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_COLLECTABLES, MAX_TIME_BETWEEN_COLLECTABLES);
 }
 
 void releaseCollectables(Level level[static 1]) {
@@ -127,7 +127,7 @@ void updateCollectables(Level level[static 1]) {
 static void addCollectables(Level level[static 1]) {
 
 	if (level->collectables.count < level->collectables.size
-			&& isCountDownFinished(COLLECTABLE_CREATION_TIMER, FALSE)) {
+			&& isCountDownFinished(COLLECTABLE_CREATION_COUNTDOWN, FALSE)) {
 
 		u8 num_collectables = level->collectables.size;
 		u8 idx;
@@ -165,7 +165,7 @@ static void createCollectable(Level level[static 1], u8 idx) {
 	level->collectables.e[idx] = collectable;
 	level->collectables.count++;
 
-	startCountDownRandom(COLLECTABLE_CREATION_TIMER, MIN_TIME_BETWEEN_COLLECTABLES, MAX_TIME_BETWEEN_COLLECTABLES);
+	startCountDownRandom(COLLECTABLE_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_COLLECTABLES, MAX_TIME_BETWEEN_COLLECTABLES);
 }
 
 static void updateCollectable(Collectable* collectable, Level level[static 1]) {

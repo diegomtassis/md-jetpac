@@ -10,9 +10,9 @@
 
 #include <genesis.h>
 
-#define ENEMY_CREATION_TIMER 0
+#define ENEMY_CREATION_COUNTDOWN 0
 #define EXPLOSIONS_TIMER 1
-#define COLLECTABLE_CREATION_TIMER 2
+#define COLLECTABLE_CREATION_COUNTDOWN 2
 
 void startCountDown(u16 numTimer, u32 subticks);
 

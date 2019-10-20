@@ -31,7 +31,8 @@
 #define MAX_POS_V_PX_F16		FIX16(MAX_POS_V_PX_S16)
 #define MAX_POS_START_V_PX_F16	FIX16(MAX_POS_V_PX_S16 - 32)
 
-static const int REST_BETWEEN_ENEMIES = SUBTICKPERSECOND * 1.5;
+static const int MIN_TIME_BETWEEN_ENEMIES = SUBTICKPERSECOND * 1.3;
+static const int MAX_TIME_BETWEEN_ENEMIES = SUBTICKPERSECOND * 2;
 
 static void addEnemy(Level level[static 1], u8 pos);
 static Enemy* createEnemy(EnemyDefinition);
@@ -60,7 +61,7 @@ void startEnemies(Level level[static 1]) {
 		addEnemy(level, enemy_idx);
 	}
 
-	startTimer(ENEMY_CREATION_TIMER);
+	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 }
 
 void enemiesAct(Level level[static 1]) {
@@ -147,7 +148,7 @@ static void releaseEnemy(Enemy* enemy) {
 	SPR_releaseSprite(enemy->sprite);
 	MEM_free(enemy);
 
-	startTimer(ENEMY_CREATION_TIMER);
+	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 }
 
 static void addEnemy(Level level[static 1], u8 pos) {
@@ -217,13 +218,13 @@ static Enemy* createEnemy(EnemyDefinition enemy_def) {
 	enemy->object.box.pos.x = fix16ToInt(enemy->object.pos.x);
 	enemy->object.box.pos.y = fix16ToInt(enemy->object.pos.y);
 
-	startTimer(ENEMY_CREATION_TIMER);
+	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 	return enemy;
 }
 
 static void enemiesJoin(Level level[static 1]) {
 
-	if (level->enemies.count < level->enemies.size && getTimer(ENEMY_CREATION_TIMER, FALSE) > REST_BETWEEN_ENEMIES) {
+	if (level->enemies.count < level->enemies.size && isCountDownFinished(ENEMY_CREATION_COUNTDOWN, FALSE)) {
 
 		u8 num_enemies = level->enemies.size;
 		u8 idx;
