@@ -25,13 +25,22 @@
 
 #define DEFAULT_FLASH_WAIT	2000
 
-static void handleCollisionsBetweenMovingObjects(Level level[static 1]);
-static void handleElementsLeavingScreenUnder(Level level[static 1]);
+/**
+ * @brief run a level.
+ *
+ * @param level
+ * @return goal accomplished
+ */
+static bool runLevel(Level level[static 1]);
+
 static bool isJetmanAlive(Level level[static 1]);
-static bool isMissionFinished(Level level[static 1]);
+static bool isMissionAccomplished(Level level[static 1]);
 
 static void waitForLanding(Level level[static 1]);
 static void leavePlanet(Level level[static 1]);
+
+static void handleCollisionsBetweenMovingObjects(Level level[static 1]);
+static void handleElementsLeavingScreenUnder(Level level[static 1]);
 
 static void scoreBonus(Level level[static 1]);
 static void scorePoints(u16 points);
@@ -47,6 +56,10 @@ static const V2u16 message_pos = { .x = 16, .y = 7 };
 
 Game * current_game;
 
+/**
+ *
+ * @param game
+ */
 void runGame(Game* game) {
 
 	current_game = game;
@@ -67,9 +80,6 @@ void runGame(Game* game) {
 
 		Level* current_level = game->createLevel[level_number]();
 		current_level->game = game;
-		if (++level_number == game->num_levels) {
-			level_number = 0;
-		}
 
 		startLevel(current_level);
 
@@ -88,69 +98,22 @@ void runGame(Game* game) {
 
 		JOY_setEventHandler(joyEvent);
 
-		bool jetman_alive = TRUE;
-		bool mission_finished = FALSE;
+		game_over = !runLevel(current_level);
 
-		while (!game_over && !mission_finished) {
+		if (game_over) {
+			flashMessage("Game Over", DEFAULT_FLASH_WAIT);
 
-			if (!paused) {
-
-				if (jetman_alive) {
-
-					jetmanActs(current_level);
-					enemiesAct(current_level);
-					handleCollisionsBetweenMovingObjects(current_level);
-					if (current_level->def.mind_bottom) {
-						handleElementsLeavingScreenUnder(current_level);
-					}
-
-					handleSpaceship(current_level);
-
-					jetman_alive = isJetmanAlive(current_level);
-					if (!jetman_alive) {
-						dropIfGrabbed(current_level->spaceship);
-						game->lives--;
-					}
-
-				} else {
-
-					// Smart dying, wait for explosions to finish
-					if (!current_level->booms.count) {
-
-						waitMs(100);
-
-						releaseEnemies(current_level);
-						if (game->lives > 0) {
-							resetJetman(current_level);
-							startEnemies(current_level);
-							jetman_alive = TRUE;
-						}
-					}
-				}
-
-				updateCollectables(current_level);
-				updateShots(current_level);
-				updateExplosions(current_level);
-
-				mission_finished = jetman_alive && isMissionFinished(current_level);
-				game_over = !game->lives && !current_level->booms.count;
-				SPR_update();
-			}
-
-			updateHud(game, current_level->jetman);
-			VDP_waitVSync();
-		}
-
-		if (mission_finished) {
+		} else {
 			SPR_setVisibility(current_level->jetman->sprite, HIDDEN);
 			leavePlanet(current_level);
 			scoreBonus(current_level);
 			updateHud(current_game, current_level->jetman);
 
-			waitMs(500);
+			if (++level_number == game->num_levels) {
+				level_number = 0;
+			}
 
-		} else {
-			flashMessage("Game Over", DEFAULT_FLASH_WAIT);
+			waitMs(500);
 		}
 
 		releaseExplosions(current_level);
@@ -232,6 +195,65 @@ void scoreByEvent(GameEvent event) {
 	}
 }
 
+static bool runLevel(Level current_level[static 1]) {
+
+	bool jetman_alive = TRUE;
+	bool game_over = FALSE;
+	bool mission_accomplished = FALSE;
+
+	while (!game_over && !mission_accomplished) {
+
+		if (!paused) {
+
+			if (jetman_alive) {
+
+				jetmanActs(current_level);
+				enemiesAct(current_level);
+				handleCollisionsBetweenMovingObjects(current_level);
+				if (current_level->def.mind_bottom) {
+					handleElementsLeavingScreenUnder(current_level);
+				}
+
+				handleSpaceship(current_level);
+
+				jetman_alive = isJetmanAlive(current_level);
+				if (!jetman_alive) {
+					dropIfGrabbed(current_level->spaceship);
+					current_game->lives--;
+				}
+
+			} else {
+
+				// Smart dying, wait for explosions to finish
+				if (!current_level->booms.count) {
+
+					waitMs(100);
+
+					releaseEnemies(current_level);
+					if (current_game->lives > 0) {
+						resetJetman(current_level);
+						startEnemies(current_level);
+						jetman_alive = TRUE;
+					}
+				}
+			}
+
+			updateCollectables(current_level);
+			updateShots(current_level);
+			updateExplosions(current_level);
+
+			mission_accomplished = jetman_alive && isMissionAccomplished(current_level);
+			game_over = !current_game->lives && !current_level->booms.count;
+			SPR_update();
+		}
+
+		updateHud(current_game, current_level->jetman);
+		VDP_waitVSync();
+	}
+
+	return mission_accomplished;
+}
+
 static void handleCollisionsBetweenMovingObjects(Level level[static 1]) {
 
 	for (u8 enemy_idx = 0; enemy_idx < level->enemies.size; enemy_idx++) {
@@ -286,7 +308,7 @@ static bool isJetmanAlive(Level level[static 1]) {
 	return ALIVE & level->jetman->health;
 }
 
-static bool isMissionFinished(Level level[static 1]) {
+static bool isMissionAccomplished(Level level[static 1]) {
 
 	return (level->spaceship->step == READY) && shareBase(level->jetman->object.box, level->spaceship->base_object->box);
 }

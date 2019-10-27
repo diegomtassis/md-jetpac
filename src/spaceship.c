@@ -268,7 +268,7 @@ static void handleFuelling(Level level[static 1]) {
 		} else {
 			V2f16 jetman_pos = level->jetman->object.pos;
 			spaceship->fuel_object->pos.x = jetman_pos.x;
-			spaceship->fuel_object->pos.y = fix16Add(jetman_pos.y, FIX16_8); // the fuel sprite is 8px shorter than the jetman
+			spaceship->fuel_object->pos.y = fix16Add(jetman_pos.y, FIX16_12);
 		}
 
 	} else if (spaceship->substep & FALLING) {
