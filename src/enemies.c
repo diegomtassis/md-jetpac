@@ -22,14 +22,14 @@
 #define SPEED_H_NORMAL	FIX16(1)
 #define SPEED_V_NORMAL	FIX16(0.3)
 
-#define FUEL_MIN_POS_H_PX_S16	LEFT_POS_H_PX_S16  + 8
-#define FUEL_MAX_POS_H_PX_S16	RIGHT_POS_H_PX_S16 - 8
-#define MAX_POS_V_PX_S16		BOTTOM_POS_V_PX_S16 - 16
+#define ENEMY_DEFAULT_MIN_POS_H_PX_S16			LEFT_POS_H_PX_S16 + 8
+#define ENEMY_DEFAULT_MAX_POS_H_PX_S16			RIGHT_POS_H_PX_S16 - 8
+#define ENEMY_DEFAULT_MAX_POS_V_PX_S16			BOTTOM_POS_V_PX_S16 - 16
 
-#define FUEL_MIN_POS_H_PX_F16	FIX16(FUEL_MIN_POS_H_PX_S16)
-#define FUEL_MAX_POS_H_PX_F16	FIX16(FUEL_MAX_POS_H_PX_S16)
-#define MAX_POS_V_PX_F16		FIX16(MAX_POS_V_PX_S16)
-#define MAX_POS_START_V_PX_F16	FIX16(MAX_POS_V_PX_S16 - 32)
+#define ENEMY_DEFAULT_MIN_POS_H_PX_F16			FIX16(ENEMY_DEFAULT_MIN_POS_H_PX_S16)
+#define ENEMY_DEFAULT_MAX_POS_H_PX_F16			FIX16(ENEMY_DEFAULT_MAX_POS_H_PX_S16)
+#define ENEMY_DEFAULT_MAX_POS_V_PX_F16			FIX16(MAX_POS_V_PX_S16)
+#define ENEMY_DEFAULT_MAX_POS_START_V_PX_F16	FIX16(ENEMY_DEFAULT_MAX_POS_V_PX_S16 - 32)
 
 static const int MIN_TIME_BETWEEN_ENEMIES = SUBTICKPERSECOND * 1.3;
 static const int MAX_TIME_BETWEEN_ENEMIES = SUBTICKPERSECOND * 2;
@@ -186,14 +186,14 @@ static Enemy* createEnemy(EnemyDefinition enemy_def) {
 
 	// position & direction
 	if (random() % 2) {
-		enemy->object.pos.x = FUEL_MIN_POS_H_PX_F16;
+		enemy->object.pos.x = ENEMY_DEFAULT_MIN_POS_H_PX_F16;
 		enemy->object.mov.x = SPEED_H_NORMAL;
 	} else {
-		enemy->object.pos.x = FUEL_MAX_POS_H_PX_F16;
+		enemy->object.pos.x = ENEMY_DEFAULT_MAX_POS_H_PX_F16;
 		enemy->object.mov.x = -SPEED_H_NORMAL;
 	}
 
-	enemy->object.pos.y = randomInRangeFix16(MIN_POS_V_PX_F16, MAX_POS_START_V_PX_F16);
+	enemy->object.pos.y = randomInRangeFix16(MIN_POS_V_PX_F16, ENEMY_DEFAULT_MAX_POS_START_V_PX_F16);
 
 	// V speed
 	if (random() % 2) {
@@ -261,11 +261,11 @@ static void updatePosition(Enemy* enemy, Level level[static 1]) {
 		return;
 	}
 
-	if (target.pos.x > FUEL_MAX_POS_H_PX_S16) {
-		enemy->object.pos.x = FUEL_MIN_POS_H_PX_F16;
+	if (target.pos.x > ENEMY_DEFAULT_MAX_POS_H_PX_S16) {
+		enemy->object.pos.x = ENEMY_DEFAULT_MIN_POS_H_PX_F16;
 
-	} else if (target.pos.x < FUEL_MIN_POS_H_PX_S16) {
-		enemy->object.pos.x = FUEL_MAX_POS_H_PX_F16;
+	} else if (target.pos.x < ENEMY_DEFAULT_MIN_POS_H_PX_S16) {
+		enemy->object.pos.x = ENEMY_DEFAULT_MAX_POS_H_PX_F16;
 	} else {
 		enemy->object.pos.x += enemy->object.mov.x;
 	}
