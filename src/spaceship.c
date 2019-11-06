@@ -279,7 +279,7 @@ static void handleFuelling(Level level[static 1]) {
 			onEvent(GRABBED_FUEL);
 
 		} else {
-			Box_s16 target_v = targetVBox(*spaceship->fuel_object, FUEL_WIDTH, FUEL_HEIGHT);
+			Box_s16 target_v = targetVBox(*spaceship->fuel_object);
 			if (landed(target_v, level)) {
 				spaceship->substep = WAITING;
 				spaceship->fuel_object->mov.y = SPEED_0;
@@ -296,7 +296,7 @@ static void handleFuelling(Level level[static 1]) {
 
 	} else if (spaceship->substep & ASSEMBLING) {
 
-		Box_s16 target_v = targetVBox(*spaceship->fuel_object, FUEL_WIDTH, FUEL_HEIGHT);
+		Box_s16 target_v = targetVBox(*spaceship->fuel_object);
 		if (overlap(target_v, spaceship->base_object->box)) {
 			spaceship->step++;
 			spaceship->substep = NONE;
@@ -377,8 +377,7 @@ static void handleLanding(Spaceship* spaceship, Level level[static 1]) {
 	}
 
 	// spaceship
-	Box_s16 target_v = targetVBox(*spaceship->base_object, spaceship->base_object->box.w,
-			spaceship->base_object->box.h);
+	Box_s16 target_v = targetVBox(*spaceship->base_object);
 
 	f16 landed_y = landed(target_v, level);
 	if (landed_y) {

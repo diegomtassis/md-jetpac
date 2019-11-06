@@ -26,27 +26,27 @@ void updateBox(Object_f16* object) {
 	object->box.pos.y = fix16ToInt(object->pos.y);
 }
 
-Box_s16 targetBox(Object_f16 object, u8 width, u8 height) {
+Box_s16 targetBox(Object_f16 object) {
 
-	Box_s16 box = { .w = width, .h = height };
+	Box_s16 box = { .w = object.size.x, .h = object.size.y };
 	box.pos.x = fix16ToInt(fix16Add(object.pos.x, object.mov.x));
 	box.pos.y = fix16ToInt(fix16Add(object.pos.y, object.mov.y));
 
 	return box;
 }
 
-Box_s16 targetHBox(Object_f16 object, u8 width, u8 height) {
+Box_s16 targetHBox(Object_f16 object) {
 
-	Box_s16 box = { .w = width, .h = height };
+	Box_s16 box = { .w = object.size.x, .h = object.size.y };
 	box.pos.x = fix16ToInt(fix16Add(object.pos.x, object.mov.x));
 	box.pos.y = fix16ToInt(object.pos.y);
 
 	return box;
 }
 
-Box_s16 targetVBox(Object_f16 object, u8 width, u8 height) {
+Box_s16 targetVBox(Object_f16 object) {
 
-	Box_s16 box = { .w = width, .h = height };
+	Box_s16 box = { .w = object.size.x, .h = object.size.y };
 	box.pos.x = fix16ToInt(object.pos.x);
 	box.pos.y = fix16ToInt(fix16Add(object.pos.y, object.mov.y));
 

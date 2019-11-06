@@ -40,7 +40,7 @@ static void releaseDeadEnemies(Level level[static 1]);
 static void releaseEnemy(Enemy*);
 static void enemiesJoin(Level level[static 1]);
 
-static void moveEnemy(Enemy*, Level*);
+static void enemyActs(Enemy*, Level*);
 static void calculateNextMovement(Enemy*);
 static void updatePosition(Enemy*, Level*);
 static bool crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]);
@@ -81,7 +81,7 @@ void enemiesAct(Level level[static 1]) {
 				if (nuclear_bomb) {
 					killEnemy(enemy, level, TRUE);
 				} else {
-					moveEnemy(enemy, level);
+					enemyActs(enemy, level);
 					SPR_setPosition(enemy->sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y));
 				}
 			}
@@ -184,6 +184,10 @@ static Enemy* createEnemy(EnemyDefinition enemy_def) {
 	enemy->type = enemy_def.type;
 	enemy->health = ALIVE;
 
+	// size
+	enemy->object.size.x = enemy_def.size_t.x;
+	enemy->object.size.y = enemy_def.size_t.y;
+
 	// position & direction
 	if (random() % 2) {
 		enemy->object.pos.x = ENEMY_DEFAULT_MIN_POS_H_PX_F16;
@@ -241,7 +245,7 @@ static void enemiesJoin(Level level[static 1]) {
 	}
 }
 
-static void moveEnemy(Enemy* enemy, Level level[static 1]) {
+static void enemyActs(Enemy* enemy, Level level[static 1]) {
 
 	calculateNextMovement(enemy);
 	updatePosition(enemy, level);
@@ -254,7 +258,7 @@ static void calculateNextMovement(Enemy* enemy) {
 static void updatePosition(Enemy* enemy, Level level[static 1]) {
 
 	// horizontal position
-	Box_s16 target = targetBox(enemy->object, ENEMY_01_WIDTH, ENEMY_01_HEIGHT);
+	Box_s16 target = targetBox(enemy->object);
 	if (crashedIntoPlatform(target, level)) {
 
 		killEnemy(enemy, level, TRUE);

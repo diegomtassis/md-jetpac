@@ -8,8 +8,7 @@
 #ifndef INC_COMMONS_H_
 #define INC_COMMONS_H_
 
-#include <maths.h>
-#include <types.h>
+#include <genesis.h>
 
 #define	FIX16_0		FIX16(0)
 #define	FIX16_8		FIX16(8)

@@ -182,7 +182,7 @@ static void updateCollectable(Collectable* collectable, Level level[static 1]) {
 			onEvent(GRABBED_COLLECTABLE);
 
 		} else {
-			Box_s16 target_v = targetVBox(collectable->object, collectable->object.size.x, collectable->object.size.y);
+			Box_s16 target_v = targetVBox(collectable->object);
 			if (landed(target_v, level)) {
 				collectable->step = WAITING;
 				collectable->object.mov.y = SPEED_0;

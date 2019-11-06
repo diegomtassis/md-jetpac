@@ -35,9 +35,9 @@ typedef struct {
 
 void updateBox(Object_f16* object);
 
-Box_s16 targetBox(Object_f16 subject, u8 width, u8 height);
-Box_s16 targetHBox(Object_f16 subject, u8 width, u8 height);
-Box_s16 targetVBox(Object_f16 subject, u8 width, u8 height);
+Box_s16 targetBox(Object_f16 subject);
+Box_s16 targetHBox(Object_f16 subject);
+Box_s16 targetVBox(Object_f16 subject);
 
 bool contained(V2s16 subject_pos, Box_s16 object_box);
 bool overlap(Box_s16 subject_box, Box_s16 object_box);

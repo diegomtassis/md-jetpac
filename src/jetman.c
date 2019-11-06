@@ -192,7 +192,7 @@ static u8 calculateNextMovement(Jetman* jetman) {
 static void updatePosition(Jetman* jetman, Level level[static 1]) {
 
 	// horizontal position
-	Box_s16 target_h = targetHBox(jetman->object, JETMAN_WIDTH, JETMAN_HEIGHT);
+	Box_s16 target_h = targetHBox(jetman->object);
 	if (target_h.pos.x > MAX_POS_H_PX_S16) {
 		jetman->object.pos.x = MIN_POS_H_PX_F16;
 
@@ -215,7 +215,7 @@ static void updatePosition(Jetman* jetman, Level level[static 1]) {
 	}
 
 	// vertical position
-	Box_s16 target_v = targetVBox(jetman->object, JETMAN_WIDTH, JETMAN_HEIGHT);
+	Box_s16 target_v = targetVBox(jetman->object);
 	f16 landed_pos_y = landed(target_v, level);
 	if (landed_pos_y) {
 		jetman->object.pos.y = landed_pos_y;

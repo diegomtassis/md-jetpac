@@ -118,7 +118,7 @@ void updateShots(Level level[static 1]) {
 					grape->life_left--;
 					if (grape->life_left) {
 						// move
-						Box_s16 target_h = targetHBox(*grape->object, GRAPE_WIDTH, GRAPE_HEIGHT);
+						Box_s16 target_h = targetHBox(*grape->object);
 						if (target_h.pos.x > MAX_POS_H_PX_S16) {
 							grape->object->pos.x = FIX16(target_h.pos.x - LEVEL_WIDTH_PX_S16);
 
