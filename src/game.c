@@ -162,12 +162,8 @@ void scoreByEvent(GameEvent event) {
 
 	switch (event) {
 
-	case KILLED_ENEMY_01:
+	case KILLED_ENEMY:
 		current_game->score += 25;
-		break;
-
-	case KILLED_ENEMY_02:
-		current_game->score += 80;
 		break;
 
 	case GRABBED_SPACESHIP_PART:
@@ -265,15 +261,7 @@ static void handleCollisionsBetweenMovingObjects(Level level[static 1]) {
 			if (checkHit(enemy->object.box, level)) {
 
 				killEnemy(enemy, level, TRUE);
-				switch (enemy->type) {
-				case METEORITE:
-					onEvent(KILLED_ENEMY_01);
-					break;
-
-				default:
-					onEvent(KILLED_ENEMY_02);
-					break;
-				}
+				onEvent(KILLED_ENEMY);
 
 				continue;
 			}
