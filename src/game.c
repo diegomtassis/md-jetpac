@@ -266,7 +266,7 @@ static void handleCollisionsBetweenMovingObjects(Level level[static 1]) {
 
 				killEnemy(enemy, level, TRUE);
 				switch (enemy->type) {
-				case ENEMY_01:
+				case METEORITE:
 					onEvent(KILLED_ENEMY_01);
 					break;
 

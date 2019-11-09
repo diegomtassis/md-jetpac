@@ -51,9 +51,9 @@ static void createPlatforms(Level level[static 1]) {
 
 static void defineEnemies(Level level[static 1]) {
 
-	level->def.enemy_def.type = ENEMY_03;
-	level->def.enemy_def.size_t.x = ENEMY_03_WIDTH;
-	level->def.enemy_def.size_t.y = ENEMY_03_HEIGHT;
+	level->def.enemy_def.type = BUBBLE;
+	level->def.enemy_def.size_t.x = BUBBLE_WIDTH;
+	level->def.enemy_def.size_t.y = BUBBLE_HEIGHT;
 	level->def.enemy_def.sprite_def = &enemy_03_sprite;
 
 	level->enemies.count = 0;

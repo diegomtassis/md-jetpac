@@ -210,13 +210,13 @@ static Enemy* createEnemy(EnemyDefinition enemy_def) {
 	if (enemy_def.size_t.x) {
 		enemy->object.box.w = enemy_def.size_t.x;
 	} else {
-		enemy->object.box.w = ENEMY_01_WIDTH;
+		enemy->object.box.w = METEORITE_WIDTH;
 	}
 
 	if (enemy_def.size_t.y) {
 		enemy->object.box.h = enemy_def.size_t.y;
 	} else {
-		enemy->object.box.h = ENEMY_01_HEIGHT;
+		enemy->object.box.h = METEORITE_HEIGHT;
 	}
 
 	enemy->object.box.pos.x = fix16ToInt(enemy->object.pos.x);

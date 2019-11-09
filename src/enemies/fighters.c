@@ -1,7 +1,7 @@
 /*
- * enemy_02.c
+ * fighters.c
  *
- *  Created on: Apr 24, 2019
+ *  Created on: Nov 09, 2019
  *      Author: diegomtassis
  */
 
