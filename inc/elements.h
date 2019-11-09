@@ -40,18 +40,30 @@ typedef struct {
 	Sprite* sprite;
 } Jetman;
 
-typedef struct {
-	u8 type;
-	V2u16 size_t;
-	const SpriteDefinition* sprite_def;
-} EnemyDefinition;
+typedef struct enemy Enemy;
 
-typedef struct {
+typedef struct enemyDefinition EnemyDefinition;
+
+struct enemy {
+	EnemyDefinition* enemy_def;
 	Object_f16 object;
 	Sprite* sprite;
 	u8 type;
 	u8 health;
-} Enemy;
+};
+
+typedef Enemy* (*CreateEnemyFunc)(void);
+typedef void (*ActEnemyFunc)(Enemy*);
+typedef void (*ReleaseEnemyFunc)(Enemy*);
+
+struct enemyDefinition {
+	u8 type;
+	CreateEnemyFunc createEnemyFunc;
+	ActEnemyFunc actEnemyFunc;
+	ReleaseEnemyFunc releaseEnemyFunc;
+	V2u16 size_t;
+	const SpriteDefinition* sprite_def;
+};
 
 typedef struct {
 	u8 count;

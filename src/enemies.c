@@ -181,8 +181,11 @@ static void addEnemy(Level level[static 1], u8 pos) {
 static Enemy* createEnemy(EnemyDefinition enemy_def) {
 
 	Enemy* enemy = MEM_calloc(sizeof *enemy);
+	enemy->enemy_def = &enemy_def;
 	enemy->type = enemy_def.type;
 	enemy->health = ALIVE;
+
+	enemy->enemy_def->createEnemyFunc();
 
 	// size
 	enemy->object.size.x = enemy_def.size_t.x;

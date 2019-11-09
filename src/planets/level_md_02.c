@@ -55,6 +55,10 @@ static void defineEnemies(Level level[static 1]) {
 	level->def.enemy_def.size_t.y = ALIEN_HEIGHT;
 	level->def.enemy_def.sprite_def = &alien_sprite;
 
+	level->def.enemy_def.createEnemyFunc = &createAlien;
+	level->def.enemy_def.actEnemyFunc = &actAlien;
+	level->def.enemy_def.releaseEnemyFunc = &releaseAlien;
+
 	level->enemies.count = 0;
 	level->enemies.size = 8;
 }
