@@ -51,7 +51,7 @@ static void defineEnemies(Level level[static 1]) {
 	level->def.enemy_def.type = METEORITE;
 	level->def.enemy_def.size_t.x = METEORITE_WIDTH;
 	level->def.enemy_def.size_t.y = METEORITE_HEIGHT;
-	level->def.enemy_def.sprite_def = &enemy_01_sprite;
+	level->def.enemy_def.sprite_def = &meteorite_sprite;
 
 	level->enemies.count = 0;
 	level->enemies.size = 10;

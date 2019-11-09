@@ -162,7 +162,7 @@ static void addEnemy(Level level[static 1], u8 pos) {
 	if (level->def.enemy_def.sprite_def) {
 		sprite_definition = level->def.enemy_def.sprite_def;
 	} else {
-		sprite_definition = &enemy_01_sprite;
+		sprite_definition = &meteorite_sprite;
 	}
 
 	Sprite* enemySprite = SPR_addSprite(sprite_definition, fix16ToInt(enemy->object.pos.x),
