@@ -45,24 +45,22 @@ typedef struct enemy Enemy;
 typedef struct enemyDefinition EnemyDefinition;
 
 struct enemy {
-	EnemyDefinition* enemy_def;
+	EnemyDefinition* definition;
 	Object_f16 object;
 	Sprite* sprite;
-	u8 type;
 	u8 health;
 };
 
-typedef Enemy* (*CreateEnemyFunc)(void);
+typedef void (*GrowEnemyFunc)(Enemy*);
 typedef void (*ActEnemyFunc)(Enemy*);
 typedef void (*ReleaseEnemyFunc)(Enemy*);
 
 struct enemyDefinition {
 	u8 type;
-	CreateEnemyFunc createEnemyFunc;
+	GrowEnemyFunc growEnemyFunc;
 	ActEnemyFunc actEnemyFunc;
 	ReleaseEnemyFunc releaseEnemyFunc;
 	V2u16 size_t;
-	const SpriteDefinition* sprite_def;
 };
 
 typedef struct {

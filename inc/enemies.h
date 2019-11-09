@@ -28,6 +28,15 @@
 #define BUBBLE_WIDTH    	16
 #define BUBBLE_HEIGHT    	14
 
+#define ENEMY_DEFAULT_MIN_POS_H_PX_S16			LEFT_POS_H_PX_S16 + 8
+#define ENEMY_DEFAULT_MAX_POS_H_PX_S16			RIGHT_POS_H_PX_S16 - 8
+#define ENEMY_DEFAULT_MAX_POS_V_PX_S16			BOTTOM_POS_V_PX_S16 - 16
+
+#define ENEMY_DEFAULT_MIN_POS_H_PX_F16			FIX16(ENEMY_DEFAULT_MIN_POS_H_PX_S16)
+#define ENEMY_DEFAULT_MAX_POS_H_PX_F16			FIX16(ENEMY_DEFAULT_MAX_POS_H_PX_S16)
+#define ENEMY_DEFAULT_MAX_POS_V_PX_F16			FIX16(MAX_POS_V_PX_S16)
+#define ENEMY_DEFAULT_MAX_POS_START_V_PX_F16	FIX16(ENEMY_DEFAULT_MAX_POS_V_PX_S16 - 32)
+
 typedef struct {
 	Enemy* enemy;
 } Meteorite;
@@ -46,15 +55,15 @@ void releaseEnemies(Level level[static 1]);
 void enemiesAct(Level level[static 1]);
 void killEnemy(Enemy* enemy, Level level[static 1], u8 exploding);
 
-Enemy* createMeteorite(void);
+void growMeteorite(Enemy enemy[static 1]);
 void actMeteorite(Enemy enemy[static 1]);
 void releaseMeteorite(Enemy enemy[static 1]);
 
-Enemy* createAlien(void);
+void growAlien(Enemy enemy[static 1]);
 void actAlien(Enemy enemy[static 1]);
 void releaseAlien(Enemy enemy[static 1]);
 
-Enemy* createBubble(void);
+void growBubble(Enemy enemy[static 1]);
 void actBubble(Enemy enemy[static 1]);
 void releaseBubble(Enemy enemy[static 1]);
 

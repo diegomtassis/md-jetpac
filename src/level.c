@@ -31,7 +31,6 @@ Level* allocLevel() {
 	Level* level = (Level*) MEM_calloc(sizeof(Level));
 
 	level->def.jetman_init_pos = 0;
-	level->def.enemy_def.sprite_def = 0;
 
 	level->floor = 0;
 	level->platforms = 0;

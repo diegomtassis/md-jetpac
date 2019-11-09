@@ -54,9 +54,8 @@ static void defineEnemies(Level level[static 1]) {
 	level->def.enemy_def.type = BUBBLE;
 	level->def.enemy_def.size_t.x = BUBBLE_WIDTH;
 	level->def.enemy_def.size_t.y = BUBBLE_HEIGHT;
-	level->def.enemy_def.sprite_def = &bubble_sprite;
 
-	level->def.enemy_def.createEnemyFunc = &createBubble;
+	level->def.enemy_def.growEnemyFunc = &growBubble;
 	level->def.enemy_def.actEnemyFunc = &actBubble;
 	level->def.enemy_def.releaseEnemyFunc = &releaseBubble;
 
