@@ -30,7 +30,6 @@ static void releaseEnemy(Enemy*);
 static void enemiesJoin(Level level[static 1]);
 
 static void enemyActs(Enemy*, Level*);
-static void calculateNextMovement(Enemy*);
 static void updatePosition(Enemy*, Level*);
 static bool crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]);
 
@@ -134,7 +133,7 @@ void releaseDeadEnemies(Level level[static 1]) {
 
 static void releaseEnemy(Enemy* enemy) {
 
-	enemy->definition->clearEnemyFunc(enemy);
+	enemy->definition->dieFunc(enemy);
 	MEM_free(enemy);
 
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
@@ -146,7 +145,7 @@ static void addEnemy(Level level[static 1], u8 pos) {
 	enemy->definition = &level->def.enemy_def;
 	enemy->health = ALIVE;
 
-	enemy->definition->growEnemyFunc(enemy);
+	enemy->definition->growFunc(enemy);
 
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 
@@ -176,12 +175,8 @@ static void enemiesJoin(Level level[static 1]) {
 
 static void enemyActs(Enemy* enemy, Level level[static 1]) {
 
-	calculateNextMovement(enemy);
+	enemy->definition->actFunc(enemy);
 	updatePosition(enemy, level);
-}
-
-static void calculateNextMovement(Enemy* enemy) {
-	// nothing for the moment
 }
 
 static void updatePosition(Enemy* enemy, Level level[static 1]) {

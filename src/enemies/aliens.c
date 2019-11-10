@@ -62,10 +62,10 @@ void growAlien(Enemy* enemy) {
 
 void actAlien(Enemy enemy[static 1]) {
 
-	return;
+	enemy->health = ALIVE;
 }
 
-void clearAlien(Enemy enemy[static 1]) {
+void dieAlien(Enemy enemy[static 1]) {
 
 	SPR_releaseSprite(enemy->sprite);
 }

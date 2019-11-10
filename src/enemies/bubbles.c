@@ -62,10 +62,10 @@ void growBubble(Enemy* enemy) {
 
 void actBubble(Enemy enemy[static 1]) {
 
-	return;
+	enemy->health = ALIVE;
 }
 
-void clearBubble(Enemy enemy[static 1]) {
+void dieBubble(Enemy enemy[static 1]) {
 
 	SPR_releaseSprite(enemy->sprite);
 }

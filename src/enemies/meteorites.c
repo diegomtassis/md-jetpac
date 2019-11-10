@@ -62,10 +62,10 @@ void growMeteorite(Enemy* enemy) {
 
 void actMeteorite(Enemy enemy[static 1]) {
 
-	return;
+	enemy->health = ALIVE;
 }
 
-void clearMeteorite(Enemy enemy[static 1]) {
+void dieMeteorite(Enemy enemy[static 1]) {
 
 	SPR_releaseSprite(enemy->sprite);
 }
