@@ -65,7 +65,7 @@ void actMeteorite(Enemy enemy[static 1]) {
 	return;
 }
 
-void releaseMeteorite(Enemy enemy[static 1]) {
+void clearMeteorite(Enemy enemy[static 1]) {
 
-	return;
+	SPR_releaseSprite(enemy->sprite);
 }

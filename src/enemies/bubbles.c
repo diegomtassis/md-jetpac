@@ -65,7 +65,7 @@ void actBubble(Enemy enemy[static 1]) {
 	return;
 }
 
-void releaseBubble(Enemy enemy[static 1]) {
+void clearBubble(Enemy enemy[static 1]) {
 
-	return;
+	SPR_releaseSprite(enemy->sprite);
 }

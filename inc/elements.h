@@ -53,13 +53,13 @@ struct enemy {
 
 typedef void (*GrowEnemyFunc)(Enemy*);
 typedef void (*ActEnemyFunc)(Enemy*);
-typedef void (*ReleaseEnemyFunc)(Enemy*);
+typedef void (*ClearEnemyFunc)(Enemy*);
 
 struct enemyDefinition {
 	u8 type;
 	GrowEnemyFunc growEnemyFunc;
 	ActEnemyFunc actEnemyFunc;
-	ReleaseEnemyFunc releaseEnemyFunc;
+	ClearEnemyFunc clearEnemyFunc;
 	V2u16 size_t;
 };
 

@@ -65,7 +65,7 @@ void actAlien(Enemy enemy[static 1]) {
 	return;
 }
 
-void releaseAlien(Enemy enemy[static 1]) {
+void clearAlien(Enemy enemy[static 1]) {
 
-	return;
+	SPR_releaseSprite(enemy->sprite);
 }

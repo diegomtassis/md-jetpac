@@ -54,7 +54,7 @@ static void defineEnemies(Level level[static 1]) {
 
 	level->def.enemy_def.growEnemyFunc = &growAlien;
 	level->def.enemy_def.actEnemyFunc = &actAlien;
-	level->def.enemy_def.releaseEnemyFunc = &releaseAlien;
+	level->def.enemy_def.clearEnemyFunc = &clearAlien;
 
 	level->enemies.count = 0;
 	level->enemies.size = 14;

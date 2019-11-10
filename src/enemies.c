@@ -134,7 +134,7 @@ void releaseDeadEnemies(Level level[static 1]) {
 
 static void releaseEnemy(Enemy* enemy) {
 
-	SPR_releaseSprite(enemy->sprite);
+	enemy->definition->clearEnemyFunc(enemy);
 	MEM_free(enemy);
 
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
