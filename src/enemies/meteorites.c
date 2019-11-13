@@ -18,7 +18,9 @@
 #define SPEED_H_NORMAL	FIX16(1)
 #define SPEED_V_NORMAL	FIX16(0.3)
 
-void growMeteorite(Enemy* enemy) {
+Enemy* createMeteorite(EnemyDefinition definition[static 1]) {
+
+	Enemy* enemy = createEnemy(definition);
 
 	// size
 	enemy->object.size.x = METEORITE_WIDTH;
@@ -59,6 +61,8 @@ void growMeteorite(Enemy* enemy) {
 	if (enemy->object.mov.x > 0) {
 		SPR_setHFlip(enemySprite, TRUE);
 	}
+
+	return enemy;
 }
 
 void actMeteorite(Enemy enemy[static 1], Level level[static 1]) {
@@ -73,7 +77,8 @@ void actMeteorite(Enemy enemy[static 1], Level level[static 1]) {
 	updatePosition(enemy, target);
 }
 
-void dieMeteorite(Enemy enemy[static 1]) {
+void releaseMeteorite(Enemy enemy[static 1]) {
 
 	SPR_releaseSprite(enemy->sprite);
+	releaseEnemy(enemy);
 }

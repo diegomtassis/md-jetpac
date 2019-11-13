@@ -68,9 +68,9 @@ static void defineEnemies(Level level[static 1]) {
 	level->def.enemy_def.size_t.x = METEORITE_WIDTH;
 	level->def.enemy_def.size_t.y = METEORITE_HEIGHT;
 
-	level->def.enemy_def.growFunc = &growMeteorite;
+	level->def.enemy_def.createFunc = &createMeteorite;
 	level->def.enemy_def.actFunc = &actMeteorite;
-	level->def.enemy_def.dieFunc = &dieMeteorite;
+	level->def.enemy_def.releaseFunc = &releaseMeteorite;
 
 	level->enemies.count = 0;
 	level->enemies.size = 7;

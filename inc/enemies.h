@@ -46,16 +46,16 @@ void releaseEnemies(Level level[static 1]);
 void enemiesAct(Level level[static 1]);
 void killEnemy(Enemy* enemy, Level level[static 1], u8 exploding);
 
-void growMeteorite(Enemy enemy[static 1]);
+Enemy* createMeteorite(EnemyDefinition definition[static 1]);
 void actMeteorite(Enemy enemy[static 1], Level level[static 1]);
-void dieMeteorite(Enemy enemy[static 1]);
+void releaseMeteorite(Enemy enemy[static 1]);
 
-void growAlien(Enemy enemy[static 1]);
+Enemy* createAlien(EnemyDefinition definition[static 1]);
 void actAlien(Enemy enemy[static 1], Level level[static 1]);
-void dieAlien(Enemy enemy[static 1]);
+void releaseAlien(Enemy enemy[static 1]);
 
-void growBubble(Enemy enemy[static 1]);
+Enemy* createBubble(EnemyDefinition definition[static 1]);
 void actBubble(Enemy enemy[static 1], Level level[static 1]);
-void dieBubble(Enemy enemy[static 1]);
+void releaseBubble(Enemy enemy[static 1]);
 
 #endif /* INC_ENEMIES_H_ */

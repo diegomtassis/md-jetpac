@@ -5,10 +5,26 @@
  *      Author: diegomtassis
  */
 
-#include "../inc/enemy.h"
+#include "../../inc/enemy.h"
 
+#include <genesis.h>
+
+#include "../../inc/fwk/commons.h"
 #include "../../inc/fwk/physics.h"
 
+Enemy* createEnemy(EnemyDefinition definition[static 1]) {
+
+	Enemy* enemy = MEM_calloc(sizeof *enemy);
+	enemy->definition = definition;
+	enemy->health = ALIVE;
+
+	return enemy;
+}
+
+void releaseEnemy(Enemy enemy[static 1]) {
+
+	MEM_free(enemy);
+}
 
 void updatePosition(Enemy* enemy, Box_s16 target) {
 

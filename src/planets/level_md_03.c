@@ -55,9 +55,9 @@ static void defineEnemies(Level level[static 1]) {
 	level->def.enemy_def.size_t.x = BUBBLE_WIDTH;
 	level->def.enemy_def.size_t.y = BUBBLE_HEIGHT;
 
-	level->def.enemy_def.growFunc = &growBubble;
+	level->def.enemy_def.createFunc = &createBubble;
 	level->def.enemy_def.actFunc = &actBubble;
-	level->def.enemy_def.dieFunc = &dieBubble;
+	level->def.enemy_def.releaseFunc = &releaseBubble;
 
 	level->enemies.count = 0;
 	level->enemies.size = 8;

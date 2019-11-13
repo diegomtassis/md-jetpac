@@ -19,6 +19,9 @@
 #define ENEMY_DEFAULT_MAX_POS_V_PX_F16			FIX16(MAX_POS_V_PX_S16)
 #define ENEMY_DEFAULT_MAX_POS_START_V_PX_F16	FIX16(ENEMY_DEFAULT_MAX_POS_V_PX_S16 - 32)
 
+Enemy* createEnemy(EnemyDefinition definition[static 1]);
+void releaseEnemy(Enemy enemy[static 1]);
+
 void updatePosition(Enemy* enemy, Box_s16 target);
 bool crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]);
 

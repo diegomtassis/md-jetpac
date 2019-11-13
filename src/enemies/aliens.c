@@ -18,7 +18,9 @@
 #define SPEED_H_NORMAL	FIX16(1)
 #define SPEED_V_NORMAL	FIX16(0.3)
 
-void growAlien(Enemy* enemy) {
+Enemy* createAlien(EnemyDefinition definition[static 1]) {
+
+	Enemy* enemy = createEnemy(definition);
 
 	// size
 	enemy->object.size.x = ALIEN_WIDTH;
@@ -59,23 +61,33 @@ void growAlien(Enemy* enemy) {
 	if (enemy->object.mov.x > 0) {
 		SPR_setHFlip(enemySprite, TRUE);
 	}
+
+	return enemy;
 }
 
 void actAlien(Enemy enemy[static 1], Level level[static 1]) {
 
-	enemy->health = ALIVE;
-
 	Box_s16 target = targetBox(enemy->object);
 	if (crashedIntoPlatform(target, level)) {
 
-		killEnemy(enemy, level, TRUE);
-		return;
+		// THIS MUST BE OPTIMIZED
+
+		// change horizontal direction
+		enemy->object.mov.x = -enemy->object.mov.x;
+		target = targetBox(enemy->object);
+		if (crashedIntoPlatform(target, level)) {
+
+			enemy->object.mov.x = -enemy->object.mov.x;
+			enemy->object.mov.y = -enemy->object.mov.y;
+			target = targetBox(enemy->object);
+		}
 	}
 
 	updatePosition(enemy, target);
 }
 
-void dieAlien(Enemy enemy[static 1]) {
+void releaseAlien(Enemy enemy[static 1]) {
 
 	SPR_releaseSprite(enemy->sprite);
+	releaseEnemy(enemy);
 }

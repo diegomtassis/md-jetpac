@@ -18,7 +18,9 @@
 #define SPEED_H_NORMAL	FIX16(1)
 #define SPEED_V_NORMAL	FIX16(0.3)
 
-void growBubble(Enemy* enemy) {
+Enemy* createBubble(EnemyDefinition definition[static 1]) {
+
+	Enemy* enemy = createEnemy(definition);
 
 	// size
 	enemy->object.size.x = BUBBLE_WIDTH;
@@ -50,8 +52,8 @@ void growBubble(Enemy* enemy) {
 	enemy->object.box.pos.y = fix16ToInt(enemy->object.pos.y);
 
 	// sprite
-	Sprite* enemySprite = SPR_addSprite(&bubble_sprite, fix16ToInt(enemy->object.pos.x),
-			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	Sprite* enemySprite = SPR_addSprite(&bubble_sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y),
+			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	SPR_setAnim(enemySprite, (abs(random())) % 4);
 	SPR_setFrame(enemySprite, (abs(random())) % 2);
 	enemy->sprite = enemySprite;
@@ -59,23 +61,33 @@ void growBubble(Enemy* enemy) {
 	if (enemy->object.mov.x > 0) {
 		SPR_setHFlip(enemySprite, TRUE);
 	}
+
+	return enemy;
 }
 
 void actBubble(Enemy enemy[static 1], Level level[static 1]) {
 
-	enemy->health = ALIVE;
-
 	Box_s16 target = targetBox(enemy->object);
 	if (crashedIntoPlatform(target, level)) {
 
-		killEnemy(enemy, level, TRUE);
-		return;
+		// THIS MUST BE OPTIMIZED
+
+		// change horizontal direction
+		enemy->object.mov.x = -enemy->object.mov.x;
+		target = targetBox(enemy->object);
+		if (crashedIntoPlatform(target, level)) {
+
+			enemy->object.mov.x = -enemy->object.mov.x;
+			enemy->object.mov.y = -enemy->object.mov.y;
+			target = targetBox(enemy->object);
+		}
 	}
 
 	updatePosition(enemy, target);
 }
 
-void dieBubble(Enemy enemy[static 1]) {
+void releaseBubble(Enemy enemy[static 1]) {
 
 	SPR_releaseSprite(enemy->sprite);
+	releaseEnemy(enemy);
 }

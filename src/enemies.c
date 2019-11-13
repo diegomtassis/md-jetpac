@@ -24,14 +24,12 @@
 static const int MIN_TIME_BETWEEN_ENEMIES = SUBTICKPERSECOND * 1.3;
 static const int MAX_TIME_BETWEEN_ENEMIES = SUBTICKPERSECOND * 2;
 
-void updatePosition(Enemy*, Level*);
-
 static void addEnemy(Level level[static 1], u8 pos);
 static void releaseDeadEnemies(Level level[static 1]);
-static void releaseEnemy(Enemy*);
+static void releaseDeadEnemy(Enemy enemy[static 1]);
 static void enemiesJoin(Level level[static 1]);
 
-static void enemyActs(Enemy*, Level*);
+static void enemyActs(Enemy enemy[static 1], Level level[static 1]);
 
 static void detectNuclearBomb();
 
@@ -103,7 +101,7 @@ void releaseEnemies(Level level[static 1]) {
 
 		Enemy* enemy = level->enemies.e[idx];
 		if (enemy) {
-			releaseEnemy(enemy);
+			releaseDeadEnemy(enemy);
 		}
 	}
 
@@ -124,34 +122,27 @@ void releaseDeadEnemies(Level level[static 1]) {
 		Enemy* enemy = level->enemies.e[idx];
 		if (enemy && (enemy->health & DEAD)) {
 
-			releaseEnemy(enemy);
+			releaseDeadEnemy(enemy);
 			level->enemies.e[idx] = 0;
 			level->enemies.count--;
 		}
 	}
 }
 
-static void releaseEnemy(Enemy* enemy) {
+static void releaseDeadEnemy(Enemy enemy[static 1]) {
 
-	enemy->definition->dieFunc(enemy);
-	MEM_free(enemy);
+	enemy->definition->releaseFunc(enemy);
 
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 }
 
 static void addEnemy(Level level[static 1], u8 pos) {
 
-	Enemy* enemy = MEM_calloc(sizeof *enemy);
-	enemy->definition = &level->def.enemy_def;
-	enemy->health = ALIVE;
-
-	enemy->definition->growFunc(enemy);
+	Enemy* enemy = level->def.enemy_def.createFunc(&level->def.enemy_def);
+	level->enemies.e[pos] = enemy;
+	level->enemies.count++;
 
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
-
-	level->enemies.e[pos] = enemy;
-
-	level->enemies.count++;
 }
 
 static void enemiesJoin(Level level[static 1]) {
@@ -173,7 +164,7 @@ static void enemiesJoin(Level level[static 1]) {
 	}
 }
 
-static void enemyActs(Enemy* enemy, Level level[static 1]) {
+static void enemyActs(Enemy enemy[static 1], Level level[static 1]) {
 
 	enemy->definition->actFunc(enemy, level);
 }
