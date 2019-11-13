@@ -52,8 +52,8 @@ Enemy* createBubble(EnemyDefinition definition[static 1]) {
 	enemy->object.box.pos.y = fix16ToInt(enemy->object.pos.y);
 
 	// sprite
-	Sprite* enemySprite = SPR_addSprite(&bubble_sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y),
-			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	Sprite* enemySprite = SPR_addSprite(&bubble_sprite, fix16ToInt(enemy->object.pos.x),
+			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	SPR_setAnim(enemySprite, (abs(random())) % 4);
 	SPR_setFrame(enemySprite, (abs(random())) % 2);
 	enemy->sprite = enemySprite;
@@ -68,13 +68,19 @@ Enemy* createBubble(EnemyDefinition definition[static 1]) {
 void actBubble(Enemy enemy[static 1], Level level[static 1]) {
 
 	Box_s16 target = targetBox(enemy->object);
-	if (crashedIntoPlatform(target, level)) {
+
+	if (target.pos.y <= MIN_POS_V_PX_S16) {
+		enemy->object.mov.y = -enemy->object.mov.y;
+		target = targetBox(enemy->object);
+
+	} else if (crashedIntoPlatform(target, level)) {
 
 		// THIS MUST BE OPTIMIZED
 
 		// change horizontal direction
 		enemy->object.mov.x = -enemy->object.mov.x;
 		target = targetBox(enemy->object);
+
 		if (crashedIntoPlatform(target, level)) {
 
 			enemy->object.mov.x = -enemy->object.mov.x;
@@ -82,8 +88,6 @@ void actBubble(Enemy enemy[static 1], Level level[static 1]) {
 			target = targetBox(enemy->object);
 		}
 	}
-
-	updatePosition(enemy, target);
 }
 
 void releaseBubble(Enemy enemy[static 1]) {

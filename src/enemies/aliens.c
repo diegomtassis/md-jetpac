@@ -12,6 +12,7 @@
 #include "../../inc/enemies.h"
 #include "../../inc/enemy.h"
 #include "../../inc/fwk/commons.h"
+#include "../../inc/fwk/physics.h"
 #include "../../res/sprite.h"
 
 #define SPEED_ZERO		FIX16_0
@@ -68,13 +69,19 @@ Enemy* createAlien(EnemyDefinition definition[static 1]) {
 void actAlien(Enemy enemy[static 1], Level level[static 1]) {
 
 	Box_s16 target = targetBox(enemy->object);
-	if (crashedIntoPlatform(target, level)) {
+
+	if (target.pos.y <= MIN_POS_V_PX_S16) {
+		enemy->object.mov.y = -enemy->object.mov.y;
+		target = targetBox(enemy->object);
+
+	} else if (crashedIntoPlatform(target, level)) {
 
 		// THIS MUST BE OPTIMIZED
 
 		// change horizontal direction
 		enemy->object.mov.x = -enemy->object.mov.x;
 		target = targetBox(enemy->object);
+
 		if (crashedIntoPlatform(target, level)) {
 
 			enemy->object.mov.x = -enemy->object.mov.x;
