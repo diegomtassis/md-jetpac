@@ -24,14 +24,14 @@
 static const int MIN_TIME_BETWEEN_ENEMIES = SUBTICKPERSECOND * 1.3;
 static const int MAX_TIME_BETWEEN_ENEMIES = SUBTICKPERSECOND * 2;
 
+void updatePosition(Enemy*, Level*);
+
 static void addEnemy(Level level[static 1], u8 pos);
 static void releaseDeadEnemies(Level level[static 1]);
 static void releaseEnemy(Enemy*);
 static void enemiesJoin(Level level[static 1]);
 
 static void enemyActs(Enemy*, Level*);
-static void updatePosition(Enemy*, Level*);
-static bool crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]);
 
 static void detectNuclearBomb();
 
@@ -175,50 +175,7 @@ static void enemiesJoin(Level level[static 1]) {
 
 static void enemyActs(Enemy* enemy, Level level[static 1]) {
 
-	enemy->definition->actFunc(enemy);
-	updatePosition(enemy, level);
-}
-
-static void updatePosition(Enemy* enemy, Level level[static 1]) {
-
-	// horizontal position
-	Box_s16 target = targetBox(enemy->object);
-	if (crashedIntoPlatform(target, level)) {
-
-		killEnemy(enemy, level, TRUE);
-		return;
-	}
-
-	if (target.pos.x > ENEMY_DEFAULT_MAX_POS_H_PX_S16) {
-		enemy->object.pos.x = ENEMY_DEFAULT_MIN_POS_H_PX_F16;
-
-	} else if (target.pos.x < ENEMY_DEFAULT_MIN_POS_H_PX_S16) {
-		enemy->object.pos.x = ENEMY_DEFAULT_MAX_POS_H_PX_F16;
-	} else {
-		enemy->object.pos.x += enemy->object.mov.x;
-	}
-
-	enemy->object.pos.y += enemy->object.mov.y;
-
-	// update box
-	updateBox(&enemy->object);
-}
-
-static bool crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]) {
-
-	bool crashed = overlap(subject_box, level->floor->object.box);
-	if (crashed) {
-		return TRUE;
-	}
-
-	for (u8 i = 0; i < level->num_platforms; i++) {
-		crashed = overlap(subject_box, level->platforms[i]->object.box);
-		if (crashed) {
-			return TRUE;
-		}
-	}
-
-	return FALSE;
+	enemy->definition->actFunc(enemy, level);
 }
 
 static void detectNuclearBomb() {

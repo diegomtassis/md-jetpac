@@ -51,9 +51,9 @@ struct enemy {
 	u8 health;
 };
 
-typedef void (*EnemyGrowFunc)(Enemy*);
-typedef void (*EnemyActFunc)(Enemy*);
-typedef void (*EnemyDieFunc)(Enemy*);
+typedef void (*EnemyGrowFunc)(Enemy enemy[static 1]);
+typedef void (*EnemyActFunc)(Enemy enemy[static 1], Level* level);
+typedef void (*EnemyDieFunc)(Enemy enemy[static 1]);
 
 struct enemyDefinition {
 	u8 type;

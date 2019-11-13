@@ -10,6 +10,7 @@
 #include "../../inc/constants.h"
 #include "../../inc/elements.h"
 #include "../../inc/enemies.h"
+#include "../../inc/enemy.h"
 #include "../../inc/fwk/commons.h"
 #include "../../res/sprite.h"
 
@@ -60,9 +61,18 @@ void growAlien(Enemy* enemy) {
 	}
 }
 
-void actAlien(Enemy enemy[static 1]) {
+void actAlien(Enemy enemy[static 1], Level level[static 1]) {
 
 	enemy->health = ALIVE;
+
+	Box_s16 target = targetBox(enemy->object);
+	if (crashedIntoPlatform(target, level)) {
+
+		killEnemy(enemy, level, TRUE);
+		return;
+	}
+
+	updatePosition(enemy, target);
 }
 
 void dieAlien(Enemy enemy[static 1]) {
