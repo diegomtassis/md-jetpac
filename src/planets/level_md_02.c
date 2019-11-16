@@ -53,7 +53,7 @@ static void defineEnemies(Level level[static 1]) {
 	level->def.enemy_def = alienDefinition;
 
 	level->enemies.count = 0;
-	level->enemies.size = 8;
+	level->enemies.size = 5;
 }
 
 static void defineSpaceship(Level level[static 1]) {

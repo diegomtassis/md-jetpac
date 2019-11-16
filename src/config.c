@@ -51,6 +51,8 @@ void setUpGame(Game* game) {
 		VDP_waitVSync();
 	} while (!start);
 
+	setRandomSeed(getTick());
+
 	setGameConfig(game);
 	clearConfigScreen();
 	VDP_setTextPriority(prev_priority);

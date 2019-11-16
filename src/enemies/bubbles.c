@@ -16,7 +16,7 @@
 
 #define SPEED_ZERO		FIX16_0
 #define SPEED_H_NORMAL	FIX16(1)
-#define SPEED_V_NORMAL	FIX16(0.3)
+#define SPEED_V_NORMAL	FIX16(0.7)
 
 #define BUBBLE_WIDTH    	16
 #define BUBBLE_HEIGHT    	14
@@ -58,9 +58,9 @@ static Enemy* createBubble(EnemyDefinition definition[static 1]) {
 
 	// V speed
 	if (random() % 2) {
-		enemy->object.mov.y = SPEED_ZERO;
-	} else {
 		enemy->object.mov.y = SPEED_V_NORMAL;
+	} else {
+		enemy->object.mov.y = -SPEED_V_NORMAL;
 	}
 
 	// box

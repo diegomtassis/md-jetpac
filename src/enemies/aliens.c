@@ -93,6 +93,10 @@ static void actAlien(Enemy enemy[static 1], Level level[static 1]) {
 		enemy->object.mov.y = -enemy->object.mov.y;
 		target = targetBox(enemy->object);
 
+	} else 	if (target.pos.y >= MAX_POS_V_PX_S16) {
+		enemy->object.mov.y = -enemy->object.mov.y;
+		target = targetBox(enemy->object);
+
 	} else if (crashedIntoPlatform(target, level)) {
 
 		// THIS MUST BE OPTIMIZED
