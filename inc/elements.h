@@ -48,6 +48,7 @@ struct enemy {
 	EnemyDefinition* definition;
 	Object_f16 object;
 	Sprite* sprite;
+	void* extension;
 	u8 health;
 };
 

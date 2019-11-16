@@ -16,7 +16,9 @@
 
 #define SPEED_ZERO		FIX16_0
 #define SPEED_H_NORMAL	FIX16(1)
-#define SPEED_V_NORMAL	FIX16(0.7)
+#define SPEED_V_NORMAL	FIX16(1)
+
+#define WAIT_BETWEEN_DIRECTION_CHANGE    	125
 
 #define BUBBLE_WIDTH    	16
 #define BUBBLE_HEIGHT    	14
@@ -34,12 +36,18 @@ const EnemyDefinition bubbleDefinition = { //
 				.releaseFunc = &releaseBubble };
 
 typedef struct {
-	Enemy* enemy;
+	u16 mov_counter;
 } Bubble;
+
+static f16 randomVSpeed();
 
 static Enemy* createBubble(EnemyDefinition definition[static 1]) {
 
 	Enemy* enemy = createEnemy(definition);
+
+	Bubble* bubble = MEM_calloc(sizeof *bubble);
+	bubble->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;
+	enemy->extension = bubble;
 
 	// size
 	enemy->object.size.x = BUBBLE_WIDTH;
@@ -57,11 +65,7 @@ static Enemy* createBubble(EnemyDefinition definition[static 1]) {
 	enemy->object.pos.y = randomInRangeFix16(MIN_POS_V_PX_F16, ENEMY_DEFAULT_MAX_POS_START_V_PX_F16);
 
 	// V speed
-	if (random() % 2) {
-		enemy->object.mov.y = SPEED_V_NORMAL;
-	} else {
-		enemy->object.mov.y = -SPEED_V_NORMAL;
-	}
+	enemy->object.mov.y = randomVSpeed();
 
 	// box
 	enemy->object.box.w = BUBBLE_WIDTH;
@@ -88,7 +92,14 @@ static void actBubble(Enemy enemy[static 1], Level level[static 1]) {
 
 	Box_s16 target = targetBox(enemy->object);
 
-	if (target.pos.y <= MIN_POS_V_PX_S16) {
+	Bubble* bubble = enemy->extension;
+	bubble->mov_counter--;
+	if (!bubble->mov_counter) {
+		enemy->object.mov.y = randomVSpeed();
+		bubble->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;
+	}
+
+	if (target.pos.y <= MIN_POS_V_PX_S16 || target.pos.y >= MAX_POS_V_PX_S16) {
 		enemy->object.mov.y = -enemy->object.mov.y;
 		target = targetBox(enemy->object);
 
@@ -113,6 +124,25 @@ static void actBubble(Enemy enemy[static 1], Level level[static 1]) {
 
 static void releaseBubble(Enemy enemy[static 1]) {
 
+	if (enemy->extension) {
+		MEM_free(enemy->extension);
+		enemy->extension = 0;
+	}
+
 	SPR_releaseSprite(enemy->sprite);
 	releaseEnemy(enemy);
+}
+
+static f16 randomVSpeed() {
+
+	int i = random() % 3;
+	if (i == 2) {
+		return SPEED_V_NORMAL;
+	}
+
+	if (i) {
+		return -SPEED_V_NORMAL;
+	}
+
+	return SPEED_ZERO;
 }
