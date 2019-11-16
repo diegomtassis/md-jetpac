@@ -25,5 +25,4 @@ void releaseEnemy(Enemy enemy[static 1]);
 void updatePosition(Enemy* enemy, Box_s16 target);
 bool crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]);
 
-
 #endif /* INC_ENEMIES_H_ */

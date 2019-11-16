@@ -18,7 +18,26 @@
 #define SPEED_H_NORMAL	FIX16(1)
 #define SPEED_V_NORMAL	FIX16(0.3)
 
-Enemy* createMeteorite(EnemyDefinition definition[static 1]) {
+#define METEORITE_WIDTH		16
+#define METEORITE_HEIGHT  	12
+
+static Enemy* createMeteorite(EnemyDefinition definition[static 1]);
+static void actMeteorite(Enemy enemy[static 1], Level level[static 1]);
+static void releaseMeteorite(Enemy enemy[static 1]);
+
+const EnemyDefinition meteoriteDefinition = { //
+		.type = METEORITE, //
+				.size_t.x = METEORITE_WIDTH, //
+				.size_t.y = METEORITE_HEIGHT, //
+				.createFunc = &createMeteorite, //
+				.actFunc = &actMeteorite, //
+				.releaseFunc = &releaseMeteorite };
+
+typedef struct {
+	Enemy* enemy;
+} Meteorite;
+
+static Enemy* createMeteorite(EnemyDefinition definition[static 1]) {
 
 	Enemy* enemy = createEnemy(definition);
 
@@ -65,7 +84,7 @@ Enemy* createMeteorite(EnemyDefinition definition[static 1]) {
 	return enemy;
 }
 
-void actMeteorite(Enemy enemy[static 1], Level level[static 1]) {
+static void actMeteorite(Enemy enemy[static 1], Level level[static 1]) {
 
 	Box_s16 target = targetBox(enemy->object);
 	if (crashedIntoPlatform(target, level)) {
@@ -77,7 +96,7 @@ void actMeteorite(Enemy enemy[static 1], Level level[static 1]) {
 	updatePosition(enemy, target);
 }
 
-void releaseMeteorite(Enemy enemy[static 1]) {
+static void releaseMeteorite(Enemy enemy[static 1]) {
 
 	SPR_releaseSprite(enemy->sprite);
 	releaseEnemy(enemy);

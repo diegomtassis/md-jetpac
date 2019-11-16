@@ -17,9 +17,28 @@
 
 #define SPEED_ZERO		FIX16_0
 #define SPEED_H_NORMAL	FIX16(1)
-#define SPEED_V_NORMAL	FIX16(0.3)
+#define SPEED_V_NORMAL	FIX16(1)
 
-Enemy* createAlien(EnemyDefinition definition[static 1]) {
+#define ALIEN_WIDTH    		16
+#define ALIEN_HEIGHT    	14
+
+static Enemy* createAlien(EnemyDefinition definition[static 1]);
+static void actAlien(Enemy enemy[static 1], Level level[static 1]);
+static void releaseAlien(Enemy enemy[static 1]);
+
+const EnemyDefinition alienDefinition = { //
+		.type = ALIEN, //
+				.size_t.x = ALIEN_WIDTH, //
+				.size_t.y = ALIEN_HEIGHT, //
+				.createFunc = &createAlien, //
+				.actFunc = &actAlien, //
+				.releaseFunc = &releaseAlien };
+
+typedef struct {
+	Enemy* enemy;
+} Alien;
+
+static Enemy* createAlien(EnemyDefinition definition[static 1]) {
 
 	Enemy* enemy = createEnemy(definition);
 
@@ -40,9 +59,9 @@ Enemy* createAlien(EnemyDefinition definition[static 1]) {
 
 	// V speed
 	if (random() % 2) {
-		enemy->object.mov.y = SPEED_ZERO;
-	} else {
 		enemy->object.mov.y = SPEED_V_NORMAL;
+	} else {
+		enemy->object.mov.y = -SPEED_V_NORMAL;
 	}
 
 	// box
@@ -66,7 +85,7 @@ Enemy* createAlien(EnemyDefinition definition[static 1]) {
 	return enemy;
 }
 
-void actAlien(Enemy enemy[static 1], Level level[static 1]) {
+static void actAlien(Enemy enemy[static 1], Level level[static 1]) {
 
 	Box_s16 target = targetBox(enemy->object);
 
@@ -93,7 +112,7 @@ void actAlien(Enemy enemy[static 1], Level level[static 1]) {
 	updatePosition(enemy, target);
 }
 
-void releaseAlien(Enemy enemy[static 1]) {
+static void releaseAlien(Enemy enemy[static 1]) {
 
 	SPR_releaseSprite(enemy->sprite);
 	releaseEnemy(enemy);

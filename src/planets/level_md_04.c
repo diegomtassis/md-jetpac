@@ -81,15 +81,9 @@ static void defineJetman(Level level[static 1]) {
 
 static void defineEnemies(Level level[static 1]) {
 
-	level->def.enemy_def.type = ALIEN;
-	level->def.enemy_def.size_t.x = ALIEN_WIDTH;
-	level->def.enemy_def.size_t.y = ALIEN_HEIGHT;
-
-	level->def.enemy_def.createFunc = &createAlien;
-	level->def.enemy_def.actFunc = &actAlien;
-	level->def.enemy_def.releaseFunc = &releaseAlien;
+	level->def.enemy_def = alienDefinition;
 
 	level->enemies.count = 0;
-	level->enemies.size = 9;
+	level->enemies.size = 7;
 }
 

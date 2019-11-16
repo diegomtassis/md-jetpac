@@ -18,7 +18,26 @@
 #define SPEED_H_NORMAL	FIX16(1)
 #define SPEED_V_NORMAL	FIX16(0.3)
 
-Enemy* createBubble(EnemyDefinition definition[static 1]) {
+#define BUBBLE_WIDTH    	16
+#define BUBBLE_HEIGHT    	14
+
+static Enemy* createBubble(EnemyDefinition definition[static 1]);
+static void actBubble(Enemy enemy[static 1], Level level[static 1]);
+static void releaseBubble(Enemy enemy[static 1]);
+
+const EnemyDefinition bubbleDefinition = { //
+		.type = BUBBLE, //
+				.size_t.x = BUBBLE_WIDTH, //
+				.size_t.y = BUBBLE_HEIGHT, //
+				.createFunc = &createBubble, //
+				.actFunc = &actBubble, //
+				.releaseFunc = &releaseBubble };
+
+typedef struct {
+	Enemy* enemy;
+} Bubble;
+
+static Enemy* createBubble(EnemyDefinition definition[static 1]) {
 
 	Enemy* enemy = createEnemy(definition);
 
@@ -65,7 +84,7 @@ Enemy* createBubble(EnemyDefinition definition[static 1]) {
 	return enemy;
 }
 
-void actBubble(Enemy enemy[static 1], Level level[static 1]) {
+static void actBubble(Enemy enemy[static 1], Level level[static 1]) {
 
 	Box_s16 target = targetBox(enemy->object);
 
@@ -88,9 +107,11 @@ void actBubble(Enemy enemy[static 1], Level level[static 1]) {
 			target = targetBox(enemy->object);
 		}
 	}
+
+	updatePosition(enemy, target);
 }
 
-void releaseBubble(Enemy enemy[static 1]) {
+static void releaseBubble(Enemy enemy[static 1]) {
 
 	SPR_releaseSprite(enemy->sprite);
 	releaseEnemy(enemy);
