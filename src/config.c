@@ -101,17 +101,18 @@ static void displayOption(const char *str, u8 highlighted, u16 x, u16 y) {
 
 static void setGameConfig(Game* game) {
 
+	u8 level = 0;
 	if (current_option == 0) {
 		game->mode = MODE_ZX;
-		game->num_levels = 2;
+		game->num_levels = 3;
 		game->createLevel = MEM_alloc(game->num_levels * sizeof(Level*));
-		game->createLevel[0] = createLevelZX01;
-		game->createLevel[1] = createLevelZX02;
+		game->createLevel[level++] = createLevelZX01;
+		game->createLevel[level++] = createLevelZX02;
+		game->createLevel[level++] = createLevelZX03;
 	} else {
 		game->mode = MODE_MD;
 		game->num_levels = 5;
 		game->createLevel = MEM_alloc(game->num_levels * sizeof(Level*));
-		u8 level = 0;
 		game->createLevel[level++] = createLevelZX01;
 		game->createLevel[level++] = createLevelMD01;
 		game->createLevel[level++] = createLevelMD02;
