@@ -1,14 +1,15 @@
 SPRITE jetman_sprite "sprite/jetman.png" 2 4 NONE 0
 SPRITE meteorite_sprite "sprite/meteorite.png" 2 2 NONE 0
 SPRITE alien_sprite "sprite/alien.png" 2 2 NONE 0
-SPRITE bubble_sprite "sprite/bubble.png" 2 2 NONE 0
+SPRITE bubble_sprite "sprite/bubble.png" 2 2 NONE 20
 SPRITE u1_base_sprite "sprite/u1_base.png" 2 2 NONE 0
 SPRITE u1_middle_sprite "sprite/u1_middle.png" 2 2 NONE 0
 SPRITE u1_top_sprite "sprite/u1_top.png" 2 2 NONE 0
 SPRITE u1_sprite "sprite/u1.png" 2 6 NONE 0
 SPRITE fuel_sprite "sprite/fuel.png" 2 2 NONE 0
 SPRITE gold_sprite "sprite/gold.png" 2 1 NONE 0
-SPRITE nuke_sprite "sprite/nuke.png" 2 2 NONE 0
+SPRITE nuke_sprite "sprite/nuke.png" 2 2 NONE 15
+SPRITE triatom_sprite "sprite/triatom.png" 2 2 NONE 15
 SPRITE bean_sprite "sprite/bean.png" 2 2 NONE 0
 SPRITE diamond_sprite "sprite/diamond.png" 2 2 NONE 5
 SPRITE boom_sprite "sprite/boom.png" 3 2 NONE 0

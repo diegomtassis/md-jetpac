@@ -15,8 +15,8 @@
 #include "../../res/sprite.h"
 
 #define SPEED_ZERO		FIX16_0
-#define SPEED_H_NORMAL	FIX16(1)
-#define SPEED_V_NORMAL	FIX16(1)
+#define SPEED_H_NORMAL	FIX16(0.8)
+#define SPEED_V_NORMAL	FIX16(0.8)
 
 #define WAIT_BETWEEN_DIRECTION_CHANGE    	125
 
@@ -77,8 +77,7 @@ static Enemy* createBubble(EnemyDefinition definition[static 1]) {
 	// sprite
 	Sprite* enemySprite = SPR_addSprite(&bubble_sprite, fix16ToInt(enemy->object.pos.x),
 			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-	SPR_setAnim(enemySprite, (abs(random())) % 4);
-	SPR_setFrame(enemySprite, (abs(random())) % 2);
+	SPR_setAnim(enemySprite, (abs(random())) % 8); // 8 animations
 	enemy->sprite = enemySprite;
 
 	if (enemy->object.mov.x > 0) {
