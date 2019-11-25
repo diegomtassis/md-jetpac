@@ -28,5 +28,6 @@ void killEnemy(Enemy* enemy, Level level[static 1], u8 exploding);
 extern const EnemyDefinition meteoriteDefinition;
 extern const EnemyDefinition alienDefinition;
 extern const EnemyDefinition bubbleDefinition;
+extern const EnemyDefinition fighterDefinition;
 
 #endif /* INC_ENEMIES_H_ */

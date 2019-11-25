@@ -14,6 +14,7 @@ Level* createLevel00();
 Level* createLevelZX01();
 Level* createLevelZX02();
 Level* createLevelZX03();
+Level* createLevelZX04();
 Level* createLevelMD01();
 Level* createLevelMD02();
 Level* createLevelMD03();

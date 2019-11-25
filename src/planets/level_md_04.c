@@ -81,7 +81,7 @@ static void defineJetman(Level level[static 1]) {
 
 static void defineEnemies(Level level[static 1]) {
 
-	level->def.enemy_def = alienDefinition;
+	level->def.enemy_def = fighterDefinition;
 
 	level->enemies.count = 0;
 	level->enemies.size = 7;

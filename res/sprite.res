@@ -2,6 +2,7 @@ SPRITE jetman_sprite "sprite/jetman.png" 2 4 NONE 0
 SPRITE meteorite_sprite "sprite/meteorite.png" 2 2 NONE 0
 SPRITE alien_sprite "sprite/alien.png" 2 2 NONE 0
 SPRITE bubble_sprite "sprite/bubble.png" 2 2 NONE 20
+SPRITE fighter_sprite "sprite/fighter.png" 2 1 NONE 0
 SPRITE u1_base_sprite "sprite/u1_base.png" 2 2 NONE 0
 SPRITE u1_middle_sprite "sprite/u1_middle.png" 2 2 NONE 0
 SPRITE u1_top_sprite "sprite/u1_top.png" 2 2 NONE 0
