@@ -22,6 +22,7 @@
 #include "../res/sprite.h"
 
 #define MAX_COLLECTABLES 5
+#define BLINK_TIME 15
 
 typedef enum {
 	GOLD, //
@@ -38,15 +39,16 @@ typedef struct {
 	CollectableType type;
 	u16 width;
 	u16 height;
+	bool blinks;
 	const SpriteDefinition* spriteDefinition;
 } CollectableDefinition;
 
 static const CollectableDefinition COLLECTABLE_DEFS[] = { //
-		{ GOLD, 16, 8, &gold_sprite }, //
-				{ BEAN, 16, 9, &bean_sprite }, //
-				{ NUKE, 16, 11, &nuke_sprite }, //
-				{ DIAMOND, 16, 12, &diamond_sprite }, //
-				{ TRIATOM, 16, 13, &triatom_sprite } };
+		{ GOLD, 16, 8, FALSE, &gold_sprite }, //
+				{ BEAN, 16, 9, FALSE, &bean_sprite }, //
+				{ NUKE, 16, 11, TRUE, &nuke_sprite }, //
+				{ DIAMOND, 16, 12, FALSE, &diamond_sprite }, //
+				{ TRIATOM, 16, 13, TRUE, &triatom_sprite } };
 
 typedef enum {
 	FALLING = 1, //
@@ -164,6 +166,13 @@ static void createCollectable(Level level[static 1], u8 idx) {
 			fix16ToInt(collectable->object.pos.y), //
 			default_sprite_attrs);
 
+	if (collectableDef.blinks) {
+		collectable->blinker = MEM_alloc(sizeof(*collectable->blinker));
+		collectable->blinker->init_value = BLINK_TIME;
+		collectable->blinker->counter = BLINK_TIME;
+		collectable->blinker->visible = TRUE;
+	}
+
 	level->collectables.e[idx] = collectable;
 	level->collectables.count++;
 
@@ -210,11 +219,19 @@ static void updateCollectable(Collectable* collectable, Level level[static 1]) {
 			onEvent(GRABBED_COLLECTABLE);
 		}
 	}
+
+	if (collectable->blinker) {
+		blink(collectable->blinker, collectable->sprite);
+	}
 }
 
 static void releaseCollectable(Collectable* collectable) {
 
 	if (collectable) {
+		if (collectable->blinker) {
+			MEM_free(collectable->blinker);
+		}
+
 		SPR_releaseSprite(collectable->sprite);
 		MEM_free(collectable);
 	}

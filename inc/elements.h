@@ -10,6 +10,7 @@
 
 #include <genesis.h>
 
+#include "fwk/blinker.h"
 #include "fwk/physics.h"
 
 #define ALIVE		0x01
@@ -73,6 +74,7 @@ typedef struct {
 typedef struct {
 	Object_f16 object;
 	Sprite* sprite;
+	Blinker* blinker;
 	u8 type;
 	u8 step;
 } Collectable;
