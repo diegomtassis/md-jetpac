@@ -14,13 +14,8 @@ void blink(Blinker* blinker, Sprite* sprite) {
 	blinker->counter--;
 	if (!blinker->counter) {
 		blinker->counter = blinker->init_value;
-		if (blinker->visible) {
-			SPR_setVisibility(sprite, HIDDEN);
-			blinker->visible = FALSE;
-		} else {
-			SPR_setVisibility(sprite, VISIBLE);
-			blinker->visible = TRUE;
-		}
+		blinker->visible = !blinker->visible;
+		SPR_setVisibility(sprite, blinker->visible ? VISIBLE : HIDDEN);
 	}
 }
 
