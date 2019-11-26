@@ -29,5 +29,6 @@ extern const EnemyDefinition meteoriteDefinition;
 extern const EnemyDefinition alienDefinition;
 extern const EnemyDefinition bubbleDefinition;
 extern const EnemyDefinition fighterDefinition;
+extern const EnemyDefinition saucerDefinition;
 
 #endif /* INC_ENEMIES_H_ */

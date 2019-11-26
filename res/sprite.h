@@ -6,6 +6,7 @@ extern const SpriteDefinition meteorite_sprite;
 extern const SpriteDefinition alien_sprite;
 extern const SpriteDefinition bubble_sprite;
 extern const SpriteDefinition fighter_sprite;
+extern const SpriteDefinition saucer_sprite;
 extern const SpriteDefinition u1_base_sprite;
 extern const SpriteDefinition u1_middle_sprite;
 extern const SpriteDefinition u1_top_sprite;
