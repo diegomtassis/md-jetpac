@@ -14,14 +14,14 @@
 #include "../../inc/fwk/commons.h"
 #include "../../res/sprite.h"
 
-#define SPEED_ZERO		FIX16_0
-#define SPEED_H_NORMAL	FIX16(0.9)
-#define SPEED_V_NORMAL	FIX16(0.6)
-
-#define WAIT_BETWEEN_DIRECTION_CHANGE    	125
-
 #define FIGHTER_WIDTH    	16
 #define FIGHTER_HEIGHT    	7
+
+#define SPEED_ZERO		FIX16_0
+#define FIGHTER_DEFAULT_SPEED_H	FIX16(0.9)
+#define FIGHTER_DEFAULT_SPEED_V	FIX16(0.6)
+
+#define WAIT_BETWEEN_DIRECTION_CHANGE    	125
 
 static Enemy* createFighter();
 static void actFighter(Enemy enemy[static 1], Level level[static 1]);
@@ -49,30 +49,11 @@ static Enemy* createFighter() {
 	fighter->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;
 	enemy->extension = fighter;
 
-	// size
-	enemy->object.size.x = FIGHTER_WIDTH;
-	enemy->object.size.y = FIGHTER_HEIGHT;
-
-	// position & direction
-	if (random() % 2) {
-		enemy->object.pos.x = ENEMY_DEFAULT_MIN_POS_H_PX_F16;
-		enemy->object.mov.x = SPEED_H_NORMAL;
-	} else {
-		enemy->object.pos.x = ENEMY_DEFAULT_MAX_POS_H_PX_F16;
-		enemy->object.mov.x = -SPEED_H_NORMAL;
-	}
-
-	enemy->object.pos.y = randomInRangeFix16(MIN_POS_V_PX_F16, ENEMY_DEFAULT_MAX_POS_START_V_PX_F16);
-
-	// V speed
-	enemy->object.mov.y = randomVSpeed();
+	// position & movement
+	initPosAndMov(enemy, FIGHTER_DEFAULT_SPEED_H, randomVSpeed());
 
 	// box
-	enemy->object.box.w = FIGHTER_WIDTH;
-	enemy->object.box.h = FIGHTER_HEIGHT;
-
-	enemy->object.box.pos.x = fix16ToInt(enemy->object.pos.x);
-	enemy->object.box.pos.y = fix16ToInt(enemy->object.pos.y);
+	initBox(enemy);
 
 	// sprite
 	Sprite* enemySprite = SPR_addSprite(&fighter_sprite, fix16ToInt(enemy->object.pos.x),
@@ -136,11 +117,11 @@ static f16 randomVSpeed() {
 
 	int i = random() % 3;
 	if (i == 2) {
-		return SPEED_V_NORMAL;
+		return FIGHTER_DEFAULT_SPEED_V;
 	}
 
 	if (i) {
-		return -SPEED_V_NORMAL;
+		return -FIGHTER_DEFAULT_SPEED_V;
 	}
 
 	return SPEED_ZERO;

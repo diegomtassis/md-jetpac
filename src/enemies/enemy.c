@@ -18,12 +18,41 @@ Enemy* createEnemy(const EnemyDefinition definition[static 1]) {
 	enemy->definition = definition;
 	enemy->health = ALIVE;
 
+	// size
+	enemy->object.size.x = definition->size_t.x;
+	enemy->object.size.y = definition->size_t.y;
+
 	return enemy;
 }
 
 void releaseEnemy(Enemy enemy[static 1]) {
 
 	MEM_free(enemy);
+}
+
+void initPosAndMov(Enemy enemy[static 1], fix16 mov_x, fix16 mov_y) {
+
+	// horizontal
+	if (random() % 2) {
+		enemy->object.pos.x = ENEMY_DEFAULT_MIN_POS_H_PX_F16;
+		enemy->object.mov.x = mov_x;
+	} else {
+		enemy->object.pos.x = ENEMY_DEFAULT_MAX_POS_H_PX_F16;
+		enemy->object.mov.x = -mov_x;
+	}
+
+	// vertical
+	enemy->object.pos.y = randomInRangeFix16(MIN_POS_V_PX_F16, ENEMY_DEFAULT_MAX_POS_START_V_PX_F16);
+	enemy->object.mov.y = mov_y;
+}
+
+void initBox(Enemy enemy[static 1]) {
+
+	enemy->object.box.w = enemy->definition->size_t.x;
+	enemy->object.box.h = enemy->definition->size_t.y;
+
+	enemy->object.box.pos.x = fix16ToInt(enemy->object.pos.x);
+	enemy->object.box.pos.y = fix16ToInt(enemy->object.pos.y);
 }
 
 void updatePosition(Enemy* enemy, Box_s16 target) {
