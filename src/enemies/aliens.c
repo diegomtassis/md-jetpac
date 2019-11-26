@@ -22,7 +22,7 @@
 #define ALIEN_WIDTH    		16
 #define ALIEN_HEIGHT    	14
 
-static Enemy* createAlien(EnemyDefinition definition[static 1]);
+static Enemy* createAlien();
 static void actAlien(Enemy enemy[static 1], Level level[static 1]);
 static void releaseAlien(Enemy enemy[static 1]);
 
@@ -38,9 +38,9 @@ typedef struct {
 	Enemy* enemy;
 } Alien;
 
-static Enemy* createAlien(EnemyDefinition definition[static 1]) {
+static Enemy* createAlien() {
 
-	Enemy* enemy = createEnemy(definition);
+	Enemy* enemy = createEnemy(&alienDefinition);
 
 	// size
 	enemy->object.size.x = ALIEN_WIDTH;

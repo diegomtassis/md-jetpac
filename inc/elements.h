@@ -46,14 +46,14 @@ typedef struct enemy Enemy;
 typedef struct enemyDefinition EnemyDefinition;
 
 struct enemy {
-	EnemyDefinition* definition;
+	const EnemyDefinition* definition;
 	Object_f16 object;
 	Sprite* sprite;
 	void* extension;
 	u8 health;
 };
 
-typedef Enemy* (*EnemyCreateFunc)(EnemyDefinition* definition);
+typedef Enemy* (*EnemyCreateFunc)();
 typedef void (*EnemyActFunc)(Enemy enemy[static 1], Level* level);
 typedef void (*EnemyReleaseFunc)(Enemy enemy[static 1]);
 

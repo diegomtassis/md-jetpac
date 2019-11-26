@@ -12,7 +12,7 @@
 #include "../../inc/fwk/commons.h"
 #include "../../inc/fwk/physics.h"
 
-Enemy* createEnemy(EnemyDefinition definition[static 1]) {
+Enemy* createEnemy(const EnemyDefinition definition[static 1]) {
 
 	Enemy* enemy = MEM_calloc(sizeof *enemy);
 	enemy->definition = definition;

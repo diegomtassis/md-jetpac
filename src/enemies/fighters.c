@@ -23,7 +23,7 @@
 #define FIGHTER_WIDTH    	16
 #define FIGHTER_HEIGHT    	7
 
-static Enemy* createFighter(EnemyDefinition definition[static 1]);
+static Enemy* createFighter();
 static void actFighter(Enemy enemy[static 1], Level level[static 1]);
 static void releaseFighter(Enemy enemy[static 1]);
 
@@ -41,9 +41,9 @@ typedef struct {
 
 static f16 randomVSpeed();
 
-static Enemy* createFighter(EnemyDefinition definition[static 1]) {
+static Enemy* createFighter() {
 
-	Enemy* enemy = createEnemy(definition);
+	Enemy* enemy = createEnemy(&fighterDefinition);
 
 	Fighter* fighter = MEM_calloc(sizeof *fighter);
 	fighter->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;

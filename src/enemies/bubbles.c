@@ -23,7 +23,7 @@
 #define BUBBLE_WIDTH    	16
 #define BUBBLE_HEIGHT    	14
 
-static Enemy* createBubble(EnemyDefinition definition[static 1]);
+static Enemy* createBubble();
 static void actBubble(Enemy enemy[static 1], Level level[static 1]);
 static void releaseBubble(Enemy enemy[static 1]);
 
@@ -41,9 +41,9 @@ typedef struct {
 
 static f16 randomVSpeed();
 
-static Enemy* createBubble(EnemyDefinition definition[static 1]) {
+static Enemy* createBubble() {
 
-	Enemy* enemy = createEnemy(definition);
+	Enemy* enemy = createEnemy(&bubbleDefinition);
 
 	Bubble* bubble = MEM_calloc(sizeof *bubble);
 	bubble->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;

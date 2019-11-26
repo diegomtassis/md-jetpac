@@ -21,7 +21,7 @@
 #define METEORITE_WIDTH		16
 #define METEORITE_HEIGHT  	12
 
-static Enemy* createMeteorite(EnemyDefinition definition[static 1]);
+static Enemy* createMeteorite();
 static void actMeteorite(Enemy enemy[static 1], Level level[static 1]);
 static void releaseMeteorite(Enemy enemy[static 1]);
 
@@ -37,9 +37,9 @@ typedef struct {
 	Enemy* enemy;
 } Meteorite;
 
-static Enemy* createMeteorite(EnemyDefinition definition[static 1]) {
+static Enemy* createMeteorite() {
 
-	Enemy* enemy = createEnemy(definition);
+	Enemy* enemy = createEnemy(&meteoriteDefinition);
 
 	// size
 	enemy->object.size.x = METEORITE_WIDTH;
