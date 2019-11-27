@@ -12,6 +12,7 @@
 
 #include "fwk/blinker.h"
 #include "fwk/physics.h"
+#include "fwk/types.h"
 
 #define ALIVE		0x01
 #define DEAD		0x02
@@ -30,14 +31,10 @@ typedef struct Platform Platform;
 typedef struct Jetman Jetman;
 typedef struct EnemyDefinition EnemyDefinition;
 typedef struct Enemy Enemy;
-typedef struct EnemyList EnemyList;
 typedef struct Collectable Collectable;
-typedef struct CollectableList CollectableList;
 typedef struct Grape Grape;
 typedef struct Shot Shot;
-typedef struct ShotList ShotList;
 typedef struct Explosion Explosion;
-typedef struct ExplosionList ExplosionList;
 
 struct Game {
 	u8 mode;
@@ -108,24 +105,12 @@ struct EnemyDefinition {
 	V2u16 size_t;
 };
 
-struct EnemyList {
-	u8 count;
-	u8 size;
-	Enemy** e;
-};
-
 struct Collectable {
 	Object_f16 object;
 	Sprite* sprite;
 	Blinker* blinker;
 	u8 type;
 	u8 step;
-};
-
-struct CollectableList {
-	u8 count;
-	u8 size;
-	Collectable** e;
 };
 
 struct Shot {
@@ -140,12 +125,6 @@ struct Shot {
 	Grape** grapes;
 };
 
-struct ShotList {
-	u8 count;
-	u8 size;
-	Shot** e;
-};
-
 struct Grape {
 	Object_f16* object;
 	u8 life_left;
@@ -156,12 +135,6 @@ struct Explosion {
 	V2s16 where;
 	u8 step;
 	Sprite* sprite;
-};
-
-struct ExplosionList {
-	u8 count;
-	u8 size;
-	Explosion** e;
 };
 
 struct LevelDefinition {
@@ -176,12 +149,12 @@ struct Level {
 	Platform* floor;
 	Platform** platforms;
 	u8 num_platforms;
-	EnemyList enemies;
-	CollectableList collectables;
+	List enemies;
+	List collectables;
 	Jetman* jetman;
 	Spaceship* spaceship;
-	ExplosionList booms;
-	ShotList shots;
+	List booms;
+	List shots;
 	LevelDefinition def;
 	Game* game;
 };
