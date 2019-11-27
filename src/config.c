@@ -104,13 +104,15 @@ static void setGameConfig(Game* game) {
 	u8 level = 0;
 	if (current_option == 0) {
 		game->mode = MODE_ZX;
-		game->num_levels = 5;
+		game->num_levels = 2;
 		game->createLevel = MEM_alloc(game->num_levels * sizeof(Level*));
 		game->createLevel[level++] = createLevelZX01;
 		game->createLevel[level++] = createLevelZX02;
 		game->createLevel[level++] = createLevelZX03;
 		game->createLevel[level++] = createLevelZX04;
 		game->createLevel[level++] = createLevelZX05;
+		game->createLevel[level++] = createLevelZX06;
+		game->createLevel[level++] = createLevelZX07;
 	} else {
 		game->mode = MODE_MD;
 		game->num_levels = 5;

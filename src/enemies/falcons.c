@@ -58,7 +58,7 @@ static Enemy* createFalcon() {
 	// sprite
 	Sprite* enemySprite = SPR_addSprite(&falcon_sprite, fix16ToInt(enemy->object.pos.x),
 			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-	SPR_setAnim(enemySprite, (abs(random())) % 8); // 8 animations
+	SPR_setAnim(enemySprite, (abs(random())) % 4);
 	SPR_setHFlip(enemySprite, enemy->object.mov.x < 0);
 	enemy->sprite = enemySprite;
 

@@ -58,8 +58,7 @@ static Enemy* createCross() {
 	// sprite
 	Sprite* enemySprite = SPR_addSprite(&cross_sprite, fix16ToInt(enemy->object.pos.x),
 			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-	SPR_setAnim(enemySprite, (abs(random())) % 8); // 8 animations
-	SPR_setHFlip(enemySprite, enemy->object.mov.x < 0);
+	SPR_setAnim(enemySprite, (abs(random())) % 4);
 	enemy->sprite = enemySprite;
 
 	return enemy;
@@ -93,9 +92,6 @@ static void actCross(Enemy enemy[static 1], Level level[static 1]) {
 			enemy->object.mov.x = -enemy->object.mov.x;
 			enemy->object.mov.y = -enemy->object.mov.y;
 			target = targetBox(enemy->object);
-
-		} else {
-			SPR_setHFlip(enemy->sprite, enemy->object.mov.x < 0);
 		}
 	}
 
