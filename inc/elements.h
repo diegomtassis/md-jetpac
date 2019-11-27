@@ -22,114 +22,41 @@
 #define U4		0x08
 
 typedef struct Game Game;
+typedef struct LevelDefinition LevelDefinition;
 typedef struct Level Level;
+typedef struct SpaceshipDefinition SpaceshipDefinition;
+typedef struct Spaceship Spaceship;
+typedef struct Platform Platform;
+typedef struct Jetman Jetman;
+typedef struct EnemyDefinition EnemyDefinition;
+typedef struct Enemy Enemy;
+typedef struct EnemyList EnemyList;
+typedef struct Collectable Collectable;
+typedef struct CollectableList CollectableList;
+typedef struct Grape Grape;
+typedef struct Shot Shot;
+typedef struct ShotList ShotList;
+typedef struct Explosion Explosion;
+typedef struct ExplosionList ExplosionList;
 
-typedef struct {
-	V2u16 pos_t;
-	V2u16 size_t;
-	Object_f16 object;
-} Platform;
-
-typedef struct {
-	Object_f16 object;
-	V2s16 order;
-	u8 walk_step_counter;
-	u8 health;
-	bool head_back;
-	bool limited_ammo;
-	u16 ammo;
-	Sprite* sprite;
-} Jetman;
-
-typedef struct enemy Enemy;
-
-typedef struct enemyDefinition EnemyDefinition;
-
-struct enemy {
-	const EnemyDefinition* definition;
-	Object_f16 object;
-	Sprite* sprite;
-	void* extension;
-	u8 health;
+struct Game {
+	u8 mode;
+	u8 lives;
+	u8 level;
+	u16 score;
+	Level* (**createLevel)(void);
+	u8 num_levels;
 };
 
-typedef Enemy* (*EnemyCreateFunc)();
-typedef void (*EnemyActFunc)(Enemy enemy[static 1], Level* level);
-typedef void (*EnemyReleaseFunc)(Enemy enemy[static 1]);
-
-struct enemyDefinition {
-	u8 type;
-	EnemyCreateFunc createFunc;
-	EnemyActFunc actFunc;
-	EnemyReleaseFunc releaseFunc;
-	V2u16 size_t;
-};
-
-typedef struct {
-	u8 count;
-	u8 size;
-	Enemy** e;
-} Enemies;
-
-typedef struct {
-	Object_f16 object;
-	Sprite* sprite;
-	Blinker* blinker;
-	u8 type;
-	u8 step;
-} Collectable;
-
-typedef struct {
-	u8 count;
-	u8 size;
-	Collectable** e;
-} Collectables;
-
-typedef struct {
-	Object_f16* object;
-	u8 life_left;
-	Sprite* sprite;
-} Grape;
-
-typedef struct {
-	V2s16 where;
-	bool to_left;
-	u8 type;
-	u8 range;
-	u8 grapes_count;
-	u8 grapes_created;
-	u8 grapes_size;
-	u16 distance_to_last;
-	Grape** grapes;
-} Shot;
-
-typedef struct {
-	u8 count;
-	u8 size;
-	Shot** e;
-} Shots;
-
-typedef struct {
-	V2s16 where;
-	u8 step;
-	Sprite* sprite;
-} Explosion;
-
-typedef struct {
-	u8 count;
-	u8 size;
-	Explosion** e;
-} Explosions;
-
-typedef struct {
+struct SpaceshipDefinition {
 	u8 type;
 	u16 init_step;
 	V2s16 base_pos;
 	V2s16 middle_pos;
 	V2s16 top_pos;
-} SpaceshipDefinition;
+};
 
-typedef struct {
+struct Spaceship {
 	u8 type;
 	u16 step;
 	u16 substep;
@@ -142,37 +69,121 @@ typedef struct {
 	Object_f16* fuel_object;
 	Sprite* fuel_sprite;
 	Sprite* fire_sprite;
-} Spaceship;
+};
 
-typedef struct {
+struct Platform {
+	V2u16 pos_t;
+	V2u16 size_t;
+	Object_f16 object;
+};
+
+struct Jetman {
+	Object_f16 object;
+	V2s16 order;
+	u8 walk_step_counter;
+	u8 health;
+	bool head_back;
+	bool limited_ammo;
+	u16 ammo;
+	Sprite* sprite;
+};
+
+struct Enemy {
+	const EnemyDefinition* definition;
+	Object_f16 object;
+	Sprite* sprite;
+	void* extension;
+	u8 health;
+};
+
+typedef Enemy* (*EnemyCreateFunc)();
+typedef void (*EnemyActFunc)(Enemy enemy[static 1], Level* level);
+typedef void (*EnemyReleaseFunc)(Enemy enemy[static 1]);
+
+struct EnemyDefinition {
+	u8 type;
+	EnemyCreateFunc createFunc;
+	EnemyActFunc actFunc;
+	EnemyReleaseFunc releaseFunc;
+	V2u16 size_t;
+};
+
+struct EnemyList {
+	u8 count;
+	u8 size;
+	Enemy** e;
+};
+
+struct Collectable {
+	Object_f16 object;
+	Sprite* sprite;
+	Blinker* blinker;
+	u8 type;
+	u8 step;
+};
+
+struct CollectableList {
+	u8 count;
+	u8 size;
+	Collectable** e;
+};
+
+struct Shot {
+	V2s16 where;
+	bool to_left;
+	u8 type;
+	u8 range;
+	u8 grapes_count;
+	u8 grapes_created;
+	u8 grapes_size;
+	u16 distance_to_last;
+	Grape** grapes;
+};
+
+struct ShotList {
+	u8 count;
+	u8 size;
+	Shot** e;
+};
+
+struct Grape {
+	Object_f16* object;
+	u8 life_left;
+	Sprite* sprite;
+};
+
+struct Explosion {
+	V2s16 where;
+	u8 step;
+	Sprite* sprite;
+};
+
+struct ExplosionList {
+	u8 count;
+	u8 size;
+	Explosion** e;
+};
+
+struct LevelDefinition {
 	u8 mind_bottom;
 	V2s16* jetman_init_pos;
 	u16 ammo;
 	SpaceshipDefinition spaceship_def;
 	EnemyDefinition enemy_def;
-} LevelDefinition;
+};
 
 struct Level {
 	Platform* floor;
 	Platform** platforms;
 	u8 num_platforms;
-	Enemies enemies;
-	Collectables collectables;
+	EnemyList enemies;
+	CollectableList collectables;
 	Jetman* jetman;
 	Spaceship* spaceship;
-	Explosions booms;
-	Shots shots;
+	ExplosionList booms;
+	ShotList shots;
 	LevelDefinition def;
 	Game* game;
-};
-
-struct Game {
-	u8 mode;
-	u8 lives;
-	u8 level;
-	u16 score;
-	Level* (**createLevel)(void);
-	u8 num_levels;
 };
 
 #endif /* INC_ELEMENTS_H_ */
