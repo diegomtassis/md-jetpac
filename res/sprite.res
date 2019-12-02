@@ -6,6 +6,7 @@ SPRITE fighter_sprite "sprite/fighter.png" 2 1 NONE 0
 SPRITE saucer_sprite "sprite/saucer.png" 2 1 NONE 0
 SPRITE falcon_sprite "sprite/falcon.png" 2 2 NONE 0
 SPRITE cross_sprite "sprite/cross.png" 2 2 NONE 0
+SPRITE owl_sprite "sprite/owl.png" 2 2 NONE 0
 SPRITE u1_base_sprite "sprite/u1_base.png" 2 2 NONE 0
 SPRITE u1_middle_sprite "sprite/u1_middle.png" 2 2 NONE 0
 SPRITE u1_top_sprite "sprite/u1_top.png" 2 2 NONE 0

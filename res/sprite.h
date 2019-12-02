@@ -9,6 +9,7 @@ extern const SpriteDefinition fighter_sprite;
 extern const SpriteDefinition saucer_sprite;
 extern const SpriteDefinition falcon_sprite;
 extern const SpriteDefinition cross_sprite;
+extern const SpriteDefinition owl_sprite;
 extern const SpriteDefinition u1_base_sprite;
 extern const SpriteDefinition u1_middle_sprite;
 extern const SpriteDefinition u1_top_sprite;
