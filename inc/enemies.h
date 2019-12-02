@@ -32,5 +32,6 @@ extern const EnemyDefinition fighterDefinition;
 extern const EnemyDefinition saucerDefinition;
 extern const EnemyDefinition falconDefinition;
 extern const EnemyDefinition crossDefinition;
+extern const EnemyDefinition owlDefinition;
 
 #endif /* INC_ENEMIES_H_ */
