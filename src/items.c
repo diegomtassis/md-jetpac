@@ -22,7 +22,7 @@ void dropFromSky(Object_f16* object, Box_s16* avoid, u16 itemWidth, u16 itemHeig
 	do {
 		object->pos.x = randomInRangeFix16(minHPos, maxHPos);
 		updateBox(object);
-	} while (avoid && isAbove(object->box, *avoid));
+	} while (avoid && isAboveBaseUpwardProjection(object->box, *avoid));
 }
 
 bool grab(Object_f16* subject, Object_f16* item) {

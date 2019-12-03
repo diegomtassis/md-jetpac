@@ -42,7 +42,7 @@ Box_s16 targetVBox(Object_f16 subject);
 bool contained(V2s16 subject_pos, Box_s16 object_box);
 bool overlap(Box_s16 subject_box, Box_s16 object_box);
 
-bool isAbove(Box_s16 subject_box, Box_s16 object_box);
+bool isAboveBaseUpwardProjection(Box_s16 subject_box, Box_s16 object_box);
 bool shareBase(Box_s16 subject_box, Box_s16 object_box);
 
 bool hitAbove(Box_s16 subject_box, Box_s16 object_box);

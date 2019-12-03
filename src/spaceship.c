@@ -49,7 +49,6 @@ u16 default_sprite_attrs = TILE_ATTR(PAL0, TRUE, FALSE, FALSE);
 void startSpaceship(Level level[static 1]) {
 
 	Spaceship* spaceship = MEM_calloc(sizeof *spaceship);
-
 	level->spaceship = spaceship;
 
 	if (UNASSEMBLED == level->def.spaceship_def.init_step) {
@@ -260,7 +259,7 @@ static void handleFuelling(Level level[static 1]) {
 	} else if (spaceship->substep & GRABBED) {
 
 		// fuel in jetman possession
-		if (isAbove(spaceship->fuel_object->box, spaceship->base_object->box)) {
+		if (isAboveBaseUpwardProjection(spaceship->fuel_object->box, spaceship->base_object->box)) {
 			spaceship->fuel_object->pos.x = spaceship->base_object->pos.x;
 			spaceship->substep = ASSEMBLING;
 			spaceship->fuel_object->mov.y = SPEED_V_DOWN;
@@ -322,7 +321,7 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 	Spaceship* spaceship = level->spaceship;
 	V2f16 jetman_pos = level->jetman->object.pos;
 
-	if (isAbove(part->box, spaceship->base_object->box)) {
+	if (isAboveBaseUpwardProjection(part->box, spaceship->base_object->box)) {
 		if (spaceship->substep & GRABBED) {
 			// release right over the base
 			spaceship->substep = ASSEMBLING;

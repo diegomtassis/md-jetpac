@@ -65,9 +65,9 @@ bool overlap(Box_s16 subject_box, Box_s16 object_box) {
 			&& (OVERLAPPED & axisYBoxRelativePos(subject_box, object_box));
 }
 
-bool isAbove(Box_s16 subject_box, Box_s16 object_box) {
+bool isAboveBaseUpwardProjection(Box_s16 subject_box, Box_s16 object_box) {
 
-	if (subject_box.pos.y + subject_box.h > object_box.pos.y) {
+	if (subject_box.pos.y + subject_box.h > object_box.pos.y + object_box.h) {
 		return FALSE;
 	}
 
