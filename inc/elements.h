@@ -17,11 +17,6 @@
 #define ALIVE		0x01
 #define DEAD		0x02
 
-#define U1		0x01
-#define U2		0x02
-#define U3		0x04
-#define U4		0x08
-
 typedef struct Game Game;
 typedef struct LevelDefinition LevelDefinition;
 typedef struct Level Level;
@@ -47,7 +42,6 @@ struct Game {
 };
 
 struct SpaceshipTypeDefinition {
-	u8 type;
 	const SpriteDefinition* sprite_def;
 	const SpriteDefinition* base_sprite_def;
 	const SpriteDefinition* middle_sprite_def;

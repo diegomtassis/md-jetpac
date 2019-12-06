@@ -34,25 +34,28 @@
 #define FUEL_HEIGHT 11
 
 const SpaceshipTypeDefinition u1Definition = { //
-		.type = U1, //
-				.sprite_def = &u1_sprite, //
+		.sprite_def = &u1_sprite, //
 				.base_sprite_def = &u1_base_sprite, //
 				.middle_sprite_def = &u1_middle_sprite, //
 				.top_sprite_def = &u1_top_sprite };
 
 const SpaceshipTypeDefinition u2Definition = { //
-		.type = U2, //
-				.sprite_def = &u2_sprite, //
+		.sprite_def = &u2_sprite, //
 				.base_sprite_def = &u2_base_sprite, //
 				.middle_sprite_def = &u2_middle_sprite, //
 				.top_sprite_def = &u2_top_sprite };
 
 const SpaceshipTypeDefinition u3Definition = { //
-		.type = U3, //
-				.sprite_def = &u3_sprite, //
+		.sprite_def = &u3_sprite, //
 				.base_sprite_def = &u3_base_sprite, //
 				.middle_sprite_def = &u3_middle_sprite, //
 				.top_sprite_def = &u3_top_sprite };
+
+const SpaceshipTypeDefinition u4Definition = { //
+		.sprite_def = &u4_sprite, //
+				.base_sprite_def = &u4_base_sprite, //
+				.middle_sprite_def = &u4_middle_sprite, //
+				.top_sprite_def = &u4_top_sprite };
 
 static Object_f16* createModule(u8 module, V2s16 pos);
 
