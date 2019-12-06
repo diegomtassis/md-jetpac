@@ -33,6 +33,27 @@
 #define FUEL_WIDTH 16
 #define FUEL_HEIGHT 11
 
+const SpaceshipTypeDefinition u1Definition = { //
+		.type = U1, //
+				.sprite_def = &u1_sprite, //
+				.base_sprite_def = &u1_base_sprite, //
+				.middle_sprite_def = &u1_middle_sprite, //
+				.top_sprite_def = &u1_top_sprite };
+
+const SpaceshipTypeDefinition u2Definition = { //
+		.type = U2, //
+				.sprite_def = &u2_sprite, //
+				.base_sprite_def = &u2_base_sprite, //
+				.middle_sprite_def = &u2_middle_sprite, //
+				.top_sprite_def = &u2_top_sprite };
+
+const SpaceshipTypeDefinition u3Definition = { //
+		.type = U3, //
+				.sprite_def = &u3_sprite, //
+				.base_sprite_def = &u3_base_sprite, //
+				.middle_sprite_def = &u3_middle_sprite, //
+				.top_sprite_def = &u3_top_sprite };
+
 static Object_f16* createModule(u8 module, V2s16 pos);
 
 static void handleAssembly(Level level[static 1]);
@@ -51,22 +72,28 @@ void startSpaceship(Level level[static 1]) {
 	Spaceship* spaceship = MEM_calloc(sizeof *spaceship);
 	level->spaceship = spaceship;
 
-	if (UNASSEMBLED == level->def.spaceship_def.init_step) {
+	SpaceshipDefinition spaceship_definition = level->def.spaceship_def;
+	spaceship->definition = spaceship_definition;
+
+	if (UNASSEMBLED == spaceship_definition.init_step) {
 
 		spaceship->step = UNASSEMBLED;
 		spaceship->substep = WAITING;
 
-		spaceship->top_object = createModule(TOP, level->def.spaceship_def.top_pos);
-		spaceship->top_sprite = SPR_addSprite(&u1_top_sprite, fix16ToInt(spaceship->top_object->pos.x),
-				fix16ToInt(spaceship->top_object->pos.y), default_sprite_attrs);
+		spaceship->top_object = createModule(TOP, spaceship_definition.top_pos);
+		spaceship->top_sprite = SPR_addSprite(spaceship_definition.type_definition.top_sprite_def,
+				fix16ToInt(spaceship->top_object->pos.x), fix16ToInt(spaceship->top_object->pos.y),
+				default_sprite_attrs);
 
-		spaceship->mid_object = createModule(MID, level->def.spaceship_def.middle_pos);
-		spaceship->mid_sprite = SPR_addSprite(&u1_middle_sprite, fix16ToInt(spaceship->mid_object->pos.x),
-				fix16ToInt(spaceship->mid_object->pos.y), default_sprite_attrs);
+		spaceship->mid_object = createModule(MID, spaceship_definition.middle_pos);
+		spaceship->mid_sprite = SPR_addSprite(spaceship_definition.type_definition.middle_sprite_def,
+				fix16ToInt(spaceship->mid_object->pos.x), fix16ToInt(spaceship->mid_object->pos.y),
+				default_sprite_attrs);
 
-		spaceship->base_object = createModule(BASE, level->def.spaceship_def.base_pos);
-		spaceship->base_sprite = SPR_addSprite(&u1_base_sprite, fix16ToInt(spaceship->base_object->pos.x),
-				fix16ToInt(spaceship->base_object->pos.y), default_sprite_attrs);
+		spaceship->base_object = createModule(BASE, spaceship_definition.base_pos);
+		spaceship->base_sprite = SPR_addSprite(spaceship_definition.type_definition.base_sprite_def,
+				fix16ToInt(spaceship->base_object->pos.x), fix16ToInt(spaceship->base_object->pos.y),
+				default_sprite_attrs);
 
 		spaceship->fire_sprite = 0;
 
@@ -82,8 +109,8 @@ void startSpaceship(Level level[static 1]) {
 		spaceship->base_object = createModule(WHOLE, *base_pos);
 		spaceship->base_object->mov.y = SPACESHIP_SPEED_V;
 
-		spaceship->base_sprite = SPR_addSprite(&u1_sprite, base_pos->x, base_pos->y,
-				TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+		spaceship->base_sprite = SPR_addSprite(spaceship_definition.type_definition.sprite_def, base_pos->x,
+				base_pos->y, TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
 
 		// fire
 		spaceship->fire_sprite = SPR_addSprite(&fire_sprite, base_pos->x, base_pos->y + 52,
@@ -365,8 +392,9 @@ static void mergeParts(Spaceship* spaceship) {
 	spaceship->base_object->pos.y -= FIX16_32;
 	spaceship->base_object->size.y = 48;
 	SPR_releaseSprite(spaceship->base_sprite);
-	spaceship->base_sprite = SPR_addSprite(&u1_sprite, fix16ToInt(spaceship->base_object->pos.x),
-			fix16ToInt(spaceship->base_object->pos.y), TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+	spaceship->base_sprite = SPR_addSprite(spaceship->definition.type_definition.sprite_def,
+			fix16ToInt(spaceship->base_object->pos.x), fix16ToInt(spaceship->base_object->pos.y),
+			TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
 }
 
 static void handleLanding(Spaceship* spaceship, Level level[static 1]) {
@@ -393,7 +421,7 @@ static void handleLanding(Spaceship* spaceship, Level level[static 1]) {
 	u16 v_pos_u16 = fix16ToInt(spaceship->base_object->pos.y);
 	SPR_setPosition(spaceship->base_sprite, h_pos_u16, v_pos_u16);
 
-	// fire
+// fire
 	if (spaceship->fire_sprite) {
 		u16 v_fire_u16 = v_pos_u16 + 52;
 		if (v_fire_u16 + 12 >= level->floor->object.box.pos.y) {

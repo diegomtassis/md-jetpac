@@ -32,4 +32,8 @@ void handleSpaceship(Level level[static 1]);
 void dropIfGrabbed(Spaceship*);
 void launch(Spaceship*);
 
+extern const SpaceshipTypeDefinition u1Definition;
+extern const SpaceshipTypeDefinition u2Definition;
+extern const SpaceshipTypeDefinition u3Definition;
+
 #endif /* INC_SPACESHIP_H_ */

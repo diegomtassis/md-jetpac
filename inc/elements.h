@@ -25,6 +25,7 @@
 typedef struct Game Game;
 typedef struct LevelDefinition LevelDefinition;
 typedef struct Level Level;
+typedef struct SpaceshipTypeDefinition SpaceshipTypeDefinition;
 typedef struct SpaceshipDefinition SpaceshipDefinition;
 typedef struct Spaceship Spaceship;
 typedef struct Platform Platform;
@@ -45,8 +46,16 @@ struct Game {
 	u8 num_levels;
 };
 
-struct SpaceshipDefinition {
+struct SpaceshipTypeDefinition {
 	u8 type;
+	const SpriteDefinition* sprite_def;
+	const SpriteDefinition* base_sprite_def;
+	const SpriteDefinition* middle_sprite_def;
+	const SpriteDefinition* top_sprite_def;
+};
+
+struct SpaceshipDefinition {
+	SpaceshipTypeDefinition type_definition;
 	u16 init_step;
 	V2s16 base_pos;
 	V2s16 middle_pos;
@@ -54,7 +63,7 @@ struct SpaceshipDefinition {
 };
 
 struct Spaceship {
-	u8 type;
+	SpaceshipDefinition definition;
 	u16 step;
 	u16 substep;
 	Object_f16* base_object;

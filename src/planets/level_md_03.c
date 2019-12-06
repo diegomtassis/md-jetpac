@@ -59,7 +59,7 @@ static void defineEnemies(Level level[static 1]) {
 
 static void defineSpaceship(Level level[static 1]) {
 
-	level->def.spaceship_def.type = U1;
+	level->def.spaceship_def.type_definition = u1Definition;
 	level->def.spaceship_def.init_step = ASSEMBLED;
 	setV2s16(&level->def.spaceship_def.base_pos, 40, 96);
 }
