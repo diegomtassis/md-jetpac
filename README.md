@@ -26,7 +26,6 @@ https://github.com/diegomtassis/md-jetpac
 * Enemies IAs.
 * Sound.
 * 2nd player.
-* Different spaceships.
 * More levels in MD mode.
 * Jetman acceleration.
 * Polishing and optimization. 
