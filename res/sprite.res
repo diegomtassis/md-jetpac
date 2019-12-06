@@ -12,6 +12,10 @@ SPRITE u3_base_sprite "sprite/u3_base.png" 2 2 NONE 0
 SPRITE u3_middle_sprite "sprite/u3_middle.png" 2 2 NONE 0
 SPRITE u3_top_sprite "sprite/u3_top.png" 2 2 NONE 0
 SPRITE u3_sprite "sprite/u3.png" 2 6 NONE 0
+SPRITE u4_base_sprite "sprite/u4_base.png" 2 2 NONE 0
+SPRITE u4_middle_sprite "sprite/u4_middle.png" 2 2 NONE 0
+SPRITE u4_top_sprite "sprite/u4_top.png" 2 2 NONE 0
+SPRITE u4_sprite "sprite/u4.png" 2 6 NONE 0
 SPRITE fire_sprite "sprite/fire.png" 2 2 NONE 5
 SPRITE meteorite_sprite "sprite/meteorite.png" 2 2 NONE 0
 SPRITE alien_sprite "sprite/alien.png" 2 2 NONE 0
