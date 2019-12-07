@@ -21,6 +21,8 @@
 #define ENEMY_DEFAULT_MAX_POS_V_PX_F16			FIX16(MAX_POS_V_PX_S16)
 #define ENEMY_DEFAULT_MAX_POS_START_V_PX_F16	FIX16(ENEMY_DEFAULT_MAX_POS_V_PX_S16 - 32)
 
+#define SPEED_ZERO		FIX16_0
+
 Enemy* createEnemy(const EnemyDefinition definition[static 1]);
 void releaseEnemy(Enemy enemy[static 1]);
 

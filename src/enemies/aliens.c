@@ -18,7 +18,6 @@
 #define ALIEN_WIDTH    		16
 #define ALIEN_HEIGHT    	14
 
-#define SPEED_ZERO		FIX16_0
 #define ALIEN_DEFAULT_SPEED_H	FIX16(0.8)
 #define ALIEN_DEFAULT_SPEED_V	FIX16(0.8)
 

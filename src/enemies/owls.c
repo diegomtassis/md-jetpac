@@ -17,7 +17,6 @@
 #define OWL_WIDTH    		16
 #define OWL_HEIGHT    	14
 
-#define SPEED_ZERO		FIX16_0
 #define OWL_DEFAULT_SPEED_H	FIX16(0.9)
 #define OWL_DEFAULT_SPEED_V	FIX16(0.6)
 

@@ -17,7 +17,6 @@
 #define CROSS_WIDTH    		15
 #define CROSS_HEIGHT    	15
 
-#define SPEED_ZERO		FIX16_0
 #define CROSS_DEFAULT_SPEED_H	FIX16(0.9)
 #define CROSS_DEFAULT_SPEED_V	FIX16(0.6)
 
