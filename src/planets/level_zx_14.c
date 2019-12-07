@@ -16,7 +16,6 @@
 #include "../../res/sprite.h"
 
 static void defineEnemies(Level level[static 1]);
-static void defineSpaceship(Level level[static 1]);
 
 Level* createLevelZX14() {
 
@@ -24,7 +23,7 @@ Level* createLevelZX14() {
 
 	createDefaultPlatforms(level);
 	defineEnemies(level);
-	defineSpaceship(level);
+	defineSpaceshipInDefaultPlanet(level, u4Definition, ASSEMBLED);
 
 	level->def.jetman_init_pos = 0;
 	level->def.ammo = 50;
@@ -40,11 +39,4 @@ static void defineEnemies(Level level[static 1]) {
 
 	level->enemies.count = 0;
 	level->enemies.size = 5;
-}
-
-static void defineSpaceship(Level level[static 1]) {
-
-	level->def.spaceship_def.type_definition = u4Definition;
-	level->def.spaceship_def.init_step = ASSEMBLED;
-	setV2s16(&level->def.spaceship_def.base_pos, 168, 152);
 }
