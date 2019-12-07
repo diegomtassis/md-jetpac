@@ -10,11 +10,11 @@
 
 #include "elements.h"
 
-void initShots(Level level[static 1]);
-void releaseShots(Level level[static 1]);
+void initShots(Planet planet[static 1]);
+void releaseShots(Planet planet[static 1]);
 
-void shoot(V2s16 where, bool to_left, Level level[static 1]);
-void updateShots(Level level[static 1]);
-bool checkHit(Box_s16 subject, Level level[static 1]);
+void shoot(V2s16 where, bool to_left, Planet planet[static 1]);
+void updateShots(Planet planet[static 1]);
+bool checkHit(Box_s16 subject, Planet planet[static 1]);
 
 #endif /* INC_SHOOTING_H_ */

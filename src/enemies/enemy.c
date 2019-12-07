@@ -73,15 +73,15 @@ void updatePosition(Enemy* enemy, Box_s16 target) {
 	updateBox(&enemy->object);
 }
 
-bool crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]) {
+bool crashedIntoPlatform(Box_s16 subject_box, const Planet planet[static 1]) {
 
-	bool crashed = overlap(subject_box, level->floor->object.box);
+	bool crashed = overlap(subject_box, planet->floor->object.box);
 	if (crashed) {
 		return TRUE;
 	}
 
-	for (u8 i = 0; i < level->num_platforms; i++) {
-		crashed = overlap(subject_box, level->platforms[i]->object.box);
+	for (u8 i = 0; i < planet->num_platforms; i++) {
+		crashed = overlap(subject_box, planet->platforms[i]->object.box);
 		if (crashed) {
 			return TRUE;
 		}

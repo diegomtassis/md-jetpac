@@ -19,30 +19,30 @@
 #include "../inc/hud.h"
 #include "../inc/events.h"
 #include "../inc/jetman.h"
-#include "../inc/level.h"
+#include "../inc/planet.h"
 #include "../inc/planets.h"
 #include "../inc/fwk/physics.h"
 
 #define DEFAULT_FLASH_WAIT	2000
 
 /**
- * @brief run a level.
+ * @brief run a planet.
  *
- * @param level
+ * @param planet
  * @return goal accomplished
  */
-static bool runLevel(Level level[static 1]);
+static bool runPlanet(Planet planet[static 1]);
 
-static bool isJetmanAlive(Level level[static 1]);
-static bool isMissionAccomplished(Level level[static 1]);
+static bool isJetmanAlive(Planet planet[static 1]);
+static bool isMissionAccomplished(Planet planet[static 1]);
 
-static void waitForLanding(Level level[static 1]);
-static void leavePlanet(Level level[static 1]);
+static void waitForLanding(Planet planet[static 1]);
+static void leavePlanet(Planet planet[static 1]);
 
-static void handleCollisionsBetweenMovingObjects(Level level[static 1]);
-static void handleElementsLeavingScreenUnder(Level level[static 1]);
+static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]);
+static void handleElementsLeavingScreenUnder(Planet planet[static 1]);
 
-static void scoreBonus(Level level[static 1]);
+static void scoreBonus(Planet planet[static 1]);
 static void scorePoints(u16 points);
 
 static void printMessage(const char* message);
@@ -68,9 +68,9 @@ void runGame(Game* game) {
 
 	bool game_over = FALSE;
 
-	/* when all the levels are passed start again */
+	/* when all the planets are passed start again */
 
-	u8 level_number = 0;
+	u8 planet_number = 0;
 
 	displayAmmo(game->mode & MODE_MD);
 
@@ -78,52 +78,52 @@ void runGame(Game* game) {
 
 		//	log_memory();
 
-		Level* current_level = game->createLevel[level_number]();
-		current_level->game = game;
+		Planet* current_planet = game->createPlanet[planet_number]();
+		current_planet->game = game;
 
-		startLevel(current_level);
+		startPlanet(current_planet);
 
-		startSpaceship(current_level);
-		waitForLanding(current_level);
+		startSpaceship(current_planet);
+		waitForLanding(current_planet);
 
-		startJetman(current_level, game->mode & MODE_MD);
-		startEnemies(current_level);
+		startJetman(current_planet, game->mode & MODE_MD);
+		startEnemies(current_planet);
 
-		startCollectables(current_level);
-		initShots(current_level);
-		initExplosions(current_level);
+		startCollectables(current_planet);
+		initShots(current_planet);
+		initExplosions(current_planet);
 
 		SPR_update();
 		VDP_waitVSync();
 
 		JOY_setEventHandler(joyEvent);
 
-		game_over = !runLevel(current_level);
+		game_over = !runPlanet(current_planet);
 
 		if (game_over) {
 			flashMessage("Game Over", DEFAULT_FLASH_WAIT);
 
 		} else {
-			SPR_setVisibility(current_level->jetman->sprite, HIDDEN);
-			leavePlanet(current_level);
-			scoreBonus(current_level);
-			updateHud(current_game, current_level->jetman);
+			SPR_setVisibility(current_planet->jetman->sprite, HIDDEN);
+			leavePlanet(current_planet);
+			scoreBonus(current_planet);
+			updateHud(current_game, current_planet->jetman);
 
-			if (++level_number == game->num_levels) {
-				level_number = 0;
+			if (++planet_number == game->num_planets) {
+				planet_number = 0;
 			}
 
 			waitMs(500);
 		}
 
-		releaseExplosions(current_level);
-		releaseShots(current_level);
-		releaseCollectables(current_level);
-		releaseEnemies(current_level);
-		releaseJetman(current_level);
-		releaseSpaceship(current_level);
-		releaseLevel(current_level);
-		current_level = 0;
+		releaseExplosions(current_planet);
+		releaseShots(current_planet);
+		releaseCollectables(current_planet);
+		releaseEnemies(current_planet);
+		releaseJetman(current_planet);
+		releaseSpaceship(current_planet);
+		releasePlanet(current_planet);
+		current_planet = 0;
 
 		SPR_update();
 
@@ -142,14 +142,14 @@ void releaseGame(Game* game) {
 		return;
 	}
 
-	for (int idx = 0; idx < game->num_levels; ++idx) {
-		if (game->createLevel[idx]) {
-			MEM_free(game->createLevel[idx]);
-			game->createLevel[idx] = 0;
+	for (int idx = 0; idx < game->num_planets; ++idx) {
+		if (game->createPlanet[idx]) {
+			MEM_free(game->createPlanet[idx]);
+			game->createPlanet[idx] = 0;
 		}
 	}
-	MEM_free(game->createLevel);
-	game->createLevel = 0;
+	MEM_free(game->createPlanet);
+	game->createPlanet = 0;
 
 	MEM_free(game);
 }
@@ -191,7 +191,7 @@ void scoreByEvent(GameEvent event) {
 	}
 }
 
-static bool runLevel(Level current_level[static 1]) {
+static bool runPlanet(Planet current_planet[static 1]) {
 
 	bool jetman_alive = TRUE;
 	bool game_over = FALSE;
@@ -203,133 +203,133 @@ static bool runLevel(Level current_level[static 1]) {
 
 			if (jetman_alive) {
 
-				jetmanActs(current_level);
-				enemiesAct(current_level);
-				handleCollisionsBetweenMovingObjects(current_level);
-				if (current_level->def.mind_bottom) {
-					handleElementsLeavingScreenUnder(current_level);
+				jetmanActs(current_planet);
+				enemiesAct(current_planet);
+				handleCollisionsBetweenMovingObjects(current_planet);
+				if (current_planet->def.mind_bottom) {
+					handleElementsLeavingScreenUnder(current_planet);
 				}
 
-				handleSpaceship(current_level);
+				handleSpaceship(current_planet);
 
-				jetman_alive = isJetmanAlive(current_level);
+				jetman_alive = isJetmanAlive(current_planet);
 				if (!jetman_alive) {
-					dropIfGrabbed(current_level->spaceship);
+					dropIfGrabbed(current_planet->spaceship);
 					current_game->lives--;
 				}
 
 			} else {
 
 				// Smart dying, wait for explosions to finish
-				if (!current_level->booms.count) {
+				if (!current_planet->booms.count) {
 
 					waitMs(100);
 
-					releaseEnemies(current_level);
+					releaseEnemies(current_planet);
 					if (current_game->lives > 0) {
-						resetJetman(current_level);
-						startEnemies(current_level);
+						resetJetman(current_planet);
+						startEnemies(current_planet);
 						jetman_alive = TRUE;
 					}
 				}
 			}
 
-			updateCollectables(current_level);
-			updateShots(current_level);
-			updateExplosions(current_level);
+			updateCollectables(current_planet);
+			updateShots(current_planet);
+			updateExplosions(current_planet);
 
-			mission_accomplished = jetman_alive && isMissionAccomplished(current_level);
-			game_over = !current_game->lives && !current_level->booms.count;
+			mission_accomplished = jetman_alive && isMissionAccomplished(current_planet);
+			game_over = !current_game->lives && !current_planet->booms.count;
 			SPR_update();
 		}
 
-		updateHud(current_game, current_level->jetman);
+		updateHud(current_game, current_planet->jetman);
 		VDP_waitVSync();
 	}
 
 	return mission_accomplished;
 }
 
-static void handleCollisionsBetweenMovingObjects(Level level[static 1]) {
+static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 
-	for (u8 enemy_idx = 0; enemy_idx < level->enemies.size; enemy_idx++) {
+	for (u8 enemy_idx = 0; enemy_idx < planet->enemies.size; enemy_idx++) {
 
-		Enemy* enemy = level->enemies.e[enemy_idx];
+		Enemy* enemy = planet->enemies.e[enemy_idx];
 		if (enemy && (ALIVE & enemy->health)) {
 
 			// enemy & shot
-			if (checkHit(enemy->object.box, level)) {
+			if (checkHit(enemy->object.box, planet)) {
 
-				killEnemy(enemy, level, TRUE);
+				killEnemy(enemy, planet, TRUE);
 				onEvent(KILLED_ENEMY);
 
 				continue;
 			}
 
 			// enemy & jetman
-			if (overlap(level->jetman->object.box, enemy->object.box)) {
-				killJetman(level, TRUE);
-				killEnemy(enemy, level, TRUE);
+			if (overlap(planet->jetman->object.box, enemy->object.box)) {
+				killJetman(planet, TRUE);
+				killEnemy(enemy, planet, TRUE);
 				break;
 			}
 		}
 	}
 }
 
-static void handleElementsLeavingScreenUnder(Level level[static 1]) {
+static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 
-	if ((ALIVE & level->jetman->health) && level->jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
-		killJetman(level, FALSE);
+	if ((ALIVE & planet->jetman->health) && planet->jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
+		killJetman(planet, FALSE);
 	}
 
-	for (u8 enemy_idx = 0; enemy_idx < level->enemies.size; enemy_idx++) {
+	for (u8 enemy_idx = 0; enemy_idx < planet->enemies.size; enemy_idx++) {
 
-		Enemy* enemy = level->enemies.e[enemy_idx];
+		Enemy* enemy = planet->enemies.e[enemy_idx];
 		if (enemy && (ALIVE & enemy->health) && enemy->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
-			killEnemy(enemy, level, FALSE);
+			killEnemy(enemy, planet, FALSE);
 		}
 	}
 }
 
-static bool isJetmanAlive(Level level[static 1]) {
+static bool isJetmanAlive(Planet planet[static 1]) {
 
-	return ALIVE & level->jetman->health;
+	return ALIVE & planet->jetman->health;
 }
 
-static bool isMissionAccomplished(Level level[static 1]) {
+static bool isMissionAccomplished(Planet planet[static 1]) {
 
-	return (level->spaceship->step == READY) && shareBase(level->jetman->object.box, level->spaceship->base_object->box);
+	return (planet->spaceship->step == READY) && shareBase(planet->jetman->object.box, planet->spaceship->base_object->box);
 }
 
-static void waitForLanding(Level level[static 1]) {
+static void waitForLanding(Planet planet[static 1]) {
 
-	while (level->spaceship->step == LANDING) {
+	while (planet->spaceship->step == LANDING) {
 
-		handleSpaceship(level);
+		handleSpaceship(planet);
 
 		SPR_update();
 		VDP_waitVSync();
 	}
 }
 
-static void leavePlanet(Level level[static 1]) {
+static void leavePlanet(Planet planet[static 1]) {
 
-	launch(level->spaceship);
+	launch(planet->spaceship);
 	do {
 		// keep life going while the orbiter lifts
-		handleSpaceship(level);
-		enemiesAct(level);
-		updateExplosions(level);
-		updateShots(level);
-		updateCollectables(level);
+		handleSpaceship(planet);
+		enemiesAct(planet);
+		updateExplosions(planet);
+		updateShots(planet);
+		updateCollectables(planet);
 
 		SPR_update();
 		VDP_waitVSync();
 
-	} while (level->spaceship->step == LIFTING);
+	} while (planet->spaceship->step == LIFTING);
 }
 
-void static scoreBonus(Level level[static 1]) {
+void static scoreBonus(Planet planet[static 1]) {
 
 	if (current_game->mode & MODE_MD) {
 
@@ -340,18 +340,18 @@ void static scoreBonus(Level level[static 1]) {
 		printMessage(bonus_message);
 		waitMs(500);
 
-		while (level->jetman->ammo--) {
+		while (planet->jetman->ammo--) {
 
 			ammo_bonus += 10;
 			sprintf(bonus_message, "Bonus %03d", ammo_bonus);
 			printMessage(bonus_message);
 			waitMs(25);
-			updateAmmo(level->jetman);
+			updateAmmo(planet->jetman);
 			VDP_waitVSync();
 		}
 
 		flashMessage(bonus_message, 1000);
-		level->jetman->ammo = 0;
+		planet->jetman->ammo = 0;
 		scorePoints(ammo_bonus);
 	}
 }

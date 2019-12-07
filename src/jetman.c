@@ -13,7 +13,7 @@
 #include "../inc/explosions.h"
 #include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
-#include "../inc/level.h"
+#include "../inc/planet.h"
 #include "../inc/shooting.h"
 #include "../res/sprite.h"
 
@@ -35,36 +35,36 @@
 #define JETMAN_HEIGHT 24
 #define JETMAN_WIDTH 16
 
-static void createPlayer1(Level level[static 1]);
+static void createPlayer1(Planet planet[static 1]);
 static void handleInputJetman(Jetman*);
 
-static void moveToStart(Jetman* jetman, const Level level[static 1]);
-static void moveJetman(Jetman*, Level*);
+static void moveToStart(Jetman* jetman, const Planet planet[static 1]);
+static void moveJetman(Jetman*, Planet*);
 static u8 calculateNextMovement(Jetman*);
-static void updatePosition(Jetman*, Level*);
-static f16 reachedTop(Box_s16, const Level*);
-static f16 blockedByLeft(Box_s16, const Level*);
-static f16 blockedByRight(Box_s16, const Level*);
+static void updatePosition(Jetman*, Planet*);
+static f16 reachedTop(Box_s16, const Planet*);
+static f16 blockedByLeft(Box_s16, const Planet*);
+static f16 blockedByRight(Box_s16, const Planet*);
 
 static void drawJetman(Jetman*);
 
 bool shoot_pushed;
 bool shoot_order;
 
-void startJetman(Level level[static 1], bool limit_ammo) {
+void startJetman(Planet planet[static 1], bool limit_ammo) {
 
-	createPlayer1(level);
-	level->jetman->sprite = SPR_addSprite(&jetman_sprite, fix16ToInt(level->jetman->object.pos.x),
-			fix16ToInt(level->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	createPlayer1(planet);
+	planet->jetman->sprite = SPR_addSprite(&jetman_sprite, fix16ToInt(planet->jetman->object.pos.x),
+			fix16ToInt(planet->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	shoot_pushed = FALSE;
 	shoot_order = FALSE;
-	level->jetman->limited_ammo = limit_ammo;
-	level->jetman->ammo = level->def.ammo;
+	planet->jetman->limited_ammo = limit_ammo;
+	planet->jetman->ammo = planet->def.ammo;
 }
 
-void releaseJetman(Level level[static 1]) {
+void releaseJetman(Planet planet[static 1]) {
 
-	Jetman* jetman = level->jetman;
+	Jetman* jetman = planet->jetman;
 	if (!jetman) {
 		return;
 	}
@@ -73,46 +73,46 @@ void releaseJetman(Level level[static 1]) {
 	SPR_releaseSprite(jetman->sprite);
 	jetman->sprite = 0;
 	MEM_free(jetman);
-	level->jetman = 0;
+	planet->jetman = 0;
 }
 
-void resetJetman(Level level[static 1]) {
+void resetJetman(Planet planet[static 1]) {
 
-	moveToStart(level->jetman, level);
-	level->jetman->health = ALIVE;
+	moveToStart(planet->jetman, planet);
+	planet->jetman->health = ALIVE;
 }
 
-void killJetman(Level level[static 1], bool exploding) {
+void killJetman(Planet planet[static 1], bool exploding) {
 
 	if (exploding) {
-		explode(level->jetman->object.box, level);
+		explode(planet->jetman->object.box, planet);
 	}
 
-	level->jetman->health = DEAD;
+	planet->jetman->health = DEAD;
 }
 
-void jetmanActs(Level level[static 1]) {
+void jetmanActs(Planet planet[static 1]) {
 
-	Jetman* jetman = level->jetman;
+	Jetman* jetman = planet->jetman;
 	if (jetman->health & ALIVE) {
 		handleInputJetman(jetman);
-		moveJetman(level->jetman, level);
-		drawJetman(level->jetman);
+		moveJetman(planet->jetman, planet);
+		drawJetman(planet->jetman);
 
 		if (shoot_order && (!jetman->limited_ammo || jetman->ammo)) {
 
 			V2s16 where = { 0 };
-			where.x = level->jetman->object.box.pos.x + (level->jetman->head_back ? 0 : 16);
-			where.y = level->jetman->object.box.pos.y + 11;
+			where.x = planet->jetman->object.box.pos.x + (planet->jetman->head_back ? 0 : 16);
+			where.y = planet->jetman->object.box.pos.y + 11;
 
-			shoot(where, level->jetman->head_back, level);
+			shoot(where, planet->jetman->head_back, planet);
 			jetman->ammo--;
 			shoot_order = FALSE;
 		}
 	}
 }
 
-static void createPlayer1(Level level[static 1]) {
+static void createPlayer1(Planet planet[static 1]) {
 
 	Jetman* jetman = MEM_calloc(sizeof *jetman);
 
@@ -122,20 +122,20 @@ static void createPlayer1(Level level[static 1]) {
 	jetman->object.box.w = JETMAN_WIDTH;
 	jetman->object.box.h = JETMAN_HEIGHT;
 
-	moveToStart(jetman, level);
+	moveToStart(jetman, planet);
 	jetman->health = ALIVE;
 
-	level->jetman = jetman;
+	planet->jetman = jetman;
 }
 
-static void moveToStart(Jetman* jetman, const Level level[static 1]) {
+static void moveToStart(Jetman* jetman, const Planet planet[static 1]) {
 
-	if (level->def.jetman_init_pos) {
-		jetman->object.pos.x = FIX16(level->def.jetman_init_pos->x);
-		jetman->object.pos.y = FIX16(level->def.jetman_init_pos->y - 8 * 3);
+	if (planet->def.jetman_init_pos) {
+		jetman->object.pos.x = FIX16(planet->def.jetman_init_pos->x);
+		jetman->object.pos.y = FIX16(planet->def.jetman_init_pos->y - 8 * 3);
 	} else {
 		jetman->object.pos.x = FIX16(124);
-		jetman->object.pos.y = fix16Sub(level->floor->object.pos.y, FIX16(8*3));
+		jetman->object.pos.y = fix16Sub(planet->floor->object.pos.y, FIX16(8*3));
 	}
 
 	jetman->object.mov.x = SPEED_ZERO;
@@ -144,12 +144,12 @@ static void moveToStart(Jetman* jetman, const Level level[static 1]) {
 	updateBox(&jetman->object);
 }
 
-static void moveJetman(Jetman* jetman, Level level[static 1]) {
+static void moveJetman(Jetman* jetman, Planet planet[static 1]) {
 
 	if (BOOST & calculateNextMovement(jetman)) {
-		boost(jetman->object.box, level);
+		boost(jetman->object.box, planet);
 	}
-	updatePosition(jetman, level);
+	updatePosition(jetman, planet);
 	SPR_setPosition(jetman->sprite, fix16ToInt(jetman->object.pos.x), fix16ToInt(jetman->object.pos.y));
 }
 
@@ -189,7 +189,7 @@ static u8 calculateNextMovement(Jetman* jetman) {
 	return movement;
 }
 
-static void updatePosition(Jetman* jetman, Level level[static 1]) {
+static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 
 	// horizontal position
 	Box_s16 target_h = targetHBox(jetman->object);
@@ -201,9 +201,9 @@ static void updatePosition(Jetman* jetman, Level level[static 1]) {
 
 	} else {
 
-		f16 blockedHorizontally = blockedByLeft(target_h, level);
+		f16 blockedHorizontally = blockedByLeft(target_h, planet);
 		if (!blockedHorizontally) {
-			blockedHorizontally = blockedByRight(target_h, level);
+			blockedHorizontally = blockedByRight(target_h, planet);
 		}
 
 		if (blockedHorizontally) {
@@ -216,13 +216,13 @@ static void updatePosition(Jetman* jetman, Level level[static 1]) {
 
 	// vertical position
 	Box_s16 target_v = targetVBox(jetman->object);
-	f16 landed_pos_y = landed(target_v, level);
+	f16 landed_pos_y = landed(target_v, planet);
 	if (landed_pos_y) {
 		jetman->object.pos.y = landed_pos_y;
 		jetman->object.mov.y = SPEED_ZERO;
 
 	} else {
-		f16 top_pos_y = reachedTop(target_v, level);
+		f16 top_pos_y = reachedTop(target_v, planet);
 		if (top_pos_y) {
 			jetman->object.pos.y = top_pos_y;
 
@@ -235,34 +235,34 @@ static void updatePosition(Jetman* jetman, Level level[static 1]) {
 	updateBox(&jetman->object);
 }
 
-static f16 reachedTop(Box_s16 subject_box, const Level level[static 1]) {
+static f16 reachedTop(Box_s16 subject_box, const Planet planet[static 1]) {
 
 	if (subject_box.pos.y <= MIN_POS_V_PX_S16) {
 		return MIN_POS_V_PX_F16;
 	}
 
-	for (u8 i = 0; i < level->num_platforms; i++) {
-		Box_s16 object_box = level->platforms[i]->object.box;
+	for (u8 i = 0; i < planet->num_platforms; i++) {
+		Box_s16 object_box = planet->platforms[i]->object.box;
 		if (hitUnder(subject_box, object_box)) {
 			return FIX16(adjacentYUnder(subject_box, object_box));
 		}
 	}
 
-	if (hitUnder(subject_box, level->floor->object.box)) {
-		return FIX16(adjacentYUnder(subject_box, level->floor->object.box));
+	if (hitUnder(subject_box, planet->floor->object.box)) {
+		return FIX16(adjacentYUnder(subject_box, planet->floor->object.box));
 	}
 
 	return FIX16_0;
 }
 
-static f16 blockedByLeft(Box_s16 target_box, const Level level[static 1]) {
+static f16 blockedByLeft(Box_s16 target_box, const Planet planet[static 1]) {
 
-	if (hitLeft(target_box, level->floor->object.box)) {
-		return FIX16(adjacentXOnTheLeft(target_box, level->floor->object.box));
+	if (hitLeft(target_box, planet->floor->object.box)) {
+		return FIX16(adjacentXOnTheLeft(target_box, planet->floor->object.box));
 	}
 
-	for (u8 i = 0; i < level->num_platforms; i++) {
-		Box_s16 object_box = level->platforms[i]->object.box;
+	for (u8 i = 0; i < planet->num_platforms; i++) {
+		Box_s16 object_box = planet->platforms[i]->object.box;
 		if (hitLeft(target_box, object_box)) {
 			return FIX16(adjacentXOnTheLeft(target_box, object_box));
 		}
@@ -271,14 +271,14 @@ static f16 blockedByLeft(Box_s16 target_box, const Level level[static 1]) {
 	return FIX16_0;
 }
 
-static f16 blockedByRight(Box_s16 target_box, const Level level[static 1]) {
+static f16 blockedByRight(Box_s16 target_box, const Planet planet[static 1]) {
 
-	if (hitRight(target_box, level->floor->object.box)) {
-		return FIX16(adjacentXOnTheRight(target_box, level->floor->object.box));
+	if (hitRight(target_box, planet->floor->object.box)) {
+		return FIX16(adjacentXOnTheRight(target_box, planet->floor->object.box));
 	}
 
-	for (u8 i = 0; i < level->num_platforms; i++) {
-		Box_s16 object_box = level->platforms[i]->object.box;
+	for (u8 i = 0; i < planet->num_platforms; i++) {
+		Box_s16 object_box = planet->platforms[i]->object.box;
 		if (hitRight(target_box, object_box)) {
 			return FIX16(adjacentXOnTheRight(target_box, object_box));
 		}

@@ -28,6 +28,6 @@ void initPosAndMov(Enemy enemy[static 1], fix16 mov_x, fix16 mov_y);
 void initBox(Enemy enemy[static 1]);
 
 void updatePosition(Enemy* enemy, Box_s16 target);
-bool crashedIntoPlatform(Box_s16 subject_box, const Level level[static 1]);
+bool crashedIntoPlatform(Box_s16 subject_box, const Planet planet[static 1]);
 
 #endif /* INC_ENEMIES_H_ */

@@ -10,11 +10,11 @@
 
 #include "elements.h"
 
-void startJetman(Level level[static 1], bool limit_ammo);
-void releaseJetman(Level level[static 1]);
-void killJetman(Level level[static 1], bool exploding);
-void resetJetman(Level level[static 1]);
+void startJetman(Planet planet[static 1], bool limit_ammo);
+void releaseJetman(Planet planet[static 1]);
+void killJetman(Planet planet[static 1], bool exploding);
+void resetJetman(Planet planet[static 1]);
 
-void jetmanActs(Level level[static 1]);
+void jetmanActs(Planet planet[static 1]);
 
 #endif /* INC_JETMAN_H_ */

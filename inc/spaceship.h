@@ -25,10 +25,10 @@
 #define LIFTING		11
 #define ORBITING	12
 
-void startSpaceship(Level level[static 1]);
-void releaseSpaceship(Level level[static 1]);
+void startSpaceship(Planet planet[static 1]);
+void releaseSpaceship(Planet planet[static 1]);
 
-void handleSpaceship(Level level[static 1]);
+void handleSpaceship(Planet planet[static 1]);
 void dropIfGrabbed(Spaceship*);
 void launch(Spaceship*);
 

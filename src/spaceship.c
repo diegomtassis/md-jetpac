@@ -11,7 +11,7 @@
 
 #include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
-#include "../inc/level.h"
+#include "../inc/planet.h"
 #include "../inc/items.h"
 #include "../inc/events.h"
 #include "../res/sprite.h"
@@ -59,23 +59,23 @@ const SpaceshipTypeDefinition u4Definition = { //
 
 static Object_f16* createModule(u8 module, V2s16 pos);
 
-static void handleAssembly(Level level[static 1]);
-static void handleFuelling(Level level[static 1]);
-static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 height, Level level[static 1]);
+static void handleAssembly(Planet planet[static 1]);
+static void handleFuelling(Planet planet[static 1]);
+static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 height, Planet planet[static 1]);
 static void mergeParts(Spaceship* spaceship);
-static void handleFlight(Spaceship* spaceship, Level level[static 1]);
-static void handleLanding(Spaceship* spaceship, Level level[static 1]);
+static void handleFlight(Spaceship* spaceship, Planet planet[static 1]);
+static void handleLanding(Spaceship* spaceship, Planet planet[static 1]);
 
 static bool leftPlanet(Spaceship* spaceship);
 
 u16 default_sprite_attrs = TILE_ATTR(PAL0, TRUE, FALSE, FALSE);
 
-void startSpaceship(Level level[static 1]) {
+void startSpaceship(Planet planet[static 1]) {
 
 	Spaceship* spaceship = MEM_calloc(sizeof *spaceship);
-	level->spaceship = spaceship;
+	planet->spaceship = spaceship;
 
-	SpaceshipDefinition spaceship_definition = level->def.spaceship_def;
+	SpaceshipDefinition spaceship_definition = planet->def.spaceship_def;
 	spaceship->definition = spaceship_definition;
 
 	if (UNASSEMBLED == spaceship_definition.init_step) {
@@ -106,7 +106,7 @@ void startSpaceship(Level level[static 1]) {
 		spaceship->substep = NONE;
 
 		// override whatever comes as vertical starting position
-		V2s16* base_pos = &level->def.spaceship_def.base_pos;
+		V2s16* base_pos = &planet->def.spaceship_def.base_pos;
 		base_pos->y = TOP_POS_V_PX_S16 - 48;
 
 		spaceship->base_object = createModule(WHOLE, *base_pos);
@@ -123,76 +123,76 @@ void startSpaceship(Level level[static 1]) {
 	spaceship->fuel_sprite = 0;
 }
 
-void releaseSpaceship(Level level[static 1]) {
+void releaseSpaceship(Planet planet[static 1]) {
 
-	if (!level->spaceship) {
+	if (!planet->spaceship) {
 		return;
 	}
 
-	if (level->spaceship->base_object) {
-		MEM_free(level->spaceship->base_object);
-		level->spaceship->base_object = 0;
+	if (planet->spaceship->base_object) {
+		MEM_free(planet->spaceship->base_object);
+		planet->spaceship->base_object = 0;
 	}
 
-	if (level->spaceship->base_sprite) {
-		SPR_releaseSprite(level->spaceship->base_sprite);
-		level->spaceship->base_sprite = 0;
+	if (planet->spaceship->base_sprite) {
+		SPR_releaseSprite(planet->spaceship->base_sprite);
+		planet->spaceship->base_sprite = 0;
 	}
 
-	if (level->spaceship->mid_object) {
-		MEM_free(level->spaceship->mid_object);
-		level->spaceship->mid_object = 0;
+	if (planet->spaceship->mid_object) {
+		MEM_free(planet->spaceship->mid_object);
+		planet->spaceship->mid_object = 0;
 	}
 
-	if (level->spaceship->mid_sprite) {
-		SPR_releaseSprite(level->spaceship->mid_sprite);
-		level->spaceship->mid_sprite = 0;
+	if (planet->spaceship->mid_sprite) {
+		SPR_releaseSprite(planet->spaceship->mid_sprite);
+		planet->spaceship->mid_sprite = 0;
 	}
 
-	if (level->spaceship->top_object) {
-		MEM_free(level->spaceship->top_object);
-		level->spaceship->top_object = 0;
+	if (planet->spaceship->top_object) {
+		MEM_free(planet->spaceship->top_object);
+		planet->spaceship->top_object = 0;
 	}
 
-	if (level->spaceship->top_sprite) {
-		SPR_releaseSprite(level->spaceship->top_sprite);
-		level->spaceship->top_sprite = 0;
+	if (planet->spaceship->top_sprite) {
+		SPR_releaseSprite(planet->spaceship->top_sprite);
+		planet->spaceship->top_sprite = 0;
 	}
 
-	if (level->spaceship->fuel_object) {
-		MEM_free(level->spaceship->fuel_object);
-		level->spaceship->fuel_object = 0;
+	if (planet->spaceship->fuel_object) {
+		MEM_free(planet->spaceship->fuel_object);
+		planet->spaceship->fuel_object = 0;
 	}
 
-	if (level->spaceship->fuel_sprite) {
-		SPR_releaseSprite(level->spaceship->fuel_sprite);
-		level->spaceship->fuel_sprite = 0;
+	if (planet->spaceship->fuel_sprite) {
+		SPR_releaseSprite(planet->spaceship->fuel_sprite);
+		planet->spaceship->fuel_sprite = 0;
 	}
 
-	if (level->spaceship->fire_sprite) {
-		SPR_releaseSprite(level->spaceship->fire_sprite);
-		level->spaceship->fire_sprite = 0;
+	if (planet->spaceship->fire_sprite) {
+		SPR_releaseSprite(planet->spaceship->fire_sprite);
+		planet->spaceship->fire_sprite = 0;
 	}
 
-	MEM_free(level->spaceship);
-	level->spaceship = 0;
+	MEM_free(planet->spaceship);
+	planet->spaceship = 0;
 }
 
-void handleSpaceship(Level level[static 1]) {
+void handleSpaceship(Planet planet[static 1]) {
 
-	Spaceship* spaceship = level->spaceship;
+	Spaceship* spaceship = planet->spaceship;
 
-	if (level->spaceship->step == LANDING) {
-		handleLanding(level->spaceship, level);
+	if (planet->spaceship->step == LANDING) {
+		handleLanding(planet->spaceship, planet);
 
-	} else if (level->spaceship->step == LIFTING) {
-		handleFlight(level->spaceship, level);
+	} else if (planet->spaceship->step == LIFTING) {
+		handleFlight(planet->spaceship, planet);
 
 	} else if (spaceship->step >= UNASSEMBLED && spaceship->step < ASSEMBLED) {
-		handleAssembly(level);
+		handleAssembly(planet);
 
 	} else if (spaceship->step >= ASSEMBLED && spaceship->step < READY) {
-		handleFuelling(level);
+		handleFuelling(planet);
 	}
 }
 
@@ -236,15 +236,15 @@ static Object_f16* createModule(u8 module, V2s16 pos) {
 	return object;
 }
 
-static void handleAssembly(Level level[static 1]) {
+static void handleAssembly(Planet planet[static 1]) {
 
-	Spaceship* spaceship = level->spaceship;
+	Spaceship* spaceship = planet->spaceship;
 
 	if (spaceship->step == UNASSEMBLED) {
-		handlePart(spaceship->mid_object, spaceship->mid_sprite, FUSELAGE_SET, FIX16_16, level);
+		handlePart(spaceship->mid_object, spaceship->mid_sprite, FUSELAGE_SET, FIX16_16, planet);
 
 	} else if (spaceship->step == FUSELAGE_SET) {
-		handlePart(spaceship->top_object, spaceship->top_sprite, ASSEMBLED, FIX16_32, level);
+		handlePart(spaceship->top_object, spaceship->top_sprite, ASSEMBLED, FIX16_32, planet);
 
 		if (spaceship->step == ASSEMBLED) {
 			// Change to the complete sprite when assembled
@@ -254,9 +254,9 @@ static void handleAssembly(Level level[static 1]) {
 	}
 }
 
-static void handleFuelling(Level level[static 1]) {
+static void handleFuelling(Planet planet[static 1]) {
 
-	Spaceship* spaceship = level->spaceship;
+	Spaceship* spaceship = planet->spaceship;
 
 	if (spaceship->step < ASSEMBLED || spaceship->step == READY) {
 		return;
@@ -280,7 +280,7 @@ static void handleFuelling(Level level[static 1]) {
 
 	} else if (spaceship->substep & WAITING) {
 
-		if (grab(&level->jetman->object, spaceship->fuel_object)) {
+		if (grab(&planet->jetman->object, spaceship->fuel_object)) {
 			// fuel grabbed while waiting
 			spaceship->substep = GRABBED;
 			onEvent(GRABBED_FUEL);
@@ -295,25 +295,25 @@ static void handleFuelling(Level level[static 1]) {
 			spaceship->fuel_object->mov.y = SPEED_V_DOWN;
 
 		} else {
-			V2f16 jetman_pos = level->jetman->object.pos;
+			V2f16 jetman_pos = planet->jetman->object.pos;
 			spaceship->fuel_object->pos.x = jetman_pos.x;
 			spaceship->fuel_object->pos.y = fix16Add(jetman_pos.y, FIX16_12);
 		}
 
 	} else if (spaceship->substep & FALLING) {
 
-		if (grab(&level->jetman->object, spaceship->fuel_object)) {
+		if (grab(&planet->jetman->object, spaceship->fuel_object)) {
 			// fuel grabbed while falling
 			spaceship->substep = GRABBED;
 			onEvent(GRABBED_FUEL);
 
 		} else {
 			Box_s16 target_v = targetVBox(*spaceship->fuel_object);
-			if (landed(target_v, level)) {
+			if (landed(target_v, planet)) {
 				spaceship->substep = WAITING;
 				spaceship->fuel_object->mov.y = SPEED_0;
 
-			} else if (level->def.mind_bottom && target_v.pos.y > BOTTOM_POS_V_PX_S16) {
+			} else if (planet->def.mind_bottom && target_v.pos.y > BOTTOM_POS_V_PX_S16) {
 				// fuel lost
 				spaceship->substep = NONE;
 				onEvent(LOST_FUEL);
@@ -346,10 +346,10 @@ static void handleFuelling(Level level[static 1]) {
 			fix16ToInt(spaceship->fuel_object->pos.y));
 }
 
-static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offset_px, Level level[static 1]) {
+static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offset_px, Planet planet[static 1]) {
 
-	Spaceship* spaceship = level->spaceship;
-	V2f16 jetman_pos = level->jetman->object.pos;
+	Spaceship* spaceship = planet->spaceship;
+	V2f16 jetman_pos = planet->jetman->object.pos;
 
 	if (isAboveBaseUpwardProjection(part->box, spaceship->base_object->box)) {
 		if (spaceship->substep & GRABBED) {
@@ -367,7 +367,7 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 			}
 		}
 
-	} else if ((spaceship->substep & GRABBED) || overlap(level->jetman->object.box, part->box)) {
+	} else if ((spaceship->substep & GRABBED) || overlap(planet->jetman->object.box, part->box)) {
 
 		// The jetman is already in possession or has just grabbed the a section of the rocket
 		if (!(spaceship->substep & GRABBED)) {
@@ -400,7 +400,7 @@ static void mergeParts(Spaceship* spaceship) {
 			TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
 }
 
-static void handleLanding(Spaceship* spaceship, Level level[static 1]) {
+static void handleLanding(Spaceship* spaceship, Planet planet[static 1]) {
 
 	if (spaceship->step != LANDING) {
 		return;
@@ -409,7 +409,7 @@ static void handleLanding(Spaceship* spaceship, Level level[static 1]) {
 	// spaceship
 	Box_s16 target_v = targetVBox(*spaceship->base_object);
 
-	f16 landed_y = landed(target_v, level);
+	f16 landed_y = landed(target_v, planet);
 	if (landed_y) {
 		spaceship->step = ASSEMBLED;
 		spaceship->base_object->pos.y = landed_y;
@@ -427,7 +427,7 @@ static void handleLanding(Spaceship* spaceship, Level level[static 1]) {
 // fire
 	if (spaceship->fire_sprite) {
 		u16 v_fire_u16 = v_pos_u16 + 52;
-		if (v_fire_u16 + 12 >= level->floor->object.box.pos.y) {
+		if (v_fire_u16 + 12 >= planet->floor->object.box.pos.y) {
 			SPR_releaseSprite(spaceship->fire_sprite);
 			spaceship->fire_sprite = 0;
 
@@ -437,7 +437,7 @@ static void handleLanding(Spaceship* spaceship, Level level[static 1]) {
 	}
 }
 
-static void handleFlight(Spaceship* spaceship, Level level[static 1]) {
+static void handleFlight(Spaceship* spaceship, Planet planet[static 1]) {
 
 	if (spaceship->step == LIFTING) {
 
@@ -456,7 +456,7 @@ static void handleFlight(Spaceship* spaceship, Level level[static 1]) {
 			// fire
 			u16 v_fire_u16 = v_pos_u16 + 52;
 			if (!spaceship->fire_sprite) {
-				if (v_fire_u16 + 12 < level->floor->object.box.pos.y) { // leave room for the fire
+				if (v_fire_u16 + 12 < planet->floor->object.box.pos.y) { // leave room for the fire
 					spaceship->fire_sprite = SPR_addSprite(&fire_sprite, h_pos_u16, v_fire_u16,
 							TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
 				}

@@ -19,25 +19,25 @@
 
 #define BOOST 0
 
-static void boom(Box_s16 what, Level level[static 1], u8 style);
-static void releaseFinishedExplosions(Level level[static 1]);
+static void boom(Box_s16 what, Planet planet[static 1], u8 style);
+static void releaseFinishedExplosions(Planet planet[static 1]);
 
-void initExplosions(Level level[static 1]) {
+void initExplosions(Planet planet[static 1]) {
 
-	level->booms.count = 0;
-	level->booms.size = 1 + level->enemies.size;
-	level->booms.e = MEM_calloc(sizeof(Explosion*) * level->booms.size);
+	planet->booms.count = 0;
+	planet->booms.size = 1 + planet->enemies.size;
+	planet->booms.e = MEM_calloc(sizeof(Explosion*) * planet->booms.size);
 
 	startTimer(EXPLOSIONS_TIMER);
 }
 
-void updateExplosions(Level level[static 1]) {
+void updateExplosions(Planet planet[static 1]) {
 
 	if (getTimer(EXPLOSIONS_TIMER, FALSE) > BOOM_ANIMATION_SPEED) {
 
-		for (u8 idx = 0; idx < level->booms.size; idx++) {
+		for (u8 idx = 0; idx < planet->booms.size; idx++) {
 
-			Explosion* boom = level->booms.e[idx];
+			Explosion* boom = planet->booms.e[idx];
 			if (boom) {
 				if (boom->step < FINISHED) {
 					SPR_setFrame(boom->sprite, ++boom->step);
@@ -48,63 +48,63 @@ void updateExplosions(Level level[static 1]) {
 		startTimer(EXPLOSIONS_TIMER);
 	}
 
-	releaseFinishedExplosions(level);
+	releaseFinishedExplosions(planet);
 }
 
-void releaseExplosions(Level level[static 1]) {
+void releaseExplosions(Planet planet[static 1]) {
 
-	if (!level->booms.e) {
+	if (!planet->booms.e) {
 		return;
 	}
 
-	for (u8 idx = 0; idx < level->booms.size; idx++) {
+	for (u8 idx = 0; idx < planet->booms.size; idx++) {
 
-		Explosion* boom = level->booms.e[idx];
+		Explosion* boom = planet->booms.e[idx];
 		if (boom) {
 			SPR_releaseSprite(boom->sprite);
 			MEM_free(boom);
-			level->booms.e[idx] = 0;
+			planet->booms.e[idx] = 0;
 		}
 	}
 
-	MEM_free(level->booms.e);
-	level->booms.e = 0;
+	MEM_free(planet->booms.e);
+	planet->booms.e = 0;
 
-	level->booms.count = 0;
+	planet->booms.count = 0;
 }
 
-static void releaseFinishedExplosions(Level level[static 1]) {
+static void releaseFinishedExplosions(Planet planet[static 1]) {
 
-	for (u8 idx = 0; idx < level->booms.size; idx++) {
+	for (u8 idx = 0; idx < planet->booms.size; idx++) {
 
-		Explosion* boom = level->booms.e[idx];
+		Explosion* boom = planet->booms.e[idx];
 		if (boom && boom->step == FINISHED) {
 			SPR_releaseSprite(boom->sprite);
 			MEM_free(boom);
-			level->booms.e[idx] = 0;
-			level->booms.count--;
+			planet->booms.e[idx] = 0;
+			planet->booms.count--;
 		}
 	}
 }
 
-void explode(Box_s16 what, Level level[static 1]) {
+void explode(Box_s16 what, Planet planet[static 1]) {
 
-	boom(what, level, abs(random()) % 3 + 1);
+	boom(what, planet, abs(random()) % 3 + 1);
 }
 
-void boost(Box_s16 what, Level level[static 1]) {
+void boost(Box_s16 what, Planet planet[static 1]) {
 
-	boom(what, level, BOOST);
+	boom(what, planet, BOOST);
 }
 
-static void boom(Box_s16 what, Level level[static 1], u8 style) {
+static void boom(Box_s16 what, Planet planet[static 1], u8 style) {
 
 	// Find an empty slot
-	u8 num_booms = level->booms.size;
+	u8 num_booms = planet->booms.size;
 	u8 boom_idx;
 	while (num_booms--) {
 		// find the first empty slot
-		Explosion* boom = level->booms.e[num_booms];
+		Explosion* boom = planet->booms.e[num_booms];
 		if (!boom) {
 			boom_idx = num_booms;
 			break;
@@ -113,9 +113,9 @@ static void boom(Box_s16 what, Level level[static 1], u8 style) {
 
 	// Create the explosion
 	Explosion* boom = MEM_calloc(sizeof *boom);
-	level->booms.e[boom_idx] = boom;
+	planet->booms.e[boom_idx] = boom;
 	boom->step = 0;
-	level->booms.count++;
+	planet->booms.count++;
 	boom->where.x = what.pos.x;
 	boom->where.y = what.pos.y + what.h - BOOM_H_PX;
 

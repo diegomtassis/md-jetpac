@@ -24,7 +24,7 @@
 #define WAIT_BETWEEN_DIRECTION_CHANGE    	125
 
 static Enemy* createFalcon();
-static void actFalcon(Enemy enemy[static 1], Level level[static 1]);
+static void actFalcon(Enemy enemy[static 1], Planet planet[static 1]);
 static void releaseFalcon(Enemy enemy[static 1]);
 
 const EnemyDefinition falconDefinition = { //
@@ -65,7 +65,7 @@ static Enemy* createFalcon() {
 	return enemy;
 }
 
-static void actFalcon(Enemy enemy[static 1], Level level[static 1]) {
+static void actFalcon(Enemy enemy[static 1], Planet planet[static 1]) {
 
 	Box_s16 target = targetBox(enemy->object);
 
@@ -80,7 +80,7 @@ static void actFalcon(Enemy enemy[static 1], Level level[static 1]) {
 		enemy->object.mov.y = -enemy->object.mov.y;
 		target = targetBox(enemy->object);
 
-	} else if (crashedIntoPlatform(target, level)) {
+	} else if (crashedIntoPlatform(target, planet)) {
 
 		// THIS MUST BE OPTIMIZED
 
@@ -88,7 +88,7 @@ static void actFalcon(Enemy enemy[static 1], Level level[static 1]) {
 		enemy->object.mov.x = -enemy->object.mov.x;
 		target = targetBox(enemy->object);
 
-		if (crashedIntoPlatform(target, level)) {
+		if (crashedIntoPlatform(target, planet)) {
 
 			enemy->object.mov.x = -enemy->object.mov.x;
 			enemy->object.mov.y = -enemy->object.mov.y;

@@ -19,11 +19,11 @@
 #define FALCON		7
 #define OWL			8
 
-void startEnemies(Level level[static 1]);
-void releaseEnemies(Level level[static 1]);
+void startEnemies(Planet planet[static 1]);
+void releaseEnemies(Planet planet[static 1]);
 
-void enemiesAct(Level level[static 1]);
-void killEnemy(Enemy* enemy, Level level[static 1], u8 exploding);
+void enemiesAct(Planet planet[static 1]);
+void killEnemy(Enemy* enemy, Planet planet[static 1], u8 exploding);
 
 extern const EnemyDefinition meteoriteDefinition;
 extern const EnemyDefinition alienDefinition;

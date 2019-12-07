@@ -23,7 +23,7 @@
 #define ALIEN_DEFAULT_SPEED_V	FIX16(0.8)
 
 static Enemy* createAlien();
-static void actAlien(Enemy enemy[static 1], Level level[static 1]);
+static void actAlien(Enemy enemy[static 1], Planet planet[static 1]);
 static void releaseAlien(Enemy enemy[static 1]);
 
 const EnemyDefinition alienDefinition = { //
@@ -60,7 +60,7 @@ static Enemy* createAlien() {
 	return enemy;
 }
 
-static void actAlien(Enemy enemy[static 1], Level level[static 1]) {
+static void actAlien(Enemy enemy[static 1], Planet planet[static 1]) {
 
 	Box_s16 target = targetBox(enemy->object);
 
@@ -68,7 +68,7 @@ static void actAlien(Enemy enemy[static 1], Level level[static 1]) {
 		enemy->object.mov.y = -enemy->object.mov.y;
 		target = targetBox(enemy->object);
 
-	} else if (crashedIntoPlatform(target, level)) {
+	} else if (crashedIntoPlatform(target, planet)) {
 
 		// THIS MUST BE OPTIMIZED
 
@@ -76,7 +76,7 @@ static void actAlien(Enemy enemy[static 1], Level level[static 1]) {
 		enemy->object.mov.x = -enemy->object.mov.x;
 		target = targetBox(enemy->object);
 
-		if (crashedIntoPlatform(target, level)) {
+		if (crashedIntoPlatform(target, planet)) {
 
 			enemy->object.mov.x = -enemy->object.mov.x;
 			enemy->object.mov.y = -enemy->object.mov.y;

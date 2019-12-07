@@ -18,8 +18,8 @@
 #define DEAD		0x02
 
 typedef struct Game Game;
-typedef struct LevelDefinition LevelDefinition;
-typedef struct Level Level;
+typedef struct PlanetDefinition PlanetDefinition;
+typedef struct Planet Planet;
 typedef struct SpaceshipTypeDefinition SpaceshipTypeDefinition;
 typedef struct SpaceshipDefinition SpaceshipDefinition;
 typedef struct Spaceship Spaceship;
@@ -35,10 +35,10 @@ typedef struct Explosion Explosion;
 struct Game {
 	u8 mode;
 	u8 lives;
-	u8 level;
+	u8 planet;
 	u16 score;
-	Level* (**createLevel)(void);
-	u8 num_levels;
+	Planet* (**createPlanet)(void);
+	u8 num_planets;
 };
 
 struct SpaceshipTypeDefinition {
@@ -97,7 +97,7 @@ struct Enemy {
 };
 
 typedef Enemy* (*EnemyCreateFunc)();
-typedef void (*EnemyActFunc)(Enemy enemy[static 1], Level* level);
+typedef void (*EnemyActFunc)(Enemy enemy[static 1], Planet* planet);
 typedef void (*EnemyReleaseFunc)(Enemy enemy[static 1]);
 
 struct EnemyDefinition {
@@ -140,7 +140,7 @@ struct Explosion {
 	Sprite* sprite;
 };
 
-struct LevelDefinition {
+struct PlanetDefinition {
 	u8 mind_bottom;
 	V2s16* jetman_init_pos;
 	u16 ammo;
@@ -148,7 +148,7 @@ struct LevelDefinition {
 	EnemyDefinition enemy_def;
 };
 
-struct Level {
+struct Planet {
 	Platform* floor;
 	Platform** platforms;
 	u8 num_platforms;
@@ -158,7 +158,7 @@ struct Level {
 	Spaceship* spaceship;
 	List booms;
 	List shots;
-	LevelDefinition def;
+	PlanetDefinition def;
 	Game* game;
 };
 

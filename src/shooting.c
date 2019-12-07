@@ -30,48 +30,48 @@
 #define GRAPE_WIDTH 16
 #define GRAPE_HEIGHT 1
 
-static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Level level[static 1]);
+static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Planet planet[static 1]);
 static bool checkCollision(Shot shot[static 1], Grape grape[static 1], Box_s16 object_box);
 
-static void releaseShotIfNoGrapes(Level level[static 1], u8 shot_idx);
+static void releaseShotIfNoGrapes(Planet planet[static 1], u8 shot_idx);
 static void releaseShot(Shot* shot);
 static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst);
-static void releaseGrapeInShot(Level level[static 1], u8 idx_shot, u8 idx_grape);
+static void releaseGrapeInShot(Planet planet[static 1], u8 idx_shot, u8 idx_grape);
 static void releaseGrape(Grape* grape);
 
-void initShots(Level level[static 1]) {
+void initShots(Planet planet[static 1]) {
 
-	level->shots.count = 0;
-	level->shots.size = MAX_SHOTS;
-	level->shots.e = MEM_calloc(level->shots.size * sizeof(Shot*));
+	planet->shots.count = 0;
+	planet->shots.size = MAX_SHOTS;
+	planet->shots.e = MEM_calloc(planet->shots.size * sizeof(Shot*));
 }
 
-void releaseShots(Level level[static 1]) {
+void releaseShots(Planet planet[static 1]) {
 
-	for (int idx = 0; idx < level->shots.size; idx++) {
-		releaseShot(level->shots.e[idx]);
-		level->shots.e[idx] = 0;
+	for (int idx = 0; idx < planet->shots.size; idx++) {
+		releaseShot(planet->shots.e[idx]);
+		planet->shots.e[idx] = 0;
 	}
 
-	level->shots.count = 0;
-	level->shots.size = 0;
-	MEM_free(level->shots.e);
-	level->shots.e = 0;
+	planet->shots.count = 0;
+	planet->shots.size = 0;
+	MEM_free(planet->shots.e);
+	planet->shots.e = 0;
 }
 
-void shoot(V2s16 where, bool to_left, Level level[static 1]) {
+void shoot(V2s16 where, bool to_left, Planet planet[static 1]) {
 
-	if (level->shots.count >= level->shots.size) {
+	if (planet->shots.count >= planet->shots.size) {
 		return;
 	}
 
 	Shot* shot = MEM_calloc(sizeof *shot);
 
-	for (int idx = 0; idx < level->shots.size; idx++) {
+	for (int idx = 0; idx < planet->shots.size; idx++) {
 		// Find an empty spot for the shot
-		if (!level->shots.e[idx]) {
-			level->shots.e[idx] = shot;
-			level->shots.count++;
+		if (!planet->shots.e[idx]) {
+			planet->shots.e[idx] = shot;
+			planet->shots.count++;
 			break;
 		}
 	}
@@ -101,12 +101,12 @@ void shoot(V2s16 where, bool to_left, Level level[static 1]) {
 	shot->distance_to_last = 0;
 }
 
-void updateShots(Level level[static 1]) {
+void updateShots(Planet planet[static 1]) {
 
 	Shot* shot = 0;
-	for (int idx_shot = 0; idx_shot < level->shots.size; idx_shot++) {
+	for (int idx_shot = 0; idx_shot < planet->shots.size; idx_shot++) {
 
-		shot = level->shots.e[idx_shot];
+		shot = planet->shots.e[idx_shot];
 		if (shot) {
 
 			Grape* grape = 0;
@@ -129,10 +129,10 @@ void updateShots(Level level[static 1]) {
 							grape->object->pos.x += grape->object->mov.x;
 						}
 
-						if (crashedIntoPlatform(shot, grape, level)) {
+						if (crashedIntoPlatform(shot, grape, planet)) {
 							releaseShot(shot);
-							level->shots.e[idx_shot] = 0;
-							level->shots.count--;
+							planet->shots.e[idx_shot] = 0;
+							planet->shots.count--;
 
 						} else {
 							updateBox(grape->object);
@@ -141,7 +141,7 @@ void updateShots(Level level[static 1]) {
 
 					} else {
 						// release
-						releaseGrapeInShot(level, idx_shot, idx_grape);
+						releaseGrapeInShot(planet, idx_shot, idx_grape);
 					}
 				}
 			}
@@ -163,21 +163,21 @@ void updateShots(Level level[static 1]) {
 	}
 }
 
-bool checkHit(Box_s16 subject, Level level[static 1]) {
+bool checkHit(Box_s16 subject, Planet planet[static 1]) {
 
 	Shot* shot = 0;
 	Grape* grape = 0;
 
-	for (int idx_shot = 0; idx_shot < level->shots.size; idx_shot++) {
-		shot = level->shots.e[idx_shot];
+	for (int idx_shot = 0; idx_shot < planet->shots.size; idx_shot++) {
+		shot = planet->shots.e[idx_shot];
 		if (shot) {
 			for (int idx_grape = 0; idx_grape < shot->grapes_size; idx_grape++) {
 				grape = shot->grapes[idx_grape];
 				if (grape) {
 					if (checkCollision(shot, grape, subject)) {
 						releaseShot(shot);
-						level->shots.e[idx_shot] = 0;
-						level->shots.count--;
+						planet->shots.e[idx_shot] = 0;
+						planet->shots.count--;
 						return TRUE;
 					}
 				}
@@ -188,18 +188,18 @@ bool checkHit(Box_s16 subject, Level level[static 1]) {
 	return FALSE;
 }
 
-static void releaseShotIfNoGrapes(Level level[static 1], u8 idx_shot) {
+static void releaseShotIfNoGrapes(Planet planet[static 1], u8 idx_shot) {
 
-	if (!level->shots.count) {
+	if (!planet->shots.count) {
 		return;
 	}
 
-	Shot* shot = level->shots.e[idx_shot];
+	Shot* shot = planet->shots.e[idx_shot];
 	if (shot && !shot->grapes_count) {
 
 		releaseShot(shot);
-		level->shots.e[idx_shot] = 0;
-		level->shots.count--;
+		planet->shots.e[idx_shot] = 0;
+		planet->shots.count--;
 	}
 }
 
@@ -251,16 +251,16 @@ static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst
 	return grape;
 }
 
-static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Level level[static 1]) {
+static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Planet planet[static 1]) {
 
 	Box_s16 grape_box = grape->object->box;
-	bool crashed = overlap(grape_box, level->floor->object.box);
+	bool crashed = overlap(grape_box, planet->floor->object.box);
 	if (crashed) {
 		return TRUE;
 	}
 
-	for (u8 i = 0; i < level->num_platforms; i++) {
-		crashed = overlap(grape->object->box, level->platforms[i]->object.box);
+	for (u8 i = 0; i < planet->num_platforms; i++) {
+		crashed = overlap(grape->object->box, planet->platforms[i]->object.box);
 		if (crashed) {
 			return TRUE;
 		}
@@ -280,9 +280,9 @@ static bool checkCollision(Shot shot[static 1], Grape grape[static 1], Box_s16 o
 	return contained(grape_tip, object_box);
 }
 
-static void releaseGrapeInShot(Level level[static 1], u8 idx_shot, u8 idx_grape) {
+static void releaseGrapeInShot(Planet planet[static 1], u8 idx_shot, u8 idx_grape) {
 
-	Shot* shot = level->shots.e[idx_shot];
+	Shot* shot = planet->shots.e[idx_shot];
 	if (!shot) {
 		return;
 	}
@@ -295,7 +295,7 @@ static void releaseGrapeInShot(Level level[static 1], u8 idx_shot, u8 idx_grape)
 	releaseGrape(grape);
 	shot->grapes[idx_grape] = 0;
 	shot->grapes_count--;
-	releaseShotIfNoGrapes(level, idx_shot);
+	releaseShotIfNoGrapes(planet, idx_shot);
 }
 
 static void releaseGrape(Grape* grape) {

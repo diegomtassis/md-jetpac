@@ -24,107 +24,107 @@
 static const int MIN_TIME_BETWEEN_ENEMIES = SUBTICKPERSECOND * 1.3;
 static const int MAX_TIME_BETWEEN_ENEMIES = SUBTICKPERSECOND * 2;
 
-static void addEnemy(Level level[static 1], u8 pos);
-static void releaseDeadEnemies(Level level[static 1]);
+static void addEnemy(Planet planet[static 1], u8 pos);
+static void releaseDeadEnemies(Planet planet[static 1]);
 static void releaseDeadEnemy(Enemy enemy[static 1]);
-static void enemiesJoin(Level level[static 1]);
+static void enemiesJoin(Planet planet[static 1]);
 
-static void enemyActs(Enemy enemy[static 1], Level level[static 1]);
+static void enemyActs(Enemy enemy[static 1], Planet planet[static 1]);
 
 static void detectNuclearBomb();
 
 bool nuclear_bomb;
 
-void startEnemies(Level level[static 1]) {
+void startEnemies(Planet planet[static 1]) {
 
 	// First time
-	level->enemies.e = MEM_calloc(sizeof(Enemy*) * level->enemies.size);
+	planet->enemies.e = MEM_calloc(sizeof(Enemy*) * planet->enemies.size);
 
 	setRandomSeed(getTick());
 
 	// start with a portion of the maximum enemies
-	for (u8 enemy_idx = 0; enemy_idx < level->enemies.size / 3; enemy_idx++) {
-		addEnemy(level, enemy_idx);
+	for (u8 enemy_idx = 0; enemy_idx < planet->enemies.size / 3; enemy_idx++) {
+		addEnemy(planet, enemy_idx);
 	}
 
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 }
 
-void enemiesAct(Level level[static 1]) {
+void enemiesAct(Planet planet[static 1]) {
 
-	if (!level->enemies.e) {
+	if (!planet->enemies.e) {
 		return;
 	}
 
 //	detectNuclearBomb();
 
-	for (u8 idx = 0; idx < level->enemies.size; idx++) {
+	for (u8 idx = 0; idx < planet->enemies.size; idx++) {
 
-		Enemy* enemy = level->enemies.e[idx];
+		Enemy* enemy = planet->enemies.e[idx];
 		if (enemy) {
 
 			if (ALIVE & enemy->health) {
 				if (nuclear_bomb) {
-					killEnemy(enemy, level, TRUE);
+					killEnemy(enemy, planet, TRUE);
 				} else {
-					enemyActs(enemy, level);
+					enemyActs(enemy, planet);
 					SPR_setPosition(enemy->sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y));
 				}
 			}
 		}
 	}
 
-	releaseDeadEnemies(level);
+	releaseDeadEnemies(planet);
 
 	// New enemies joining the party?
-	enemiesJoin(level);
+	enemiesJoin(planet);
 
 	nuclear_bomb = FALSE;
 }
 
-void killEnemy(Enemy* enemy, Level level[static 1], u8 exploding) {
+void killEnemy(Enemy* enemy, Planet planet[static 1], u8 exploding) {
 
 	if (exploding) {
-		explode(enemy->object.box, level);
+		explode(enemy->object.box, planet);
 	}
 
 	enemy->health = DEAD;
 }
 
-void releaseEnemies(Level level[static 1]) {
+void releaseEnemies(Planet planet[static 1]) {
 
-	if (!level->enemies.e) {
+	if (!planet->enemies.e) {
 		return;
 	}
 
-	for (u8 idx = 0; idx < level->enemies.size; idx++) {
+	for (u8 idx = 0; idx < planet->enemies.size; idx++) {
 
-		Enemy* enemy = level->enemies.e[idx];
+		Enemy* enemy = planet->enemies.e[idx];
 		if (enemy) {
 			releaseDeadEnemy(enemy);
 		}
 	}
 
-	level->enemies.count = 0;
-	memset(level->enemies.e, 0, level->enemies.size);
-	MEM_free(level->enemies.e);
-	level->enemies.e = 0;
+	planet->enemies.count = 0;
+	memset(planet->enemies.e, 0, planet->enemies.size);
+	MEM_free(planet->enemies.e);
+	planet->enemies.e = 0;
 }
 
-void releaseDeadEnemies(Level level[static 1]) {
+void releaseDeadEnemies(Planet planet[static 1]) {
 
-	if (!level->enemies.e) {
+	if (!planet->enemies.e) {
 		return;
 	}
 
-	for (u8 idx = 0; idx < level->enemies.size; idx++) {
+	for (u8 idx = 0; idx < planet->enemies.size; idx++) {
 
-		Enemy* enemy = level->enemies.e[idx];
+		Enemy* enemy = planet->enemies.e[idx];
 		if (enemy && (enemy->health & DEAD)) {
 
 			releaseDeadEnemy(enemy);
-			level->enemies.e[idx] = 0;
-			level->enemies.count--;
+			planet->enemies.e[idx] = 0;
+			planet->enemies.count--;
 		}
 	}
 }
@@ -136,37 +136,37 @@ static void releaseDeadEnemy(Enemy enemy[static 1]) {
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 }
 
-static void addEnemy(Level level[static 1], u8 pos) {
+static void addEnemy(Planet planet[static 1], u8 pos) {
 
-	Enemy* enemy = level->def.enemy_def.createFunc(&level->def.enemy_def);
-	level->enemies.e[pos] = enemy;
-	level->enemies.count++;
+	Enemy* enemy = planet->def.enemy_def.createFunc(&planet->def.enemy_def);
+	planet->enemies.e[pos] = enemy;
+	planet->enemies.count++;
 
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 }
 
-static void enemiesJoin(Level level[static 1]) {
+static void enemiesJoin(Planet planet[static 1]) {
 
-	if (level->enemies.count < level->enemies.size && isCountDownFinished(ENEMY_CREATION_COUNTDOWN, FALSE)) {
+	if (planet->enemies.count < planet->enemies.size && isCountDownFinished(ENEMY_CREATION_COUNTDOWN, FALSE)) {
 
-		u8 num_enemies = level->enemies.size;
+		u8 num_enemies = planet->enemies.size;
 		u8 idx;
 		while (num_enemies--) {
 			// find the first empty slot
-			Enemy* enemy = level->enemies.e[num_enemies];
+			Enemy* enemy = planet->enemies.e[num_enemies];
 			if (!enemy) {
 				idx = num_enemies;
 				break;
 			}
 		}
 
-		addEnemy(level, idx);
+		addEnemy(planet, idx);
 	}
 }
 
-static void enemyActs(Enemy enemy[static 1], Level level[static 1]) {
+static void enemyActs(Enemy enemy[static 1], Planet planet[static 1]) {
 
-	enemy->definition->actFunc(enemy, level);
+	enemy->definition->actFunc(enemy, planet);
 }
 
 static void detectNuclearBomb() {

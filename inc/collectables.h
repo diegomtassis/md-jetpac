@@ -10,8 +10,8 @@
 
 #include "elements.h"
 
-void startCollectables(Level level[static 1]);
-void updateCollectables(Level level[static 1]);
-void releaseCollectables(Level level[static 1]);
+void startCollectables(Planet planet[static 1]);
+void updateCollectables(Planet planet[static 1]);
+void releaseCollectables(Planet planet[static 1]);
 
 #endif /* INC_COLLECTABLES_H_ */

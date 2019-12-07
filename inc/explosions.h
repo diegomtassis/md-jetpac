@@ -14,12 +14,12 @@
 
 #define BOOM_ANIMATION_SPEED SUBTICKPERSECOND / 16
 
-void initExplosions(Level level[static 1]);
-void updateExplosions(Level level[static 1]);
-void releaseExplosions(Level level[static 1]);
+void initExplosions(Planet planet[static 1]);
+void updateExplosions(Planet planet[static 1]);
+void releaseExplosions(Planet planet[static 1]);
 
-void explode(Box_s16 what, Level level[static 1]);
+void explode(Box_s16 what, Planet planet[static 1]);
 
-void boost(Box_s16 what, Level level[static 1]);
+void boost(Box_s16 what, Planet planet[static 1]);
 
 #endif /* INC_EXPLOSIONS_H_ */

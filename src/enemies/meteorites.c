@@ -22,7 +22,7 @@
 #define METEORITE_DEFAULT_SPEED_V	FIX16(0.3)
 
 static Enemy* createMeteorite();
-static void actMeteorite(Enemy enemy[static 1], Level level[static 1]);
+static void actMeteorite(Enemy enemy[static 1], Planet planet[static 1]);
 static void releaseMeteorite(Enemy enemy[static 1]);
 
 const EnemyDefinition meteoriteDefinition = { //
@@ -63,12 +63,12 @@ static Enemy* createMeteorite() {
 	return enemy;
 }
 
-static void actMeteorite(Enemy enemy[static 1], Level level[static 1]) {
+static void actMeteorite(Enemy enemy[static 1], Planet planet[static 1]) {
 
 	Box_s16 target = targetBox(enemy->object);
-	if (crashedIntoPlatform(target, level)) {
+	if (crashedIntoPlatform(target, planet)) {
 
-		killEnemy(enemy, level, TRUE);
+		killEnemy(enemy, planet, TRUE);
 		return;
 	}
 

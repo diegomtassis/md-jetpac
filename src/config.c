@@ -101,36 +101,36 @@ static void displayOption(const char *str, u8 highlighted, u16 x, u16 y) {
 
 static void setGameConfig(Game* game) {
 
-	u8 level = 0;
+	u8 planet = 0;
 	if (current_option == 0) {
 		game->mode = MODE_ZX;
-		game->num_levels = 16;
-		game->createLevel = MEM_alloc(game->num_levels * sizeof(Level*));
-		game->createLevel[level++] = createLevelZX01;
-		game->createLevel[level++] = createLevelZX02;
-		game->createLevel[level++] = createLevelZX03;
-		game->createLevel[level++] = createLevelZX04;
-		game->createLevel[level++] = createLevelZX05;
-		game->createLevel[level++] = createLevelZX06;
-		game->createLevel[level++] = createLevelZX07;
-		game->createLevel[level++] = createLevelZX08;
-		game->createLevel[level++] = createLevelZX09;
-		game->createLevel[level++] = createLevelZX10;
-		game->createLevel[level++] = createLevelZX11;
-		game->createLevel[level++] = createLevelZX12;
-		game->createLevel[level++] = createLevelZX13;
-		game->createLevel[level++] = createLevelZX14;
-		game->createLevel[level++] = createLevelZX15;
-		game->createLevel[level++] = createLevelZX16;
+		game->num_planets = 16;
+		game->createPlanet = MEM_alloc(game->num_planets * sizeof(Planet*));
+		game->createPlanet[planet++] = createPlanetZX01;
+		game->createPlanet[planet++] = createPlanetZX02;
+		game->createPlanet[planet++] = createPlanetZX03;
+		game->createPlanet[planet++] = createPlanetZX04;
+		game->createPlanet[planet++] = createPlanetZX05;
+		game->createPlanet[planet++] = createPlanetZX06;
+		game->createPlanet[planet++] = createPlanetZX07;
+		game->createPlanet[planet++] = createPlanetZX08;
+		game->createPlanet[planet++] = createPlanetZX09;
+		game->createPlanet[planet++] = createPlanetZX10;
+		game->createPlanet[planet++] = createPlanetZX11;
+		game->createPlanet[planet++] = createPlanetZX12;
+		game->createPlanet[planet++] = createPlanetZX13;
+		game->createPlanet[planet++] = createPlanetZX14;
+		game->createPlanet[planet++] = createPlanetZX15;
+		game->createPlanet[planet++] = createPlanetZX16;
 	} else {
 		game->mode = MODE_MD;
-		game->num_levels = 5;
-		game->createLevel = MEM_alloc(game->num_levels * sizeof(Level*));
-		game->createLevel[level++] = createLevelZX01;
-		game->createLevel[level++] = createLevelMD01;
-		game->createLevel[level++] = createLevelMD02;
-		game->createLevel[level++] = createLevelMD03;
-		game->createLevel[level++] = createLevelMD04;
+		game->num_planets = 5;
+		game->createPlanet = MEM_alloc(game->num_planets * sizeof(Planet*));
+		game->createPlanet[planet++] = createPlanetZX01;
+		game->createPlanet[planet++] = createPlanetMD01;
+		game->createPlanet[planet++] = createPlanetMD02;
+		game->createPlanet[planet++] = createPlanetMD03;
+		game->createPlanet[planet++] = createPlanetMD04;
 	}
 
 	game->lives = 4;
