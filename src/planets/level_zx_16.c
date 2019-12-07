@@ -12,9 +12,9 @@
 #include "../../inc/fwk/commons.h"
 #include "../../inc/level.h"
 #include "../../inc/spaceship.h"
+#include "../../inc/planet.h"
 #include "../../res/sprite.h"
 
-static void createPlatforms(Level level[static 1]);
 static void defineEnemies(Level level[static 1]);
 static void defineSpaceship(Level level[static 1]);
 
@@ -22,7 +22,7 @@ Level* createLevelZX16() {
 
 	Level* level = allocLevel();
 
-	createPlatforms(level);
+	createDefaultPlatforms(level);
 	defineEnemies(level);
 	defineSpaceship(level);
 
@@ -32,18 +32,6 @@ Level* createLevelZX16() {
 	level->def.mind_bottom = FALSE;
 
 	return level;
-}
-
-static void createPlatforms(Level level[static 1]) {
-
-	level->floor = createPlatform(0, 25, 32);
-
-	level->num_platforms = 3;
-	level->platforms = MEM_calloc(level->num_platforms * sizeof(Platform*));
-
-	level->platforms[0] = createPlatform(4, 11, 6);
-	level->platforms[1] = createPlatform(15, 14, 4);
-	level->platforms[2] = createPlatform(24, 8, 6);
 }
 
 static void defineEnemies(Level level[static 1]) {
