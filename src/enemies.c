@@ -18,7 +18,7 @@
 #include "../inc/timers.h"
 
 #define SPEED_ZERO		FIX16_0
-#define SPEED_H_NORMAL	FIX16(1)
+#define SPEED_H_FLY	FIX16(1)
 #define SPEED_V_NORMAL	FIX16(0.3)
 
 static const int MIN_TIME_BETWEEN_ENEMIES = SUBTICKPERSECOND * 1.3;

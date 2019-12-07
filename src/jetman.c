@@ -22,7 +22,8 @@
 #define STEPPING_SPEED	6 // 0 Maximum
 
 #define SPEED_ZERO		FIX16_0
-#define SPEED_H_NORMAL	FIX16(1.5)
+#define SPEED_H_WALK	FIX16(1)
+#define SPEED_H_FLY		FIX16(1.5)
 #define SPEED_V_UP		FIX16(-1.5)
 #define SPEED_V_DOWN	FIX16(1.5)
 
@@ -159,12 +160,12 @@ static u8 calculateNextMovement(Jetman* jetman) {
 
 	// horizontal movement
 	if (jetman->order.x > 0) {
-		jetman->object.mov.x = SPEED_H_NORMAL;
+		jetman->object.mov.x = jetman->airborne ? SPEED_H_FLY : SPEED_H_WALK;
 		jetman->head_back = FALSE;
 		movement |= RIGHT;
 
 	} else if (jetman->order.x < 0) {
-		jetman->object.mov.x = -SPEED_H_NORMAL;
+		jetman->object.mov.x = jetman->airborne ? -SPEED_H_FLY : -SPEED_H_WALK;
 		jetman->head_back = TRUE;
 		movement |= LEFT;
 
@@ -220,6 +221,7 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 	if (landed_pos_y) {
 		jetman->object.pos.y = landed_pos_y;
 		jetman->object.mov.y = SPEED_ZERO;
+		jetman->airborne = FALSE;
 
 	} else {
 		f16 top_pos_y = reachedTop(target_v, planet);
@@ -229,6 +231,7 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 		} else {
 			jetman->object.pos.y += jetman->object.mov.y;
 		}
+		jetman->airborne = TRUE;
 	}
 
 	// update box
