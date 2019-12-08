@@ -27,7 +27,6 @@ https://github.com/diegomtassis/md-jetpac
 * Sound.
 * 2nd player.
 * More levels in MD mode.
-* Jetman acceleration.
 * Polishing and optimization. 
 
 

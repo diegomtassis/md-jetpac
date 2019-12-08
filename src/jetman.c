@@ -21,11 +21,13 @@
 #define ANIM_FLY		1
 #define STEPPING_SPEED	6 // 0 Maximum
 
-#define SPEED_ZERO		FIX16_0
-#define SPEED_H_WALK	FIX16(1)
-#define SPEED_H_FLY		FIX16(1.5)
-#define SPEED_V_UP		FIX16(-1.5)
-#define SPEED_V_DOWN	FIX16(1.5)
+#define SPEED_ZERO			FIX16_0
+#define SPEED_H_WALK		FIX16(1)
+#define SPEED_H_FLY			FIX16(1.5)
+#define SPEED_V_UP			FIX16(-1.5)
+#define SPEED_V_DOWN_MAX	FIX16(1.5)
+#define GRAVITY         	FIX16(0.2)
+#define SPEED_V_DOWN_MAX_MINUS_GRAVITY	SPEED_V_DOWN_MAX - GRAVITY
 
 #define UP			0x01
 #define DOWN		0x02
@@ -175,7 +177,7 @@ static u8 calculateNextMovement(Jetman* jetman) {
 
 	// vertical movement
 	if (jetman->order.y < 0) {
-		if (jetman->object.mov.y == FIX16_0) {
+		if (!jetman->airborne) {
 			movement |= BOOST;
 		}
 
@@ -183,7 +185,13 @@ static u8 calculateNextMovement(Jetman* jetman) {
 		movement |= UP;
 
 	} else {
-		jetman->object.mov.y = SPEED_V_DOWN;
+		/*
+		 * either falling or walking. But at this point it's not known yet whether he's walking,
+		 * so by default he's falling.
+		 */
+		if (jetman->object.mov.y <= SPEED_V_DOWN_MAX_MINUS_GRAVITY) {
+			jetman->object.mov.y += GRAVITY;
+		}
 		movement |= DOWN;
 	}
 
@@ -218,20 +226,23 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 	// vertical position
 	Box_s16 target_v = targetVBox(jetman->object);
 	f16 landed_pos_y = landed(target_v, planet);
+	jetman->airborne = !landed_pos_y;
+
 	if (landed_pos_y) {
 		jetman->object.pos.y = landed_pos_y;
 		jetman->object.mov.y = SPEED_ZERO;
-		jetman->airborne = FALSE;
 
 	} else {
 		f16 top_pos_y = reachedTop(target_v, planet);
 		if (top_pos_y) {
 			jetman->object.pos.y = top_pos_y;
+			if (jetman->object.mov.y < 0) {
+				jetman->object.mov.y = SPEED_ZERO;
+			}
 
 		} else {
 			jetman->object.pos.y += jetman->object.mov.y;
 		}
-		jetman->airborne = TRUE;
 	}
 
 	// update box
@@ -294,7 +305,7 @@ static void drawJetman(Jetman* jetman) {
 
 	Sprite* sprite = jetman->sprite;
 
-	if (jetman->object.mov.y) {
+	if (jetman->airborne) {
 		// somewhere in the air
 		SPR_setAnim(sprite, ANIM_FLY);
 
