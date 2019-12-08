@@ -40,7 +40,7 @@ static void changeMode(Config config[static 1]);
 static void changeDifficulty(Config config[static 1]);
 static void changePlayers(Config config[static 1]);
 
-static void setGameConfig(Game* game);
+static void expandGameConfig(Game* game);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
@@ -79,7 +79,9 @@ void setUpGame(Game* game) {
 
 	setRandomSeed(getTick());
 
-	setGameConfig(game);
+	expandGameConfig(game);
+	current_config = 0;
+
 	clearConfigScreen();
 	VDP_setTextPriority(prev_priority);
 }
@@ -198,11 +200,10 @@ static void displayOption(const char *option, const char *value, u8 highlighted,
 	VDP_setTextPriority(0);
 }
 
-static void setGameConfig(Game* game) {
+static void expandGameConfig(Game* game) {
 
 	u8 planet = 0;
-	if (current_option == 0) {
-		game->config.mode = ZX;
+	if (game->config.mode == ZX) {
 		game->num_planets = 16;
 		game->createPlanet = MEM_alloc(game->num_planets * sizeof(Planet*));
 		game->createPlanet[planet++] = createPlanetZX01;
@@ -222,7 +223,6 @@ static void setGameConfig(Game* game) {
 		game->createPlanet[planet++] = createPlanetZX15;
 		game->createPlanet[planet++] = createPlanetZX16;
 	} else {
-		game->config.mode = MD;
 		game->num_planets = 5;
 		game->createPlanet = MEM_alloc(game->num_planets * sizeof(Planet*));
 		game->createPlanet[planet++] = createPlanetZX01;
@@ -232,7 +232,20 @@ static void setGameConfig(Game* game) {
 		game->createPlanet[planet++] = createPlanetMD04;
 	}
 
-	game->lives = 4;
+	switch (game->config.difficulty) {
+	case MANIAC:
+		game->lives = 1;
+		break;
+	case HARD:
+		game->lives = 3;
+		break;
+	case NORMAL:
+		game->lives = 5;
+		break;
+	default: // EASY
+		game->lives = 10;
+	}
+
 	game->score = 0;
 }
 
