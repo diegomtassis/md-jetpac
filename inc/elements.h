@@ -35,6 +35,8 @@ typedef struct Explosion Explosion;
 
 struct Config {
 	u8 mode;
+	u8 difficulty;
+	u8 players;
 };
 
 struct Game {

@@ -12,8 +12,22 @@
 
 #include "game.h"
 
-#define MODE_ZX		0x01
-#define MODE_MD		0x02
+typedef enum {
+	ZX, //
+	MD,
+} Mode;
+
+typedef enum {
+	EASY, //
+	NORMAL, //
+	HARD, //
+	MANIAC,
+} Difficulty;
+
+typedef enum {
+	ONE_PLAYER, //
+	TWO_PLAYERS,
+} Players;
 
 void setUpGame(Game*);
 
