@@ -62,8 +62,11 @@ void setUpGame(Game* game) {
 
 	u8 prev_priority = VDP_getTextPriority();
 
+	if (!current_config) {
+		current_config = MEM_alloc(sizeof(*current_config));
+	}
+
 	current_option = OPTION_MODE;
-	current_config = &game->config;
 
 	initConfigScreen();
 
@@ -73,14 +76,13 @@ void setUpGame(Game* game) {
 	JOY_setEventHandler(joyEvent);
 
 	do {
-		handleConfig(&game->config, pos_init);
+		handleConfig(current_config, pos_init);
 		VDP_waitVSync();
 	} while (!start);
 
 	setRandomSeed(getTick());
 
 	expandGameConfig(game);
-	current_config = 0;
 
 	clearConfigScreen();
 	VDP_setTextPriority(prev_priority);
@@ -203,7 +205,7 @@ static void displayOption(const char *option, const char *value, u8 highlighted,
 static void expandGameConfig(Game* game) {
 
 	u8 planet = 0;
-	if (game->config.mode == ZX) {
+	if (current_config->mode == ZX) {
 		game->num_planets = 16;
 		game->createPlanet = MEM_alloc(game->num_planets * sizeof(Planet*));
 		game->createPlanet[planet++] = createPlanetZX01;
@@ -232,7 +234,7 @@ static void expandGameConfig(Game* game) {
 		game->createPlanet[planet++] = createPlanetMD04;
 	}
 
-	switch (game->config.difficulty) {
+	switch (current_config->difficulty) {
 	case MANIAC:
 		game->lives = 1;
 		break;
@@ -247,6 +249,8 @@ static void expandGameConfig(Game* game) {
 	}
 
 	game->score = 0;
+
+	game->config = current_config;
 }
 
 static void joyEvent(u16 joy, u16 changed, u16 state) {

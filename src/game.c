@@ -72,7 +72,7 @@ void runGame(Game* game) {
 
 	u8 planet_number = 0;
 
-	displayAmmo(game->config.mode == MD);
+	displayAmmo(game->config->mode == MD);
 
 	while (!game_over) {
 
@@ -86,7 +86,7 @@ void runGame(Game* game) {
 		startSpaceship(current_planet);
 		waitForLanding(current_planet);
 
-		startJetman(current_planet, game->config.mode == MD);
+		startJetman(current_planet, game->config->mode == MD);
 		startEnemies(current_planet);
 
 		startCollectables(current_planet);
@@ -329,7 +329,7 @@ static void leavePlanet(Planet planet[static 1]) {
 
 void static scoreBonus(Planet planet[static 1]) {
 
-	if (current_game->config.mode == MD) {
+	if (current_game->config->mode == MD) {
 
 		u16 ammo_bonus = 0;
 		char bonus_message[19];

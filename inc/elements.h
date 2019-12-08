@@ -40,7 +40,7 @@ struct Config {
 };
 
 struct Game {
-	Config config;
+	Config* config;
 	u8 lives;
 	u8 planet;
 	u16 score;
