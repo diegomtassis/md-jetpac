@@ -57,7 +57,7 @@ bool shoot_order;
 void startJetman(Planet planet[static 1], bool limit_ammo) {
 
 	createPlayer1(planet);
-	planet->jetman->sprite = SPR_addSprite(&jetman_sprite, fix16ToInt(planet->jetman->object.pos.x),
+	planet->jetman->sprite = SPR_addSprite(&carl_sprite, fix16ToInt(planet->jetman->object.pos.x),
 			fix16ToInt(planet->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	shoot_pushed = FALSE;
 	shoot_order = FALSE;

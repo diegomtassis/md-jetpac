@@ -2,6 +2,8 @@
 #define _RES_SPRITE_H_
 
 extern const SpriteDefinition jetman_sprite;
+extern const SpriteDefinition carl_sprite;
+extern const SpriteDefinition ann_sprite;
 extern const SpriteDefinition shot_sprite;
 extern const SpriteDefinition u1_base_sprite;
 extern const SpriteDefinition u1_middle_sprite;
