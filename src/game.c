@@ -72,7 +72,7 @@ void runGame(Game* game) {
 
 	u8 planet_number = 0;
 
-	displayAmmo(game->mode & MODE_MD);
+	displayAmmo(game->config.mode & MODE_MD);
 
 	while (!game_over) {
 
@@ -86,7 +86,7 @@ void runGame(Game* game) {
 		startSpaceship(current_planet);
 		waitForLanding(current_planet);
 
-		startJetman(current_planet, game->mode & MODE_MD);
+		startJetman(current_planet, game->config.mode & MODE_MD);
 		startEnemies(current_planet);
 
 		startCollectables(current_planet);
@@ -142,14 +142,11 @@ void releaseGame(Game* game) {
 		return;
 	}
 
-	for (int idx = 0; idx < game->num_planets; ++idx) {
-		if (game->createPlanet[idx]) {
-			MEM_free(game->createPlanet[idx]);
-			game->createPlanet[idx] = 0;
-		}
+	// No need to release the createPlanet individual functions, only the array
+	if (game->createPlanet) {
+		MEM_free(game->createPlanet);
+		game->createPlanet = 0;
 	}
-	MEM_free(game->createPlanet);
-	game->createPlanet = 0;
 
 	MEM_free(game);
 }
@@ -298,7 +295,8 @@ static bool isJetmanAlive(Planet planet[static 1]) {
 
 static bool isMissionAccomplished(Planet planet[static 1]) {
 
-	return (planet->spaceship->step == READY) && shareBase(planet->jetman->object.box, planet->spaceship->base_object->box);
+	return (planet->spaceship->step == READY)
+			&& shareBase(planet->jetman->object.box, planet->spaceship->base_object->box);
 }
 
 static void waitForLanding(Planet planet[static 1]) {
@@ -331,7 +329,7 @@ static void leavePlanet(Planet planet[static 1]) {
 
 void static scoreBonus(Planet planet[static 1]) {
 
-	if (current_game->mode & MODE_MD) {
+	if (current_game->config.mode & MODE_MD) {
 
 		u16 ammo_bonus = 0;
 		char bonus_message[19];

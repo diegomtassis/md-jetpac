@@ -17,6 +17,7 @@
 #define ALIVE		0x01
 #define DEAD		0x02
 
+typedef struct Config Config;
 typedef struct Game Game;
 typedef struct PlanetDefinition PlanetDefinition;
 typedef struct Planet Planet;
@@ -32,8 +33,12 @@ typedef struct Grape Grape;
 typedef struct Shot Shot;
 typedef struct Explosion Explosion;
 
-struct Game {
+struct Config {
 	u8 mode;
+};
+
+struct Game {
+	Config config;
 	u8 lives;
 	u8 planet;
 	u16 score;

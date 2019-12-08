@@ -103,7 +103,7 @@ static void setGameConfig(Game* game) {
 
 	u8 planet = 0;
 	if (current_option == 0) {
-		game->mode = MODE_ZX;
+		game->config.mode = MODE_ZX;
 		game->num_planets = 16;
 		game->createPlanet = MEM_alloc(game->num_planets * sizeof(Planet*));
 		game->createPlanet[planet++] = createPlanetZX01;
@@ -123,7 +123,7 @@ static void setGameConfig(Game* game) {
 		game->createPlanet[planet++] = createPlanetZX15;
 		game->createPlanet[planet++] = createPlanetZX16;
 	} else {
-		game->mode = MODE_MD;
+		game->config.mode = MODE_MD;
 		game->num_planets = 5;
 		game->createPlanet = MEM_alloc(game->num_planets * sizeof(Planet*));
 		game->createPlanet[planet++] = createPlanetZX01;
