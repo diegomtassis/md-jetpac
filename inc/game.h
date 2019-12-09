@@ -14,6 +14,6 @@
 void runGame(Game* game);
 void releaseGame(Game* game);
 
-void scoreByEvent(GameEvent event);
+void scoreByEvent(GameEvent event, u8 player);
 
 #endif /* INC_GAME_H_ */

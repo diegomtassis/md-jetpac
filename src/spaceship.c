@@ -15,6 +15,7 @@
 #include "../inc/items.h"
 #include "../inc/events.h"
 #include "../res/sprite.h"
+#include "../inc/players.h"
 
 #define BASE	0x01
 #define MID		0x02
@@ -280,10 +281,10 @@ static void handleFuelling(Planet planet[static 1]) {
 
 	} else if (spaceship->substep & WAITING) {
 
-		if (grab(&planet->jetman->object, spaceship->fuel_object)) {
+		if (grab(&planet->p1->object, spaceship->fuel_object)) {
 			// fuel grabbed while waiting
 			spaceship->substep = GRABBED;
-			onEvent(GRABBED_FUEL);
+			onEvent(GRABBED_FUEL, P1);
 		}
 
 	} else if (spaceship->substep & GRABBED) {
@@ -295,17 +296,17 @@ static void handleFuelling(Planet planet[static 1]) {
 			spaceship->fuel_object->mov.y = SPEED_V_DOWN;
 
 		} else {
-			V2f16 jetman_pos = planet->jetman->object.pos;
+			V2f16 jetman_pos = planet->p1->object.pos;
 			spaceship->fuel_object->pos.x = jetman_pos.x;
 			spaceship->fuel_object->pos.y = fix16Add(jetman_pos.y, FIX16_12);
 		}
 
 	} else if (spaceship->substep & FALLING) {
 
-		if (grab(&planet->jetman->object, spaceship->fuel_object)) {
+		if (grab(&planet->p1->object, spaceship->fuel_object)) {
 			// fuel grabbed while falling
 			spaceship->substep = GRABBED;
-			onEvent(GRABBED_FUEL);
+			onEvent(GRABBED_FUEL, P1);
 
 		} else {
 			Box_s16 target_v = targetVBox(*spaceship->fuel_object);
@@ -316,7 +317,7 @@ static void handleFuelling(Planet planet[static 1]) {
 			} else if (planet->def.mind_bottom && target_v.pos.y > BOTTOM_POS_V_PX_S16) {
 				// fuel lost
 				spaceship->substep = NONE;
-				onEvent(LOST_FUEL);
+				onEvent(LOST_FUEL, 0);
 
 			} else {
 				spaceship->fuel_object->pos.y += spaceship->fuel_object->mov.y;
@@ -349,7 +350,7 @@ static void handleFuelling(Planet planet[static 1]) {
 static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offset_px, Planet planet[static 1]) {
 
 	Spaceship* spaceship = planet->spaceship;
-	V2f16 jetman_pos = planet->jetman->object.pos;
+	V2f16 jetman_pos = planet->p1->object.pos;
 
 	if (isAboveBaseUpwardProjection(part->box, spaceship->base_object->box)) {
 		if (spaceship->substep & GRABBED) {
@@ -367,12 +368,12 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 			}
 		}
 
-	} else if ((spaceship->substep & GRABBED) || overlap(planet->jetman->object.box, part->box)) {
+	} else if ((spaceship->substep & GRABBED) || overlap(planet->p1->object.box, part->box)) {
 
 		// The jetman is already in possession or has just grabbed the a section of the rocket
 		if (!(spaceship->substep & GRABBED)) {
 			spaceship->substep = GRABBED;
-			onEvent(GRABBED_SPACESHIP_PART);
+			onEvent(GRABBED_SPACESHIP_PART, P1);
 		}
 
 		part->pos.x = jetman_pos.x;

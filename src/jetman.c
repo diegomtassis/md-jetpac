@@ -9,6 +9,7 @@
 
 #include <genesis.h>
 
+#include "../inc/players.h"
 #include "../inc/constants.h"
 #include "../inc/explosions.h"
 #include "../inc/fwk/commons.h"
@@ -39,7 +40,7 @@
 #define JETMAN_WIDTH 16
 
 static void createPlayer1(Planet planet[static 1]);
-static void handleInputJetman(Jetman*);
+static void handleInputJetman(Jetman*, u16 joy);
 
 static void moveToStart(Jetman* jetman, const Planet planet[static 1]);
 static void moveJetman(Jetman*, Planet*);
@@ -54,20 +55,20 @@ static void drawJetman(Jetman*);
 bool shoot_pushed;
 bool shoot_order;
 
-void startJetman(Planet planet[static 1], bool limit_ammo) {
+void startPlayers(Planet planet[static 1], bool limit_ammo) {
 
 	createPlayer1(planet);
-	planet->jetman->sprite = SPR_addSprite(&carl_sprite, fix16ToInt(planet->jetman->object.pos.x),
-			fix16ToInt(planet->jetman->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	planet->p1->sprite = SPR_addSprite(&carl_sprite, fix16ToInt(planet->p1->object.pos.x),
+			fix16ToInt(planet->p1->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	shoot_pushed = FALSE;
 	shoot_order = FALSE;
-	planet->jetman->limited_ammo = limit_ammo;
-	planet->jetman->ammo = planet->def.ammo;
+	planet->p1->limited_ammo = limit_ammo;
+	planet->p1->ammo = planet->def.ammo;
 }
 
-void releaseJetman(Planet planet[static 1]) {
+void releasePlayers(Planet planet[static 1]) {
 
-	Jetman* jetman = planet->jetman;
+	Jetman* jetman = planet->p1;
 	if (!jetman) {
 		return;
 	}
@@ -76,40 +77,40 @@ void releaseJetman(Planet planet[static 1]) {
 	SPR_releaseSprite(jetman->sprite);
 	jetman->sprite = 0;
 	MEM_free(jetman);
-	planet->jetman = 0;
+	planet->p1 = 0;
 }
 
-void resetJetman(Planet planet[static 1]) {
+void resetPlayers(Planet planet[static 1]) {
 
-	moveToStart(planet->jetman, planet);
-	planet->jetman->health = ALIVE;
+	moveToStart(planet->p1, planet);
+	planet->p1->health = ALIVE;
 }
 
-void killJetman(Planet planet[static 1], bool exploding) {
+void killPlayer(Planet planet[static 1], bool exploding) {
 
 	if (exploding) {
-		explode(planet->jetman->object.box, planet);
+		explode(planet->p1->object.box, planet);
 	}
 
-	planet->jetman->health = DEAD;
+	planet->p1->health = DEAD;
 }
 
-void jetmanActs(Planet planet[static 1]) {
+void playersAct(Planet planet[static 1]) {
 
-	Jetman* jetman = planet->jetman;
-	if (jetman->health & ALIVE) {
-		handleInputJetman(jetman);
-		moveJetman(planet->jetman, planet);
-		drawJetman(planet->jetman);
+	Jetman* p1 = planet->p1;
+	if (p1->health & ALIVE) {
+		handleInputJetman(p1, JOY_1);
+		moveJetman(planet->p1, planet);
+		drawJetman(planet->p1);
 
-		if (shoot_order && (!jetman->limited_ammo || jetman->ammo)) {
+		if (shoot_order && (!p1->limited_ammo || p1->ammo)) {
 
 			V2s16 where = { 0 };
-			where.x = planet->jetman->object.box.pos.x + (planet->jetman->head_back ? 0 : 16);
-			where.y = planet->jetman->object.box.pos.y + 11;
+			where.x = planet->p1->object.box.pos.x + (planet->p1->head_back ? 0 : 16);
+			where.y = planet->p1->object.box.pos.y + 11;
 
-			shoot(where, planet->jetman->head_back, planet);
-			jetman->ammo--;
+			shoot(P1, where, planet->p1->head_back, planet);
+			p1->ammo--;
 			shoot_order = FALSE;
 		}
 	}
@@ -128,7 +129,7 @@ static void createPlayer1(Planet planet[static 1]) {
 	moveToStart(jetman, planet);
 	jetman->health = ALIVE;
 
-	planet->jetman = jetman;
+	planet->p1 = jetman;
 }
 
 static void moveToStart(Jetman* jetman, const Planet planet[static 1]) {
@@ -325,9 +326,9 @@ static void drawJetman(Jetman* jetman) {
 	SPR_setHFlip(sprite, jetman->head_back);
 }
 
-static void handleInputJetman(Jetman* jetman) {
+static void handleInputJetman(Jetman* jetman, u16 joy) {
 
-	u16 value = JOY_readJoypad(JOY_1);
+	u16 value = JOY_readJoypad(joy);
 
 	if (value & BUTTON_B) {
 		jetman->order.y = -1;

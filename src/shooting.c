@@ -59,13 +59,15 @@ void releaseShots(Planet planet[static 1]) {
 	planet->shots.e = 0;
 }
 
-void shoot(V2s16 where, bool to_left, Planet planet[static 1]) {
+void shoot(u8 shooter, V2s16 where, bool to_left, Planet planet[static 1]) {
 
 	if (planet->shots.count >= planet->shots.size) {
 		return;
 	}
 
 	Shot* shot = MEM_calloc(sizeof *shot);
+
+	shot->shooter = shooter;
 
 	for (int idx = 0; idx < planet->shots.size; idx++) {
 		// Find an empty spot for the shot
@@ -163,7 +165,7 @@ void updateShots(Planet planet[static 1]) {
 	}
 }
 
-bool checkHit(Box_s16 subject, Planet planet[static 1]) {
+u8 checkHit(Box_s16 subject, Planet planet[static 1]) {
 
 	Shot* shot = 0;
 	Grape* grape = 0;
@@ -175,17 +177,21 @@ bool checkHit(Box_s16 subject, Planet planet[static 1]) {
 				grape = shot->grapes[idx_grape];
 				if (grape) {
 					if (checkCollision(shot, grape, subject)) {
+
+						u8 who = shot->shooter;
+
 						releaseShot(shot);
 						planet->shots.e[idx_shot] = 0;
 						planet->shots.count--;
-						return TRUE;
+
+						return who;
 					}
 				}
 			}
 		}
 	}
 
-	return FALSE;
+	return 0;
 }
 
 static void releaseShotIfNoGrapes(Planet planet[static 1], u8 idx_shot) {

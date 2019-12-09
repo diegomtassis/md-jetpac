@@ -230,21 +230,27 @@ static void expandGameConfig(Game* game) {
 		game->createPlanet[planet++] = createPlanetMD04;
 	}
 
+	u8 lives;
+
 	switch (current_config->difficulty) {
 	case MANIAC:
-		game->lives = 1;
+		lives = 1;
 		break;
 	case HARD:
-		game->lives = 3;
+		lives = 3;
 		break;
 	case NORMAL:
-		game->lives = 5;
+		lives = 5;
 		break;
 	default: // EASY
-		game->lives = 10;
+		lives = 10;
 	}
 
-	game->score = 0;
+	game->p1.lives = lives;
+	game->p2.lives = lives;
+
+	game->p1.score = 0;
+	game->p2.score = 0;
 
 	game->config = current_config;
 }

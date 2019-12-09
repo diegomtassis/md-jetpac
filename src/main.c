@@ -24,17 +24,17 @@ int main() {
 	VDP_setScreenWidth256();
 	VDP_setScreenHeight224();
 
-	// jetpac file
-	printDisclaimer();
-	JOY_waitPress(JOY_1, BUTTON_BTN);
-	clearDisclaimer();
-
-	waitMs(50);
-
-	// splash screen
-	showSplashScreen();
-	waitMs(LOADING_TIME);
-	clearSplashScreen();
+//	// jetpac file
+//	printDisclaimer();
+//	JOY_waitPress(JOY_1, BUTTON_BTN);
+//	clearDisclaimer();
+//
+//	waitMs(50);
+//
+//	// splash screen
+//	showSplashScreen();
+//	waitMs(LOADING_TIME);
+//	clearSplashScreen();
 
 	resetTileMemory();
 	initHud();
@@ -48,7 +48,7 @@ int main() {
 		setUpGame(game);
 		runGame(game);
 
-		registerScore(game->score);
+		registerScore(game->p1.score);
 		releaseGame(game);
 
 		VDP_waitVSync();

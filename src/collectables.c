@@ -13,6 +13,7 @@
 #include <timer.h>
 #include <types.h>
 
+#include "../inc/players.h"
 #include "../inc/events.h"
 #include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
@@ -187,10 +188,10 @@ static void updateCollectable(Collectable* collectable, Planet planet[static 1])
 
 	if (collectable->step == FALLING) {
 
-		if (grab(&planet->jetman->object, &collectable->object)) {
+		if (grab(&planet->p1->object, &collectable->object)) {
 			// collectable grabbed while falling
 			collectable->step = GRABBED;
-			onEvent(GRABBED_COLLECTABLE);
+			onEvent(GRABBED_COLLECTABLE, P1);
 
 		} else {
 			Box_s16 target_v = targetVBox(collectable->object);
@@ -201,7 +202,7 @@ static void updateCollectable(Collectable* collectable, Planet planet[static 1])
 			} else if (planet->def.mind_bottom && target_v.pos.y > BOTTOM_POS_V_PX_S16) {
 				// collectable lost
 				collectable->step = LOST;
-				onEvent(LOST_COLLECTABLE);
+				onEvent(LOST_COLLECTABLE, 0);
 
 			} else {
 				collectable->object.pos.y += collectable->object.mov.y;
@@ -213,10 +214,10 @@ static void updateCollectable(Collectable* collectable, Planet planet[static 1])
 		}
 
 	} else if (collectable->step == WAITING) {
-		if (grab(&planet->jetman->object, &collectable->object)) {
+		if (grab(&planet->p1->object, &collectable->object)) {
 			// collectable grabbed while waiting
 			collectable->step = GRABBED;
-			onEvent(GRABBED_COLLECTABLE);
+			onEvent(GRABBED_COLLECTABLE, P1);
 		}
 	}
 

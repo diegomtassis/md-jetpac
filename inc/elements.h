@@ -19,6 +19,7 @@
 
 typedef struct Config Config;
 typedef struct Game Game;
+typedef struct PlayerStatus PlayerStatus;
 typedef struct PlanetDefinition PlanetDefinition;
 typedef struct Planet Planet;
 typedef struct SpaceshipTypeDefinition SpaceshipTypeDefinition;
@@ -39,11 +40,16 @@ struct Config {
 	u8 players;
 };
 
+struct PlayerStatus {
+	u8 lives;
+	u16 score;
+};
+
 struct Game {
 	Config* config;
-	u8 lives;
+	PlayerStatus p1;
+	PlayerStatus p2;
 	u8 planet;
-	u16 score;
 	Planet* (**createPlanet)(void);
 	u8 num_planets;
 };
@@ -125,6 +131,7 @@ struct Collectable {
 };
 
 struct Shot {
+	u8 shooter;
 	V2s16 where;
 	bool to_left;
 	u8 type;
@@ -149,25 +156,26 @@ struct Explosion {
 };
 
 struct PlanetDefinition {
+	SpaceshipDefinition spaceship_def;
+	EnemyDefinition enemy_def;
 	u8 mind_bottom;
 	V2s16* jetman_init_pos;
 	u16 ammo;
-	SpaceshipDefinition spaceship_def;
-	EnemyDefinition enemy_def;
 };
 
 struct Planet {
+	PlanetDefinition def;
+	Game* game;
 	Platform* floor;
 	Platform** platforms;
 	u8 num_platforms;
+	Spaceship* spaceship;
+	Jetman* p1;
+	Jetman* p2;
 	List enemies;
 	List collectables;
-	Jetman* jetman;
-	Spaceship* spaceship;
 	List booms;
 	List shots;
-	PlanetDefinition def;
-	Game* game;
 };
 
 #endif /* INC_ELEMENTS_H_ */

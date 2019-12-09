@@ -61,12 +61,12 @@ void updateHud(Game* game, Jetman* jetman) {
 
 	// p1 lives
 	char lives[2];
-	uintToStr(game->lives, lives, 1);
+	uintToStr(game->p1.lives, lives, 1);
 	VDP_drawText(lives, 9, 2);
 
 	// p1 score
 	char score[6];
-	sprintf(score, "%06d", game->score);
+	sprintf(score, "%06d", game->p1.score);
 	VDP_drawText(score, 1, 3);
 
 	updateAmmo(jetman);

@@ -34,7 +34,7 @@ Planet* allocPlanet() {
 
 	planet->floor = 0;
 	planet->platforms = 0;
-	planet->jetman = 0;
+	planet->p1 = 0;
 	planet->spaceship = 0;
 
 	planet->enemies.e = 0;

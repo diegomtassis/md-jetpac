@@ -8,6 +8,8 @@
 #ifndef INC_EVENTS_H_
 #define INC_EVENTS_H_
 
+#include <types.h>
+
 typedef enum {
 	KILLED_ENEMY, //
 	GRABBED_SPACESHIP_PART, //
@@ -17,6 +19,6 @@ typedef enum {
 	LOST_COLLECTABLE, //
 } GameEvent;
 
-void onEvent(GameEvent event);
+void onEvent(GameEvent event, u8 player);
 
 #endif /* INC_EVENTS_H_ */
