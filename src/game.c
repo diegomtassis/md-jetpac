@@ -87,7 +87,7 @@ void runGame(Game* game) {
 		startSpaceship(current_planet);
 		waitForLanding(current_planet);
 
-		startPlayers(current_planet, game->config->mode == MD);
+		startPlayers(current_planet, &game->p1, &game->p2, game->config->mode == MD);
 		startEnemies(current_planet);
 
 		startCollectables(current_planet);
@@ -291,7 +291,7 @@ static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 
 static bool areTherePlayersAlive(Planet planet[static 1]) {
 
-	return ALIVE & planet->p1->health;
+	return (ALIVE & planet->p1->health) | (ALIVE & planet->p2->health);
 }
 
 static bool isMissionAccomplished(Planet planet[static 1]) {

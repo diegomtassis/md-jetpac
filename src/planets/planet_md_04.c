@@ -75,6 +75,6 @@ static void defineSpaceship(Planet planet[static 1]) {
 
 static void defineJetman(Planet planet[static 1]) {
 
-	planet->def.jetman_init_pos = MEM_alloc(sizeof *planet->def.jetman_init_pos);
-	setV2s16(planet->def.jetman_init_pos, 92, 30);
+	planet->def.p1_init_pos = MEM_alloc(sizeof *planet->def.p1_init_pos);
+	setV2s16(planet->def.p1_init_pos, 92, 30);
 }

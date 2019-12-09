@@ -39,10 +39,12 @@
 #define JETMAN_HEIGHT 24
 #define JETMAN_WIDTH 16
 
-static void createPlayer1(Planet planet[static 1]);
+static Jetman* createJetman(PlayerStatus* status);
+static void releaseJetman(Jetman jetman[static 1]);
 static void handleInputJetman(Jetman*, u16 joy);
 
-static void moveToStart(Jetman* jetman, const Planet planet[static 1]);
+static void moveToStart(Jetman* jetman, V2f16 init_pos);
+static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player);
 static void moveJetman(Jetman*, Planet*);
 static u8 calculateNextMovement(Jetman*);
 static void updatePosition(Jetman*, Planet*);
@@ -55,34 +57,42 @@ static void drawJetman(Jetman*);
 bool shoot_pushed;
 bool shoot_order;
 
-void startPlayers(Planet planet[static 1], bool limit_ammo) {
+void startPlayers(Planet planet[static 1], PlayerStatus* p1_status, PlayerStatus* p2_status, bool limit_ammo) {
 
-	createPlayer1(planet);
-	planet->p1->sprite = SPR_addSprite(&carl_sprite, fix16ToInt(planet->p1->object.pos.x),
-			fix16ToInt(planet->p1->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	Jetman* p1 = createJetman(p1_status);
+	moveToStart(p1, figureOutInitPosition(planet, P1));
+
+	planet->p1 = p1;
+
+	p1->sprite = SPR_addSprite(&carl_sprite, fix16ToInt(p1->object.pos.x), fix16ToInt(p1->object.pos.y),
+			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	shoot_pushed = FALSE;
 	shoot_order = FALSE;
-	planet->p1->limited_ammo = limit_ammo;
-	planet->p1->ammo = planet->def.ammo;
+	p1->limited_ammo = limit_ammo;
+	p1->ammo = planet->def.ammo;
+
+	if (p2_status && p2_status->lives > 0) {
+		// create player 2
+	}
+
 }
 
 void releasePlayers(Planet planet[static 1]) {
 
-	Jetman* jetman = planet->p1;
-	if (!jetman) {
-		return;
+	if (planet->p1) {
+		releaseJetman(planet->p1);
+		planet->p1 = 0;
 	}
 
-	SPR_setVisibility(jetman->sprite, FALSE);
-	SPR_releaseSprite(jetman->sprite);
-	jetman->sprite = 0;
-	MEM_free(jetman);
-	planet->p1 = 0;
+	if (planet->p2) {
+		releaseJetman(planet->p2);
+		planet->p2 = 0;
+	}
 }
 
 void resetPlayers(Planet planet[static 1]) {
 
-	moveToStart(planet->p1, planet);
+	moveToStart(planet->p1, figureOutInitPosition(planet, P1));
 	planet->p1->health = ALIVE;
 }
 
@@ -116,7 +126,7 @@ void playersAct(Planet planet[static 1]) {
 	}
 }
 
-static void createPlayer1(Planet planet[static 1]) {
+static Jetman* createJetman(PlayerStatus* status) {
 
 	Jetman* jetman = MEM_calloc(sizeof *jetman);
 
@@ -126,26 +136,60 @@ static void createPlayer1(Planet planet[static 1]) {
 	jetman->object.box.w = JETMAN_WIDTH;
 	jetman->object.box.h = JETMAN_HEIGHT;
 
-	moveToStart(jetman, planet);
 	jetman->health = ALIVE;
 
-	planet->p1 = jetman;
+	jetman->status = status;
+
+	return jetman;
 }
 
-static void moveToStart(Jetman* jetman, const Planet planet[static 1]) {
+static void releaseJetman(Jetman jetman[static 1]) {
 
-	if (planet->def.jetman_init_pos) {
-		jetman->object.pos.x = FIX16(planet->def.jetman_init_pos->x);
-		jetman->object.pos.y = FIX16(planet->def.jetman_init_pos->y - 8 * 3);
-	} else {
-		jetman->object.pos.x = FIX16(124);
-		jetman->object.pos.y = fix16Sub(planet->floor->object.pos.y, FIX16(8*3));
+	if (!jetman) {
+		return;
 	}
+
+	SPR_setVisibility(jetman->sprite, FALSE);
+	SPR_releaseSprite(jetman->sprite);
+	jetman->sprite = 0;
+	jetman->status = 0;
+	MEM_free(jetman);
+}
+
+static void moveToStart(Jetman* jetman, V2f16 init_pos) {
+
+	jetman->object.pos.x = init_pos.x;
+	jetman->object.pos.y = init_pos.y;
 
 	jetman->object.mov.x = SPEED_ZERO;
 	jetman->object.mov.y = SPEED_ZERO;
 
 	updateBox(&jetman->object);
+}
+
+static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player) {
+
+	V2f16 init_pos;
+
+	if (player == P1) {
+
+		if (planet->def.p1_init_pos) {
+
+			init_pos.x = FIX16(planet->def.p1_init_pos->x);
+			init_pos.y = FIX16(planet->def.p1_init_pos->y);
+
+		} else {
+			init_pos.x = FIX16(124);
+			init_pos.y = fix16Sub(planet->floor->object.pos.y, FIX16(8 * 3));
+		}
+
+	} else {
+
+		init_pos.x = FIX16(80);
+		init_pos.y = fix16Sub(planet->floor->object.pos.y, FIX16(8 * 3));
+	}
+
+	return init_pos;
 }
 
 static void moveJetman(Jetman* jetman, Planet planet[static 1]) {
@@ -161,7 +205,7 @@ static u8 calculateNextMovement(Jetman* jetman) {
 
 	u8 movement = 0;
 
-	// horizontal movement
+// horizontal movement
 	if (jetman->order.x > 0) {
 		jetman->object.mov.x = jetman->airborne ? SPEED_H_FLY : SPEED_H_WALK;
 		jetman->head_back = FALSE;
@@ -176,7 +220,7 @@ static u8 calculateNextMovement(Jetman* jetman) {
 		jetman->object.mov.x = SPEED_ZERO;
 	}
 
-	// vertical movement
+// vertical movement
 	if (jetman->order.y < 0) {
 		if (!jetman->airborne) {
 			movement |= BOOST;
@@ -201,7 +245,7 @@ static u8 calculateNextMovement(Jetman* jetman) {
 
 static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 
-	// horizontal position
+// horizontal position
 	Box_s16 target_h = targetHBox(jetman->object);
 	if (target_h.pos.x > MAX_POS_H_PX_S16) {
 		jetman->object.pos.x = MIN_POS_H_PX_F16;
@@ -224,7 +268,7 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 		}
 	}
 
-	// vertical position
+// vertical position
 	Box_s16 target_v = targetVBox(jetman->object);
 	f16 landed_pos_y = landed(target_v, planet);
 	jetman->airborne = !landed_pos_y;
@@ -246,7 +290,7 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 		}
 	}
 
-	// update box
+// update box
 	updateBox(&jetman->object);
 }
 

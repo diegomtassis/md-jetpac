@@ -27,8 +27,8 @@ Planet* createPlanetMD03() {
 	defineEnemiesPopulation(planet, bubbleDefinition, 6);
 	defineSpaceship(planet);
 
-	planet->def.jetman_init_pos = MEM_alloc(sizeof *planet->def.jetman_init_pos);
-	setV2s16(planet->def.jetman_init_pos, 68, 176);
+	planet->def.p1_init_pos = MEM_alloc(sizeof *planet->def.p1_init_pos);
+	setV2s16(planet->def.p1_init_pos, 68, 176);
 
 	planet->def.mind_bottom = TRUE;
 	planet->def.ammo = 20;

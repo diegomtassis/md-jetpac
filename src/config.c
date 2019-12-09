@@ -65,6 +65,9 @@ void setUpGame(Game* game) {
 
 	if (!current_config) {
 		current_config = MEM_alloc(sizeof(*current_config));
+		current_config->mode = ZX;
+		current_config->difficulty = NORMAL;
+		current_config->players = ONE_PLAYER;
 	}
 
 	current_option = OPTION_MODE;

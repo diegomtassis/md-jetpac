@@ -23,7 +23,7 @@ Planet* createPlanetZX14() {
 	defineEnemiesPopulation(planet, falconDefinition, 5);
 	defineSpaceshipInDefaultPlanet(planet, u4Definition, ASSEMBLED);
 
-	planet->def.jetman_init_pos = 0;
+	planet->def.p1_init_pos = 0;
 	planet->def.ammo = 50;
 
 	planet->def.mind_bottom = FALSE;

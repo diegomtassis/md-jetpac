@@ -30,7 +30,7 @@ Planet* allocPlanet() {
 
 	Planet* planet = (Planet*) MEM_calloc(sizeof(Planet));
 
-	planet->def.jetman_init_pos = 0;
+	planet->def.p1_init_pos = 0;
 
 	planet->floor = 0;
 	planet->platforms = 0;
@@ -90,9 +90,9 @@ void releasePlanet(Planet* planet) {
 	// spaceship
 
 	// jetman definition
-	if (planet->def.jetman_init_pos) {
-		MEM_free(planet->def.jetman_init_pos);
-		planet->def.jetman_init_pos = 0;
+	if (planet->def.p1_init_pos) {
+		MEM_free(planet->def.p1_init_pos);
+		planet->def.p1_init_pos = 0;
 	}
 
 	if (planet->game) {

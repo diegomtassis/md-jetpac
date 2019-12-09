@@ -23,7 +23,7 @@ Planet* createPlanetZX04() {
 	defineEnemiesPopulation(planet, fighterDefinition, 7);
 	defineSpaceshipInDefaultPlanet(planet, u1Definition, ASSEMBLED);
 
-	planet->def.jetman_init_pos = 0;
+	planet->def.p1_init_pos = 0;
 	planet->def.ammo = 50;
 
 	planet->def.mind_bottom = FALSE;

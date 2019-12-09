@@ -60,13 +60,17 @@ void displayAmmo(bool show_ammo) {
 void updateHud(Game* game, Jetman* jetman) {
 
 	// p1 lives
-	char lives[2];
-	uintToStr(game->p1.lives, lives, 1);
-	VDP_drawText(lives, 9, 2);
+	u8 lives = jetman->status->lives;
+	char lives_text[2];
+	uintToStr(lives, lives_text, 1);
+	VDP_drawText(lives_text, lives > 9 ? 8 : 9, 2);
+	if (lives == 9) {
+		VDP_clearText(8, 2, 1);
+	}
 
 	// p1 score
 	char score[6];
-	sprintf(score, "%06d", game->p1.score);
+	sprintf(score, "%06d", jetman->status->score);
 	VDP_drawText(score, 1, 3);
 
 	updateAmmo(jetman);
