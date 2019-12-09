@@ -15,30 +15,31 @@ static const char* JETPAC_GAME_SELECTION = "JETPAC GAME SELECTION";
 static const char* TEXT_MODE = "MODE";
 static const char* TEXT_ZX = "ZX";
 static const char* TEXT_MD = "MD";
+static const char* TEXT_PLAYERS = "PLAYERS";
+static const char* TEXT_ONE_PLAYER = "1";
+static const char* TEXT_TWO_PLAYERS = "2";
 static const char* TEXT_DIFFICULTY = "DIFFICULTY";
 static const char* TEXT_EASY = "EASY";
 static const char* TEXT_NORMAL = "NORMAL";
 static const char* TEXT_HARD = "HARD";
 static const char* TEXT_MANIAC = "MANIAC";
-static const char* TEXT_PLAYERS = "PLAYERS";
-static const char* TEXT_ONE_PLAYER = "1";
-static const char* TEXT_TWO_PLAYERS = "2";
 static const char* PRESS_START_BUTTON = "START GAME";
+
+static const u16 BUTTON_ABC = BUTTON_A | BUTTON_B | BUTTON_C;
 
 static void initConfigScreen();
 static void clearConfigScreen();
 
-static void handleConfig(Config config[static 1], V2u16 pos);
 static void displayConfig(Config config, V2u16 pos);
 static void displayOption(const char *option, const char *value, u8 highlighted, u16 x, u16 y);
 
 static const char* printableMode(Config config);
-static const char* printableDifficulty(Config config);
 static const char* printablePlayers(Config config);
+static const char* printableDifficulty(Config config);
 
 static void changeMode(Config config[static 1]);
-static void changeDifficulty(Config config[static 1]);
 static void changePlayers(Config config[static 1]);
+static void changeDifficulty(Config config[static 1]);
 
 static void expandGameConfig(Game* game);
 
@@ -46,8 +47,8 @@ static void joyEvent(u16 joy, u16 changed, u16 state);
 
 volatile enum option {
 	OPTION_MODE, //
-	OPTION_DIFFICULTY, //
 	OPTION_PLAYERS, //
+	OPTION_DIFFICULTY, //
 	OPTION_START,
 } current_option;
 
@@ -76,7 +77,7 @@ void setUpGame(Game* game) {
 	JOY_setEventHandler(joyEvent);
 
 	do {
-		handleConfig(current_config, pos_init);
+		displayConfig(*current_config, pos_init);
 		VDP_waitVSync();
 	} while (!start);
 
@@ -103,11 +104,6 @@ static void clearConfigScreen() {
 	VDP_setHilightShadow(FALSE);
 }
 
-static void handleConfig(Config config[static 1], V2u16 pos) {
-
-	displayConfig(*config, pos);
-}
-
 static void displayConfig(Config config, V2u16 pos) {
 
 	if (refresh) {
@@ -118,10 +114,10 @@ static void displayConfig(Config config, V2u16 pos) {
 		displayOption(TEXT_MODE, printableMode(config), current_option == OPTION_MODE, pos.x, pos.y);
 
 		pos.y += 2;
-		displayOption(TEXT_DIFFICULTY, printableDifficulty(config), current_option == OPTION_DIFFICULTY, pos.x, pos.y);
+		displayOption(TEXT_PLAYERS, printablePlayers(config), current_option == OPTION_PLAYERS, pos.x, pos.y);
 
 		pos.y += 2;
-		displayOption(TEXT_PLAYERS, printablePlayers(config), current_option == OPTION_PLAYERS, pos.x, pos.y);
+		displayOption(TEXT_DIFFICULTY, printableDifficulty(config), current_option == OPTION_DIFFICULTY, pos.x, pos.y);
 
 		pos.y += 4;
 		displayOption(PRESS_START_BUTTON, 0, current_option == OPTION_START, pos.x, pos.y);
@@ -140,6 +136,16 @@ static const char* printableMode(Config config) {
 	}
 }
 
+static const char* printablePlayers(Config config) {
+
+	switch (config.players) {
+	case ONE_PLAYER:
+		return TEXT_ONE_PLAYER;
+	default:
+		return TEXT_TWO_PLAYERS;
+	}
+}
+
 static const char* printableDifficulty(Config config) {
 
 	switch (config.difficulty) {
@@ -154,31 +160,12 @@ static const char* printableDifficulty(Config config) {
 	}
 }
 
-static const char* printablePlayers(Config config) {
-
-	switch (config.players) {
-	case ONE_PLAYER:
-		return TEXT_ONE_PLAYER;
-	default:
-		return TEXT_TWO_PLAYERS;
-	}
-}
-
 static void changeMode(Config config[static 1]) {
 
 	if (config->mode == MD) {
 		config->mode = ZX;
 	} else {
 		config->mode++;
-	}
-}
-
-static void changeDifficulty(Config config[static 1]) {
-
-	if (config->difficulty == MANIAC) {
-		config->difficulty = EASY;
-	} else {
-		config->difficulty++;
 	}
 }
 
@@ -191,10 +178,19 @@ static void changePlayers(Config config[static 1]) {
 	}
 }
 
+static void changeDifficulty(Config config[static 1]) {
+
+	if (config->difficulty == MANIAC) {
+		config->difficulty = EASY;
+	} else {
+		config->difficulty++;
+	}
+}
+
 static void displayOption(const char *option, const char *value, u8 highlighted, u16 x, u16 y) {
 
-	VDP_setTextPriority(highlighted);
 	VDP_clearTextLine(y);
+	VDP_setTextPriority(highlighted);
 	VDP_drawText(option, x, y);
 	if (value) {
 		VDP_drawText(value, x + 15, y);
@@ -274,20 +270,21 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 		refresh = TRUE;
 	}
 
-	if ((BUTTON_A | BUTTON_B | BUTTON_C) & changed & ~state) {
+	if (BUTTON_ABC & changed & ~state) {
 
 		if (current_option == OPTION_MODE) {
 			changeMode(current_config);
 			refresh = TRUE;
 
-		} else if (current_option == OPTION_DIFFICULTY) {
-			changeDifficulty(current_config);
-			refresh = TRUE;
-
 		} else if (current_option == OPTION_PLAYERS) {
 			changePlayers(current_config);
 			refresh = TRUE;
+
+		} else if (current_option == OPTION_DIFFICULTY) {
+			changeDifficulty(current_config);
+			refresh = TRUE;
 		}
+
 	}
 
 	if (BUTTON_START & changed & ~state) {
