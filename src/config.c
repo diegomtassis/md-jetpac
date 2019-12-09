@@ -254,9 +254,11 @@ static void displayOption(const char *option, const char *value, u8 highlighted,
 static void expandGameConfig(Config config[static 1]) {
 
 	if (current_config->mode == ZX) {
+		config->limited_ammo = FALSE;
 		config->num_planets = zx_num_planets;
 		config->createPlanet = zxCreatePlanet;
 	} else {
+		config->limited_ammo = TRUE;
 		config->num_planets = md_num_planets;
 		config->createPlanet = mdCreatePlanet;
 	}

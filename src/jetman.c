@@ -44,6 +44,7 @@ static void releaseJetman(Jetman jetman[static 1]);
 static void handleInputJetman(Jetman*, u16 joy);
 
 static void moveToStart(Jetman* jetman, V2f16 init_pos);
+static void shapePlayer(Jetman player[static 1], const SpriteDefinition* sprite, u16 ammo);
 static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player);
 static void moveJetman(Jetman*, Planet*);
 static u8 calculateNextMovement(Jetman*);
@@ -57,24 +58,21 @@ static void drawJetman(Jetman*);
 bool shoot_pushed;
 bool shoot_order;
 
-void startPlayers(Planet planet[static 1], PlayerStatus* p1_status, PlayerStatus* p2_status, bool limit_ammo) {
+void startPlayers(Planet planet[static 1], PlayerStatus* p1_status, PlayerStatus* p2_status) {
 
-	Jetman* p1 = createJetman(p1_status);
-	moveToStart(p1, figureOutInitPosition(planet, P1));
-
-	planet->p1 = p1;
-
-	p1->sprite = SPR_addSprite(&carl_sprite, fix16ToInt(p1->object.pos.x), fix16ToInt(p1->object.pos.y),
-			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-	shoot_pushed = FALSE;
-	shoot_order = FALSE;
-	p1->limited_ammo = limit_ammo;
-	p1->ammo = planet->def.ammo;
+	Jetman* player = createJetman(p1_status);
+	moveToStart(player, figureOutInitPosition(planet, P1));
+	shapePlayer(player, &carl_sprite, planet->def.ammo);
+	planet->p1 = player;
 
 	if (p2_status && p2_status->lives > 0) {
-		// create player 2
-	}
 
+		player = createJetman(p2_status);
+		player->health = DEAD; // Until we handle its state in the game loop
+		moveToStart(player, figureOutInitPosition(planet, P2));
+		shapePlayer(player, &ann_sprite, planet->def.ammo);
+		planet->p2 = player;
+	}
 }
 
 void releasePlayers(Planet planet[static 1]) {
@@ -113,7 +111,7 @@ void playersAct(Planet planet[static 1]) {
 		moveJetman(planet->p1, planet);
 		drawJetman(planet->p1);
 
-		if (shoot_order && (!p1->limited_ammo || p1->ammo)) {
+		if (shoot_order && (p1->ammo || !planet->game->config->limited_ammo)) {
 
 			V2s16 where = { 0 };
 			where.x = planet->p1->object.box.pos.x + (planet->p1->head_back ? 0 : 16);
@@ -165,6 +163,15 @@ static void moveToStart(Jetman* jetman, V2f16 init_pos) {
 	jetman->object.mov.y = SPEED_ZERO;
 
 	updateBox(&jetman->object);
+}
+
+static void shapePlayer(Jetman player[static 1], const SpriteDefinition* sprite, u16 ammo) {
+
+	player->sprite = SPR_addSprite(sprite, fix16ToInt(player->object.pos.x), fix16ToInt(player->object.pos.y),
+			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	shoot_pushed = FALSE;
+	shoot_order = FALSE;
+	player->ammo = ammo;
 }
 
 static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player) {

@@ -38,8 +38,9 @@ typedef struct Explosion Explosion;
 struct Config {
 	u8 mode;
 	u8 difficulty;
-	u8 lives;
 	u8 players;
+	u8 lives;
+	bool limited_ammo;
 	Planet* (**createPlanet)(void);
 	u8 num_planets;
 };
@@ -50,7 +51,7 @@ struct PlayerStatus {
 };
 
 struct Game {
-	Config* config;
+	const Config* config;
 	PlayerStatus* p1;
 	PlayerStatus* p2;
 	u8 planet;

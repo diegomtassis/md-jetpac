@@ -86,7 +86,7 @@ GameResult runGame(Config config[static 1]) {
 		startSpaceship(current_planet);
 		waitForLanding(current_planet);
 
-		startPlayers(current_planet, current_game->p1, current_game->p2, config->mode == MD);
+		startPlayers(current_planet, current_game->p1, current_game->p2);
 		startEnemies(current_planet);
 
 		startCollectables(current_planet);
@@ -399,7 +399,7 @@ static void scorePoints(u16 points, Player player) {
 
 static void printMessage(const char *message) {
 
-// center the message
+	// center the message
 	u8 x_pos = message_pos.x - strlen(message) / 2;
 	VDP_drawText(message, x_pos, message_pos.y);
 }
