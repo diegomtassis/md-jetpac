@@ -19,6 +19,7 @@
 
 typedef struct Config Config;
 typedef struct Game Game;
+typedef struct GameResult GameResult;
 typedef struct PlayerStatus PlayerStatus;
 typedef struct PlanetDefinition PlanetDefinition;
 typedef struct Planet Planet;
@@ -37,7 +38,10 @@ typedef struct Explosion Explosion;
 struct Config {
 	u8 mode;
 	u8 difficulty;
+	u8 lives;
 	u8 players;
+	Planet* (**createPlanet)(void);
+	u8 num_planets;
 };
 
 struct PlayerStatus {
@@ -47,11 +51,14 @@ struct PlayerStatus {
 
 struct Game {
 	Config* config;
-	PlayerStatus p1;
-	PlayerStatus p2;
+	PlayerStatus* p1;
+	PlayerStatus* p2;
 	u8 planet;
-	Planet* (**createPlanet)(void);
-	u8 num_planets;
+};
+
+struct GameResult {
+	u16 p1_score;
+	u16 p2_score;
 };
 
 struct SpaceshipTypeDefinition {

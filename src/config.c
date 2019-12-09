@@ -27,6 +27,8 @@ static const char* PRESS_START_BUTTON = "START GAME";
 
 static const u16 BUTTON_ABC = BUTTON_A | BUTTON_B | BUTTON_C;
 
+static void setUpDefaults();
+
 static void initConfigScreen();
 static void clearConfigScreen();
 
@@ -41,7 +43,7 @@ static void changeMode(Config config[static 1]);
 static void changePlayers(Config config[static 1]);
 static void changeDifficulty(Config config[static 1]);
 
-static void expandGameConfig(Game* game);
+static void expandGameConfig(Config config[static 1]);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
@@ -59,7 +61,15 @@ volatile bool refresh = TRUE;
 
 const V2u16 pos_init = { .x = 6, .y = 8 };
 
-void setUpGame(Game* game) {
+Planet* (**zxCreatePlanet)(void);
+u8 zx_num_planets;
+
+Planet* (**mdCreatePlanet)(void);
+u8 md_num_planets;
+
+Config setUpGame() {
+
+	setUpDefaults();
 
 	u8 prev_priority = VDP_getTextPriority();
 
@@ -86,10 +96,50 @@ void setUpGame(Game* game) {
 
 	setRandomSeed(getTick());
 
-	expandGameConfig(game);
+	expandGameConfig(current_config);
 
 	clearConfigScreen();
 	VDP_setTextPriority(prev_priority);
+
+	return *current_config;
+}
+
+static void setUpDefaults() {
+
+	if (!zxCreatePlanet) {
+
+		zx_num_planets = 16;
+		u8 planet = 0;
+		zxCreatePlanet = MEM_alloc(zx_num_planets * sizeof(Planet*));
+		zxCreatePlanet[planet++] = createPlanetZX01;
+		zxCreatePlanet[planet++] = createPlanetZX02;
+		zxCreatePlanet[planet++] = createPlanetZX03;
+		zxCreatePlanet[planet++] = createPlanetZX04;
+		zxCreatePlanet[planet++] = createPlanetZX05;
+		zxCreatePlanet[planet++] = createPlanetZX06;
+		zxCreatePlanet[planet++] = createPlanetZX07;
+		zxCreatePlanet[planet++] = createPlanetZX08;
+		zxCreatePlanet[planet++] = createPlanetZX09;
+		zxCreatePlanet[planet++] = createPlanetZX10;
+		zxCreatePlanet[planet++] = createPlanetZX11;
+		zxCreatePlanet[planet++] = createPlanetZX12;
+		zxCreatePlanet[planet++] = createPlanetZX13;
+		zxCreatePlanet[planet++] = createPlanetZX14;
+		zxCreatePlanet[planet++] = createPlanetZX15;
+		zxCreatePlanet[planet++] = createPlanetZX16;
+	}
+
+	if (!mdCreatePlanet) {
+
+		md_num_planets = 5;
+		u8 planet = 0;
+		mdCreatePlanet = MEM_alloc(md_num_planets * sizeof(Planet*));
+		mdCreatePlanet[planet++] = createPlanetZX01;
+		mdCreatePlanet[planet++] = createPlanetMD01;
+		mdCreatePlanet[planet++] = createPlanetMD02;
+		mdCreatePlanet[planet++] = createPlanetMD03;
+		mdCreatePlanet[planet++] = createPlanetMD04;
+	}
 }
 
 static void initConfigScreen() {
@@ -201,61 +251,29 @@ static void displayOption(const char *option, const char *value, u8 highlighted,
 	VDP_setTextPriority(0);
 }
 
-static void expandGameConfig(Game* game) {
+static void expandGameConfig(Config config[static 1]) {
 
-	u8 planet = 0;
 	if (current_config->mode == ZX) {
-		game->num_planets = 16;
-		game->createPlanet = MEM_alloc(game->num_planets * sizeof(Planet*));
-		game->createPlanet[planet++] = createPlanetZX01;
-		game->createPlanet[planet++] = createPlanetZX02;
-		game->createPlanet[planet++] = createPlanetZX03;
-		game->createPlanet[planet++] = createPlanetZX04;
-		game->createPlanet[planet++] = createPlanetZX05;
-		game->createPlanet[planet++] = createPlanetZX06;
-		game->createPlanet[planet++] = createPlanetZX07;
-		game->createPlanet[planet++] = createPlanetZX08;
-		game->createPlanet[planet++] = createPlanetZX09;
-		game->createPlanet[planet++] = createPlanetZX10;
-		game->createPlanet[planet++] = createPlanetZX11;
-		game->createPlanet[planet++] = createPlanetZX12;
-		game->createPlanet[planet++] = createPlanetZX13;
-		game->createPlanet[planet++] = createPlanetZX14;
-		game->createPlanet[planet++] = createPlanetZX15;
-		game->createPlanet[planet++] = createPlanetZX16;
+		config->num_planets = zx_num_planets;
+		config->createPlanet = zxCreatePlanet;
 	} else {
-		game->num_planets = 5;
-		game->createPlanet = MEM_alloc(game->num_planets * sizeof(Planet*));
-		game->createPlanet[planet++] = createPlanetZX01;
-		game->createPlanet[planet++] = createPlanetMD01;
-		game->createPlanet[planet++] = createPlanetMD02;
-		game->createPlanet[planet++] = createPlanetMD03;
-		game->createPlanet[planet++] = createPlanetMD04;
+		config->num_planets = md_num_planets;
+		config->createPlanet = mdCreatePlanet;
 	}
-
-	u8 lives;
 
 	switch (current_config->difficulty) {
 	case MANIAC:
-		lives = 1;
+		current_config->lives = 1;
 		break;
 	case HARD:
-		lives = 3;
+		current_config->lives = 3;
 		break;
 	case NORMAL:
-		lives = 5;
+		current_config->lives = 5;
 		break;
 	default: // EASY
-		lives = 10;
+		current_config->lives = 10;
 	}
-
-	game->p1.lives = lives;
-	game->p2.lives = lives;
-
-	game->p1.score = 0;
-	game->p2.score = 0;
-
-	game->config = current_config;
 }
 
 static void joyEvent(u16 joy, u16 changed, u16 state) {

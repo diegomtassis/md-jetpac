@@ -39,17 +39,15 @@ int main() {
 	resetTileMemory();
 	initHud();
 
-	Game* game = 0;
 	while (1) {
 
 		//	log_memory();
 
-		game = MEM_calloc(sizeof *game);
-		setUpGame(game);
-		runGame(game);
+		Config config = setUpGame();
+		GameResult result = runGame(&config);
 
-		registerScore(game->p1.score);
-		releaseGame(game);
+		registerScore(result.p1_score);
+		registerScore(result.p2_score);
 
 		VDP_waitVSync();
 	}
