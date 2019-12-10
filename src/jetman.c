@@ -68,12 +68,13 @@ void startPlayers(Planet planet[static 1], PlayerStatus* p1_status, PlayerStatus
 	shapePlayer(player, &carl_sprite, planet->def.ammo);
 	planet->p1 = player;
 
+	planet->p2 = 0;
 	if (p2_status && p2_status->lives > 0) {
 
 		player = createJetman(P2, p2_status);
 		moveToStart(player, figureOutInitPosition(planet, P2));
 		shapePlayer(player, &ann_sprite, planet->def.ammo);
-		player->invincible = TRUE; // Only for the moment
+		player->immune = TRUE; // Only for the moment
 		planet->p2 = player;
 	}
 }
@@ -104,7 +105,7 @@ void resetPlayer(Jetman* player, Planet planet[static 1]) {
 
 void killPlayer(Jetman* player, Planet planet[static 1], bool exploding) {
 
-	if (player->invincible) {
+	if (player->immune) {
 		return;
 	}
 
@@ -428,24 +429,24 @@ static void handleInputJetman(Jetman* jetman, u16 joy) {
 		jetman->order.x = 0;
 	}
 
-	bool order;
-	bool pushed;
+	bool* pushed;
+	bool* order;
 
-	if (value & BUTTON_C) {
-		if (!pushed) {
-			// detect flank
-			order = TRUE;
-		}
-		pushed = TRUE;
-	} else {
-		pushed = FALSE;
+	if (joy == JOY_1) {
+		pushed = &p1_shoot_pushed;
+		order = &p1_shoot_order;
+	} else if (joy == JOY_2) {
+		pushed = &p2_shoot_pushed;
+		order = &p2_shoot_order;
 	}
 
-	if (joy & JOY_1) {
-		p1_shoot_order = order;
-		p1_shoot_pushed = pushed;
+	if (value & BUTTON_C) {
+		if (!*pushed) {
+			// detect flank
+			*order = TRUE;
+		}
+		*pushed = TRUE;
 	} else {
-		p2_shoot_order = order;
-		p2_shoot_pushed = pushed;
+		*pushed = FALSE;
 	}
 }

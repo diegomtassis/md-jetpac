@@ -87,6 +87,11 @@ GameResult runGame(Config config[static 1]) {
 		waitForLanding(current_planet);
 
 		startPlayers(current_planet, current_game->p1, current_game->p2);
+		current_planet->p1->immune = config->difficulty == EASY;
+		if (current_planet->p2) {
+			current_planet->p2->immune = current_planet->p1->immune;
+		}
+
 		startEnemies(current_planet);
 
 		startCollectables(current_planet);
@@ -307,7 +312,7 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 
 			// enemy & p1
 			Jetman* player = planet->p1;
-			if (!player->invincible && overlap(player->object.box, enemy->object.box)) {
+			if (!player->immune && overlap(player->object.box, enemy->object.box)) {
 				killPlayer(player, planet, TRUE);
 				killEnemy(enemy, planet, TRUE);
 				break;
@@ -315,7 +320,7 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 
 			// enemy & p2
 			player = planet->p2;
-			if (player && !player->invincible && overlap(player->object.box, enemy->object.box)) {
+			if (player && !player->immune && overlap(player->object.box, enemy->object.box)) {
 				killPlayer(player, planet, TRUE);
 				killEnemy(enemy, planet, TRUE);
 				break;
