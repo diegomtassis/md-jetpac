@@ -14,8 +14,6 @@
 #include "../inc/fwk/physics.h"
 #include "../res/sprite.h"
 
-#define MAX_SHOTS 	5
-
 #define RANGE_SHORT 22
 #define RANGE_MEDIUM 28
 #define RANGE_LONG 35
@@ -42,7 +40,7 @@ static void releaseGrape(Grape* grape);
 void initShots(Planet planet[static 1]) {
 
 	planet->shots.count = 0;
-	planet->shots.size = MAX_SHOTS;
+	planet->shots.size = MAX_SHOTS_PER_PLAYER * planet->game->config->players;
 	planet->shots.e = MEM_calloc(planet->shots.size * sizeof(Shot*));
 }
 
@@ -59,15 +57,16 @@ void releaseShots(Planet planet[static 1]) {
 	planet->shots.e = 0;
 }
 
-void shoot(u8 shooter, V2s16 where, bool to_left, Planet planet[static 1]) {
+void shoot(Jetman* shooter, Planet planet[static 1]) {
 
-	if (planet->shots.count >= planet->shots.size) {
+	if (!shooter || shooter->shots == MAX_SHOTS_PER_PLAYER) {
 		return;
 	}
 
 	Shot* shot = MEM_calloc(sizeof *shot);
 
 	shot->shooter = shooter;
+	shooter->shots++;
 
 	for (int idx = 0; idx < planet->shots.size; idx++) {
 		// Find an empty spot for the shot
@@ -78,9 +77,9 @@ void shoot(u8 shooter, V2s16 where, bool to_left, Planet planet[static 1]) {
 		}
 	}
 
-	shot->where.x = where.x;
-	shot->where.y = where.y;
-	shot->to_left = to_left;
+	shot->where.x = shooter->object.box.pos.x + (shooter->head_back ? 0 : 16);
+	shot->where.y = shooter->object.box.pos.y + 11;
+	shot->to_left = shooter->head_back;
 	shot->type = abs(random()) % 3;
 
 	u8 range = abs(random()) % 3;
@@ -97,10 +96,11 @@ void shoot(u8 shooter, V2s16 where, bool to_left, Planet planet[static 1]) {
 	shot->grapes_created = 0;
 	shot->grapes = MEM_calloc(shot->grapes_size * sizeof(Grape*));
 
-	shot->grapes[0] = createGrape(where, to_left, shot->type, shot->range, BURST_A);
+	shot->grapes[0] = createGrape(shot->where, shot->to_left, shot->type, shot->range, BURST_A);
 	shot->grapes_count++;
 	shot->grapes_created++;
 	shot->distance_to_last = 0;
+
 }
 
 void updateShots(Planet planet[static 1]) {
@@ -178,7 +178,7 @@ u8 checkHit(Box_s16 subject, Planet planet[static 1]) {
 				if (grape) {
 					if (checkCollision(shot, grape, subject)) {
 
-						u8 who = shot->shooter;
+						u8 who = shot->shooter->id;
 
 						releaseShot(shot);
 						planet->shots.e[idx_shot] = 0;
@@ -227,6 +227,10 @@ static void releaseShot(Shot* shot) {
 
 	shot->grapes_count = 0;
 	shot->grapes_size = 0;
+
+	shot->shooter->shots--;
+	shot->shooter = 0;
+
 	MEM_free(shot);
 }
 

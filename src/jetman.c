@@ -55,11 +55,8 @@ static f16 blockedByRight(Box_s16, const Planet*);
 
 static void drawJetman(Jetman*);
 
-bool p1_shoot_pushed;
-bool p1_shoot_order;
-
-bool p2_shoot_pushed;
-bool p2_shoot_order;
+bool pushed[2];
+bool order[2];
 
 void startPlayers(Planet planet[static 1], PlayerStatus* p1_status, PlayerStatus* p2_status) {
 
@@ -124,15 +121,11 @@ void playersAct(Planet planet[static 1]) {
 		moveJetman(player, planet);
 		drawJetman(player);
 
-		if (p1_shoot_order && (player->ammo || !planet->game->config->limited_ammo)) {
+		if (order[0] && (player->ammo || !planet->game->config->limited_ammo)) {
 
-			V2s16 where = { 0 };
-			where.x = player->object.box.pos.x + (player->head_back ? 0 : 16);
-			where.y = player->object.box.pos.y + 11;
-
-			shoot(P1, where, player->head_back, planet);
+			shoot(player, planet);
 			player->ammo--;
-			p1_shoot_order = FALSE;
+			order[0] = FALSE;
 		}
 	}
 
@@ -143,15 +136,11 @@ void playersAct(Planet planet[static 1]) {
 		moveJetman(player, planet);
 		drawJetman(player);
 
-		if (p2_shoot_order && (player->ammo || !planet->game->config->limited_ammo)) {
+		if (order[1] && (player->ammo || !planet->game->config->limited_ammo)) {
 
-			V2s16 where = { 0 };
-			where.x = player->object.box.pos.x + (player->head_back ? 0 : 16);
-			where.y = player->object.box.pos.y + 11;
-
-			shoot(P2, where, player->head_back, planet);
+			shoot(player, planet);
 			player->ammo--;
-			p2_shoot_order = FALSE;
+			order[1] = FALSE;
 		}
 	}
 }
@@ -203,8 +192,6 @@ static void shapePlayer(Jetman player[static 1], const SpriteDefinition* sprite,
 
 	player->sprite = SPR_addSprite(sprite, fix16ToInt(player->object.pos.x), fix16ToInt(player->object.pos.y),
 			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-	p1_shoot_pushed = FALSE;
-	p1_shoot_order = FALSE;
 	player->ammo = ammo;
 }
 
@@ -429,24 +416,13 @@ static void handleInputJetman(Jetman* jetman, u16 joy) {
 		jetman->order.x = 0;
 	}
 
-	bool* pushed;
-	bool* order;
-
-	if (joy == JOY_1) {
-		pushed = &p1_shoot_pushed;
-		order = &p1_shoot_order;
-	} else if (joy == JOY_2) {
-		pushed = &p2_shoot_pushed;
-		order = &p2_shoot_order;
-	}
-
 	if (value & BUTTON_C) {
-		if (!*pushed) {
+		if (!pushed[joy]) {
 			// detect flank
-			*order = TRUE;
+			order[joy] = TRUE;
 		}
-		*pushed = TRUE;
+		pushed[joy] = TRUE;
 	} else {
-		*pushed = FALSE;
+		pushed[joy] = FALSE;
 	}
 }

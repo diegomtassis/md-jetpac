@@ -25,7 +25,7 @@ typedef enum {
 } Difficulty;
 
 typedef enum {
-	ONE_PLAYER, //
+	ONE_PLAYER = 1, //
 	TWO_PLAYERS,
 } Players;
 

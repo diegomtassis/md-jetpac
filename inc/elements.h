@@ -109,6 +109,7 @@ struct Jetman {
 	bool head_back;
 	bool limited_ammo;
 	u16 ammo;
+	u8 shots;
 	bool immune;
 	Sprite* sprite;
 };
@@ -142,7 +143,7 @@ struct Collectable {
 };
 
 struct Shot {
-	u8 shooter;
+	Jetman* shooter;
 	V2s16 where;
 	bool to_left;
 	u8 type;
