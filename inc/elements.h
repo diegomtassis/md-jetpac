@@ -100,6 +100,7 @@ struct Platform {
 
 struct Jetman {
 	Object_f16 object;
+	u8 id;
 	PlayerStatus* status;
 	V2s16 order;
 	u8 walk_step_counter;
@@ -108,6 +109,7 @@ struct Jetman {
 	bool head_back;
 	bool limited_ammo;
 	u16 ammo;
+	bool invincible;
 	Sprite* sprite;
 };
 
