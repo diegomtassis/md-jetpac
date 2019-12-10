@@ -14,7 +14,7 @@
 #include "../inc/fwk/physics.h"
 #include "../res/sprite.h"
 
-#define MAX_SHOTS 	3
+#define MAX_SHOTS 	5
 
 #define RANGE_SHORT 22
 #define RANGE_MEDIUM 28

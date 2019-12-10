@@ -130,7 +130,7 @@ void playersAct(Planet planet[static 1]) {
 			where.x = player->object.box.pos.x + (player->head_back ? 0 : 16);
 			where.y = player->object.box.pos.y + 11;
 
-			shoot(P1, where, planet->p1->head_back, planet);
+			shoot(P1, where, player->head_back, planet);
 			player->ammo--;
 			p1_shoot_order = FALSE;
 		}
@@ -143,15 +143,15 @@ void playersAct(Planet planet[static 1]) {
 		moveJetman(player, planet);
 		drawJetman(player);
 
-		if (p1_shoot_order && (player->ammo || !planet->game->config->limited_ammo)) {
+		if (p2_shoot_order && (player->ammo || !planet->game->config->limited_ammo)) {
 
 			V2s16 where = { 0 };
 			where.x = player->object.box.pos.x + (player->head_back ? 0 : 16);
 			where.y = player->object.box.pos.y + 11;
 
-			shoot(P2, where, planet->p1->head_back, planet);
+			shoot(P2, where, player->head_back, planet);
 			player->ammo--;
-			p1_shoot_order = FALSE;
+			p2_shoot_order = FALSE;
 		}
 	}
 }
