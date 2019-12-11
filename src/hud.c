@@ -67,20 +67,20 @@ void displayAmmo(bool show_ammo) {
 	}
 }
 
-void updateHud(Game* game, Jetman* jetman) {
+void updatePlayerHud(Player* player, u16 ammo) {
 
-	if (!jetman) {
+	if (!player) {
 		return;
 	}
 
-	u8 lives = jetman->player->lives;
+	u8 lives = player->lives;
 	char lives_text[2];
 	uintToStr(lives, lives_text, 1);
 
 	char score[6];
-	sprintf(score, "%06d", jetman->player->score);
+	sprintf(score, "%06d", player->score);
 
-	if (jetman->player->id == P1) {
+	if (player->id == P1) {
 
 		VDP_drawText(lives_text, lives > 9 ? P1_LIVES_X : P1_LIVES_X + 1, 2);
 		if (lives == 9) {
@@ -99,18 +99,19 @@ void updateHud(Game* game, Jetman* jetman) {
 		VDP_drawText(score, 25, 3);
 	}
 
-	updateAmmo(jetman);
+	updateAmmo(player->id, ammo);
 }
 
-void updateAmmo(Jetman* jetman) {
+void updateAmmo(u8 player_id, u16 ammo) {
 
-	if (!jetman || !showing_ammo) {
+	if (!showing_ammo) {
 		return;
 	}
 
-	char ammo[2];
-	sprintf(ammo, "%02d", jetman->ammo);
-	VDP_drawText(ammo, 8, 3);
+	char text_ammo[2];
+	sprintf(text_ammo, "%02d", ammo);
+
+	VDP_drawText(text_ammo, player_id == P1 ? P1_LIVES_X : P2_LIVES_X, 3);
 }
 
 void registerScore(u16 new_score) {
