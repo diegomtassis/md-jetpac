@@ -103,7 +103,7 @@ struct Jetman {
 	Object_f16 object;
 	u8 id;
 	u8 joystick;
-	Player* status;
+	Player* player;
 	V2s16 order;
 	u8 walk_step_counter;
 	u8 health;

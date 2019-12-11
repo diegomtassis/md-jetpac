@@ -114,6 +114,7 @@ GameResult runGame(Config config[static 1]) {
 			leavePlanet(current_planet);
 			scoreBonus(current_planet);
 			updateHud(current_game, current_planet->j1);
+			updateHud(current_game, current_planet->j2);
 
 			if (++planet_number == config->num_planets) {
 				planet_number = 0;
@@ -306,6 +307,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 		}
 
 		updateHud(current_game, current_planet->j1);
+		updateHud(current_game, current_planet->j2);
 		VDP_waitVSync();
 	}
 
