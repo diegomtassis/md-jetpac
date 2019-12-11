@@ -20,7 +20,7 @@
 typedef struct Config Config;
 typedef struct Game Game;
 typedef struct GameResult GameResult;
-typedef struct PlayerStatus PlayerStatus;
+typedef struct Player Player;
 typedef struct PlanetDefinition PlanetDefinition;
 typedef struct Planet Planet;
 typedef struct SpaceshipTypeDefinition SpaceshipTypeDefinition;
@@ -45,15 +45,16 @@ struct Config {
 	u8 num_planets;
 };
 
-struct PlayerStatus {
+struct Player {
+	u8 id;
 	u8 lives;
 	u16 score;
 };
 
 struct Game {
 	const Config* config;
-	PlayerStatus* p1;
-	PlayerStatus* p2;
+	Player* p1;
+	Player* p2;
 	u8 planet;
 };
 
@@ -102,7 +103,7 @@ struct Jetman {
 	Object_f16 object;
 	u8 id;
 	u8 joystick;
-	PlayerStatus* status;
+	Player* status;
 	V2s16 order;
 	u8 walk_step_counter;
 	u8 health;
@@ -184,8 +185,8 @@ struct Planet {
 	Platform** platforms;
 	u8 num_platforms;
 	Spaceship* spaceship;
-	Jetman* p1;
-	Jetman* p2;
+	Jetman* j1;
+	Jetman* j2;
 	List enemies;
 	List collectables;
 	List booms;

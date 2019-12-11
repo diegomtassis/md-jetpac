@@ -39,7 +39,7 @@
 #define JETMAN_HEIGHT 24
 #define JETMAN_WIDTH 16
 
-static Jetman* createJetman(u8 player_id, u8 joystick, PlayerStatus* status);
+static Jetman* createJetman(Player* player);
 static void releaseJetman(Jetman jetman[static 1]);
 static void handleInputJetman(Jetman* jetman);
 
@@ -58,11 +58,11 @@ static void drawJetman(Jetman*);
 bool joy_pushed[2];
 bool joy_flank[2];
 
-Jetman* startJetman(u8 player_id, PlayerStatus* status, Planet planet[static 1]) {
+Jetman* startJetman(Player* player, Planet planet[static 1]) {
 
-	Jetman* jetman = createJetman(player_id, player_id == P1 ? JOY_1 : JOY_2, status);
-	moveToStart(jetman, figureOutInitPosition(planet, player_id));
-	shapeJetman(jetman, player_id == P1 ? &carl_sprite : &ann_sprite, planet->def.ammo);
+	Jetman* jetman = createJetman(player);
+	moveToStart(jetman, figureOutInitPosition(planet, player->id));
+	shapeJetman(jetman, player->id == P1 ? &carl_sprite : &ann_sprite, planet->def.ammo);
 
 	return jetman;
 }
@@ -71,15 +71,15 @@ void releaseJetmanFromPlanet(u8 player_id, Planet planet[static 1]) {
 
 	// May be optimized
 
-	if (player_id == P1 && planet->p1) {
-		releaseJetman(planet->p1);
-		planet->p1 = 0;
+	if (player_id == P1 && planet->j1) {
+		releaseJetman(planet->j1);
+		planet->j1 = 0;
 		return;
 	}
 
-	if (player_id == P2 && planet->p2) {
-		releaseJetman(planet->p2);
-		planet->p2 = 0;
+	if (player_id == P2 && planet->j2) {
+		releaseJetman(planet->j2);
+		planet->j2 = 0;
 	}
 }
 
@@ -127,12 +127,13 @@ void jetmanActs(Jetman* jetman, Planet planet[static 1]) {
 	}
 }
 
-static Jetman* createJetman(u8 player_id, u8 joystick, PlayerStatus* status) {
+static Jetman* createJetman(Player* player) {
 
 	Jetman* jetman = MEM_calloc(sizeof *jetman);
 
-	jetman->id = player_id;
-	jetman->joystick = joystick;
+	jetman->id = player->id;
+	jetman->joystick = player->id == P1 ? JOY_1 : JOY_2;
+	;
 
 	jetman->object.size.x = JETMAN_WIDTH;
 	jetman->object.size.y = JETMAN_HEIGHT;
@@ -142,7 +143,7 @@ static Jetman* createJetman(u8 player_id, u8 joystick, PlayerStatus* status) {
 
 	jetman->health = ALIVE;
 
-	jetman->status = status;
+	jetman->status = player;
 
 	return jetman;
 }

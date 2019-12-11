@@ -188,12 +188,12 @@ static void updateCollectable(Collectable* collectable, Planet planet[static 1])
 
 	if (collectable->step == FALLING) {
 
-		if (grab(&planet->p1->object, &collectable->object)) {
+		if (grab(&planet->j1->object, &collectable->object)) {
 			// collectable grabbed by p1 while falling
 			collectable->step = GRABBED;
 			onEvent(GRABBED_COLLECTABLE, P1);
 
-		} else if (planet->p2 && (planet->p2->health & ALIVE) && grab(&planet->p2->object, &collectable->object)) {
+		} else if (planet->j2 && (planet->j2->health & ALIVE) && grab(&planet->j2->object, &collectable->object)) {
 			// collectable grabbed by p2 while falling
 			collectable->step = GRABBED;
 			onEvent(GRABBED_COLLECTABLE, P2);
@@ -219,12 +219,12 @@ static void updateCollectable(Collectable* collectable, Planet planet[static 1])
 		}
 
 	} else if (collectable->step == WAITING) {
-		if (grab(&planet->p1->object, &collectable->object)) {
+		if (grab(&planet->j1->object, &collectable->object)) {
 			// collectable grabbed by p1 while waiting
 			collectable->step = GRABBED;
 			onEvent(GRABBED_COLLECTABLE, P1);
 
-		} else if (planet->p2 && (planet->p2->health & ALIVE) && grab(&planet->p2->object, &collectable->object)) {
+		} else if (planet->j2 && (planet->j2->health & ALIVE) && grab(&planet->j2->object, &collectable->object)) {
 			// collectable grabbed by p2 while waiting
 			collectable->step = GRABBED;
 			onEvent(GRABBED_COLLECTABLE, P2);
