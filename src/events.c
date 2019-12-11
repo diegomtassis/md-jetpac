@@ -9,7 +9,7 @@
 
 #include "../inc/game.h"
 
-void onEvent(GameEvent game_event, u8 player) {
+void onEvent(GameEvent game_event, u8 player_id) {
 
-	scoreByEvent(game_event, player);
+	scoreByEvent(game_event, player_id);
 }

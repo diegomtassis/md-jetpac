@@ -39,13 +39,13 @@
 #define JETMAN_HEIGHT 24
 #define JETMAN_WIDTH 16
 
-static Jetman* createJetman(u8 id, PlayerStatus* status);
+static Jetman* createJetman(u8 player_id, u8 joystick, PlayerStatus* status);
 static void releaseJetman(Jetman jetman[static 1]);
-static void handleInputJetman(Jetman*, u16 joy);
+static void handleInputJetman(Jetman* jetman);
 
 static void moveToStart(Jetman* jetman, V2f16 init_pos);
-static void shapePlayer(Jetman player[static 1], const SpriteDefinition* sprite, u16 ammo);
-static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player);
+static void shapeJetman(Jetman jetman[static 1], const SpriteDefinition* sprite, u16 ammo);
+static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player_id);
 static void moveJetman(Jetman*, Planet*);
 static u8 calculateNextMovement(Jetman*);
 static void updatePosition(Jetman*, Planet*);
@@ -55,101 +55,84 @@ static f16 blockedByRight(Box_s16, const Planet*);
 
 static void drawJetman(Jetman*);
 
-bool pushed[2];
-bool order[2];
+bool joy_pushed[2];
+bool joy_flank[2];
 
-void startPlayers(Planet planet[static 1], PlayerStatus* p1_status, PlayerStatus* p2_status) {
+Jetman* startJetman(u8 player_id, PlayerStatus* status, Planet planet[static 1]) {
 
-	Jetman* player = createJetman(P1, p1_status);
-	moveToStart(player, figureOutInitPosition(planet, P1));
-	shapePlayer(player, &carl_sprite, planet->def.ammo);
-	planet->p1 = player;
+	Jetman* jetman = createJetman(player_id, player_id == P1 ? JOY_1 : JOY_2, status);
+	moveToStart(jetman, figureOutInitPosition(planet, player_id));
+	shapeJetman(jetman, player_id == P1 ? &carl_sprite : &ann_sprite, planet->def.ammo);
 
-	planet->p2 = 0;
-	if (p2_status && p2_status->lives > 0) {
-
-		player = createJetman(P2, p2_status);
-		moveToStart(player, figureOutInitPosition(planet, P2));
-		shapePlayer(player, &ann_sprite, planet->def.ammo);
-		player->immune = TRUE; // Only for the moment
-		planet->p2 = player;
-	}
+	return jetman;
 }
 
-void releasePlayers(Planet planet[static 1]) {
+void releaseJetmanFromPlanet(u8 player_id, Planet planet[static 1]) {
 
-	if (planet->p1) {
+	// May be optimized
+
+	if (player_id == P1 && planet->p1) {
 		releaseJetman(planet->p1);
 		planet->p1 = 0;
+		return;
 	}
 
-	if (planet->p2) {
+	if (player_id == P2 && planet->p2) {
 		releaseJetman(planet->p2);
 		planet->p2 = 0;
 	}
 }
 
-void resetPlayer(Jetman* player, Planet planet[static 1]) {
+void resetJetman(Jetman* jetman, Planet planet[static 1]) {
 
-	if (!player) {
+	if (!jetman) {
 		return;
 	}
 
-	moveToStart(player, figureOutInitPosition(planet, player->id));
-	player->health = ALIVE;
+	moveToStart(jetman, figureOutInitPosition(planet, jetman->id));
+	jetman->health = ALIVE;
 	return;
 }
 
-void killPlayer(Jetman* player, Planet planet[static 1], bool exploding) {
+void killJetman(Jetman* jetman, Planet planet[static 1], bool exploding) {
 
-	if (player->immune) {
+	if (jetman->immune) {
 		return;
 	}
 
 	if (exploding) {
-		explode(player->object.box, planet);
+		explode(jetman->object.box, planet);
 	}
 
-	player->health = DEAD;
+	jetman->health = DEAD;
 }
 
-void playersAct(Planet planet[static 1]) {
+void jetmanActs(Jetman* jetman, Planet planet[static 1]) {
 
-	Jetman* player = planet->p1;
-	if (player->health & ALIVE) {
-		handleInputJetman(player, JOY_1);
-		moveJetman(player, planet);
-		drawJetman(player);
-
-		if (order[0] && (player->ammo || !planet->game->config->limited_ammo)) {
-
-			shoot(player, planet);
-			player->ammo--;
-			order[0] = FALSE;
-		}
+	if (!jetman) {
+		return;
 	}
 
-	player = planet->p2;
-	if (player && (player->health & ALIVE)) {
+	if (jetman->health & ALIVE) {
+		handleInputJetman(jetman);
+		moveJetman(jetman, planet);
+		drawJetman(jetman);
 
-		handleInputJetman(player, JOY_2);
-		moveJetman(player, planet);
-		drawJetman(player);
+		if (joy_flank[jetman->joystick] && (jetman->ammo || !planet->game->config->limited_ammo)) {
 
-		if (order[1] && (player->ammo || !planet->game->config->limited_ammo)) {
-
-			shoot(player, planet);
-			player->ammo--;
-			order[1] = FALSE;
+			shoot(jetman, planet);
+			jetman->ammo--;
+			joy_flank[jetman->joystick] = FALSE;
 		}
 	}
 }
 
-static Jetman* createJetman(u8 id, PlayerStatus* status) {
+static Jetman* createJetman(u8 player_id, u8 joystick, PlayerStatus* status) {
 
 	Jetman* jetman = MEM_calloc(sizeof *jetman);
 
-	jetman->id = id;
+	jetman->id = player_id;
+	jetman->joystick = joystick;
 
 	jetman->object.size.x = JETMAN_WIDTH;
 	jetman->object.size.y = JETMAN_HEIGHT;
@@ -188,18 +171,18 @@ static void moveToStart(Jetman* jetman, V2f16 init_pos) {
 	updateBox(&jetman->object);
 }
 
-static void shapePlayer(Jetman player[static 1], const SpriteDefinition* sprite, u16 ammo) {
+static void shapeJetman(Jetman jetman[static 1], const SpriteDefinition* sprite, u16 ammo) {
 
-	player->sprite = SPR_addSprite(sprite, fix16ToInt(player->object.pos.x), fix16ToInt(player->object.pos.y),
+	jetman->sprite = SPR_addSprite(sprite, fix16ToInt(jetman->object.pos.x), fix16ToInt(jetman->object.pos.y),
 			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-	player->ammo = ammo;
+	jetman->ammo = ammo;
 }
 
-static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player) {
+static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player_id) {
 
 	V2f16 init_pos;
 
-	if (player == P1) {
+	if (player_id == P1) {
 
 		if (planet->def.p1_init_pos) {
 
@@ -398,8 +381,9 @@ static void drawJetman(Jetman* jetman) {
 	SPR_setHFlip(sprite, jetman->head_back);
 }
 
-static void handleInputJetman(Jetman* jetman, u16 joy) {
+static void handleInputJetman(Jetman* jetman) {
 
+	u8 joy = jetman->joystick;
 	u16 value = JOY_readJoypad(joy);
 
 	if (value & BUTTON_B) {
@@ -417,12 +401,12 @@ static void handleInputJetman(Jetman* jetman, u16 joy) {
 	}
 
 	if (value & BUTTON_C) {
-		if (!pushed[joy]) {
+		if (!joy_pushed[joy]) {
 			// detect flank
-			order[joy] = TRUE;
+			joy_flank[joy] = TRUE;
 		}
-		pushed[joy] = TRUE;
+		joy_pushed[joy] = TRUE;
 	} else {
-		pushed[joy] = FALSE;
+		joy_pushed[joy] = FALSE;
 	}
 }

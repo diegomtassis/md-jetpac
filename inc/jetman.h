@@ -10,11 +10,11 @@
 
 #include "elements.h"
 
-void startPlayers(Planet planet[static 1], PlayerStatus* p1_status, PlayerStatus* p2_status);
-void releasePlayers(Planet planet[static 1]);
-void killPlayer(Jetman* player, Planet planet[static 1], bool exploding);
-void resetPlayer(Jetman* player, Planet planet[static 1]);
+Jetman* startJetman(u8 player_id, PlayerStatus* status, Planet planet[static 1]);
+void releaseJetmanFromPlanet(u8 player_id, Planet planet[static 1]);
+void killJetman(Jetman* jetman, Planet planet[static 1], bool exploding);
+void resetJetman(Jetman* jetman, Planet planet[static 1]);
 
-void playersAct(Planet planet[static 1]);
+void jetmanActs(Jetman* jetman, Planet planet[static 1]);
 
 #endif /* INC_JETMAN_H_ */

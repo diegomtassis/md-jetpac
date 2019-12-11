@@ -101,6 +101,7 @@ struct Platform {
 struct Jetman {
 	Object_f16 object;
 	u8 id;
+	u8 joystick;
 	PlayerStatus* status;
 	V2s16 order;
 	u8 walk_step_counter;

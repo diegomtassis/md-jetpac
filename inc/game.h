@@ -13,6 +13,6 @@
 
 GameResult runGame(Config config[static 1]);
 
-void scoreByEvent(GameEvent event, u8 player);
+void scoreByEvent(GameEvent event, u8 player_id);
 
 #endif /* INC_GAME_H_ */

@@ -11,6 +11,6 @@
 typedef enum {
 	P1 = 1, //
 	P2, //
-} Player;
+} PlayerId;
 
 #endif /* INC_PLAYERS_H_ */

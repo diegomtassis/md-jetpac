@@ -19,6 +19,6 @@ typedef enum {
 	LOST_COLLECTABLE, //
 } GameEvent;
 
-void onEvent(GameEvent event, u8 player);
+void onEvent(GameEvent event, u8 player_id);
 
 #endif /* INC_EVENTS_H_ */

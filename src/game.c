@@ -37,7 +37,7 @@ static void releaseGame(Game* game);
 
 static bool runPlanet(Planet planet[static 1]);
 
-static bool isPlayerAlive(Jetman* player);
+static bool isJetmanAlive(Jetman* jetman);
 static bool isMissionAccomplished(Planet planet[static 1]);
 
 static void waitForLanding(Planet planet[static 1]);
@@ -47,7 +47,7 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]);
 static void handleElementsLeavingScreenUnder(Planet planet[static 1]);
 
 static void scoreBonus(Planet planet[static 1]);
-static void scorePoints(u16 points, Player player);
+static void scorePoints(u16 points, u8 player_id);
 
 static void printMessage(const char* message);
 static void flashMessage(const char *message, long wait);
@@ -86,9 +86,10 @@ GameResult runGame(Config config[static 1]) {
 		startSpaceship(current_planet);
 		waitForLanding(current_planet);
 
-		startPlayers(current_planet, current_game->p1, current_game->p2);
+		current_planet->p1 = startJetman(P1, current_game->p1, current_planet);
 		current_planet->p1->immune = config->difficulty == EASY;
-		if (current_planet->p2) {
+		if (current_game->p2) {
+			current_planet->p2 = startJetman(P2, current_game->p2, current_planet);
 			current_planet->p2->immune = current_planet->p1->immune;
 		}
 
@@ -125,7 +126,10 @@ GameResult runGame(Config config[static 1]) {
 		releaseShots(current_planet);
 		releaseCollectables(current_planet);
 		releaseEnemies(current_planet);
-		releasePlayers(current_planet);
+		releaseJetmanFromPlanet(P1, current_planet);
+		if (current_game->p2) {
+			releaseJetmanFromPlanet(P2, current_planet);
+		}
 		releaseSpaceship(current_planet);
 		releasePlanet(current_planet);
 		current_planet = 0;
@@ -148,36 +152,41 @@ GameResult runGame(Config config[static 1]) {
 	return result;
 }
 
-void scoreByEvent(GameEvent event, u8 player) {
+void scoreByEvent(GameEvent event, u8 player_id) {
 
 	if (!current_game) {
+		return;
+	}
+
+	PlayerStatus* status = player_id == P1 ? current_game->p1 : current_game->p2;
+	if (!status) {
 		return;
 	}
 
 	switch (event) {
 
 	case KILLED_ENEMY:
-		current_game->p1->score += 25;
+		status->score += 25;
 		break;
 
 	case GRABBED_SPACESHIP_PART:
-		current_game->p1->score += 100;
+		status->score += 100;
 		break;
 
 	case GRABBED_FUEL:
-		current_game->p1->score += 100;
+		status->score += 100;
 		break;
 
 	case GRABBED_COLLECTABLE:
-		current_game->p1->score += 250;
+		status->score += 250;
 		break;
 
 	case LOST_FUEL:
-		current_game->p1->score -= 50;
+		status->score -= 50;
 		break;
 
 	case LOST_COLLECTABLE:
-		current_game->p1->score -= 25;
+		status->score -= 25;
 		break;
 
 	default:
@@ -229,7 +238,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 	bool game_over = FALSE;
 	bool mission_accomplished = FALSE;
 
-	Jetman* player;
+	Jetman* jetman;
 
 	while (!game_over && !mission_accomplished) {
 
@@ -237,7 +246,9 @@ static bool runPlanet(Planet current_planet[static 1]) {
 
 			if (p1_alive) {
 
-				playersAct(current_planet);
+				jetmanActs(current_planet->p1, current_planet);
+				jetmanActs(current_planet->p2, current_planet);
+
 				enemiesAct(current_planet);
 				handleCollisionsBetweenMovingObjects(current_planet);
 				if (current_planet->def.mind_bottom) {
@@ -246,19 +257,23 @@ static bool runPlanet(Planet current_planet[static 1]) {
 
 				handleSpaceship(current_planet);
 
-				player = current_planet->p1;
-				p1_alive = isPlayerAlive(player);
+				jetman = current_planet->p1;
+				p1_alive = isJetmanAlive(jetman);
 				if (!p1_alive) {
 					dropIfGrabbed(current_planet->spaceship);
 					current_game->p1->lives--;
 				}
 
-				player = current_planet->p2;
-				if (player) {
-					p2_alive = isPlayerAlive(player);
+				jetman = current_planet->p2;
+				if (jetman) {
+					p2_alive = isJetmanAlive(jetman);
 					if (!p2_alive) {
 						dropIfGrabbed(current_planet->spaceship);
 						current_game->p2->lives--;
+
+						// TO REFACTOR
+						resetJetman(jetman, current_planet);
+						p2_alive = TRUE;
 					}
 				}
 
@@ -272,7 +287,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 					releaseEnemies(current_planet);
 
 					if (current_game->p1->lives > 0) {
-						resetPlayer(current_planet->p1, current_planet);
+						resetJetman(current_planet->p1, current_planet);
 						startEnemies(current_planet);
 						p1_alive = TRUE;
 					}
@@ -311,17 +326,17 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 			}
 
 			// enemy & p1
-			Jetman* player = planet->p1;
-			if (!player->immune && overlap(player->object.box, enemy->object.box)) {
-				killPlayer(player, planet, TRUE);
+			Jetman* jetman = planet->p1;
+			if (!jetman->immune && overlap(jetman->object.box, enemy->object.box)) {
+				killJetman(jetman, planet, TRUE);
 				killEnemy(enemy, planet, TRUE);
 				break;
 			}
 
 			// enemy & p2
-			player = planet->p2;
-			if (player && !player->immune && overlap(player->object.box, enemy->object.box)) {
-				killPlayer(player, planet, TRUE);
+			jetman = planet->p2;
+			if (jetman && !jetman->immune && overlap(jetman->object.box, enemy->object.box)) {
+				killJetman(jetman, planet, TRUE);
 				killEnemy(enemy, planet, TRUE);
 				break;
 			}
@@ -332,15 +347,15 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 
 	// p1
-	Jetman* player = planet->p1;
-	if ((ALIVE & player->health) && player->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
-		killPlayer(player, planet, FALSE);
+	Jetman* jetman = planet->p1;
+	if ((ALIVE & jetman->health) && jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
+		killJetman(jetman, planet, FALSE);
 	}
 
 	// p2
-	player = planet->p2;
-	if (player && (ALIVE & player->health) && player->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
-		killPlayer(player, planet, FALSE);
+	jetman = planet->p2;
+	if (jetman && (ALIVE & jetman->health) && jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
+		killJetman(jetman, planet, FALSE);
 	}
 
 	// enemies
@@ -353,9 +368,9 @@ static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 	}
 }
 
-static bool isPlayerAlive(Jetman* player) {
+static bool isJetmanAlive(Jetman* jetman) {
 
-	return player && (ALIVE & player->health);
+	return jetman && (ALIVE & jetman->health);
 }
 
 static bool isMissionAccomplished(Planet planet[static 1]) {
@@ -418,16 +433,16 @@ void static scoreBonus(Planet planet[static 1]) {
 	}
 }
 
-static void scorePoints(u16 points, Player player) {
+static void scorePoints(u16 points, u8 player_id) {
 
 	if (!current_game) {
 		return;
 	}
 
-	if (player == P1) {
+	if (player_id == P1) {
 		current_game->p1->score += points;
 
-	} else if (player == P2) {
+	} else if (player_id == P2) {
 		current_game->p2->score += points;
 	}
 
