@@ -90,7 +90,7 @@ GameResult runGame(Config config[static 1]) {
 
 		current_planet->j1 = startJetman(current_game->p1, current_planet);
 		current_planet->j1->immune = config->difficulty == EASY;
-		if (current_game->p2) {
+		if (current_game->p2 && current_game->p2->lives > 0) {
 			current_planet->j2 = startJetman(current_game->p2, current_planet);
 			current_planet->j2->immune = current_planet->j1->immune;
 		}
