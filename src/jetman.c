@@ -143,7 +143,7 @@ static Jetman* createJetman(Player* player) {
 
 	jetman->health = ALIVE;
 
-	jetman->status = player;
+	jetman->player = player;
 
 	return jetman;
 }
@@ -157,7 +157,7 @@ static void releaseJetman(Jetman jetman[static 1]) {
 	SPR_setVisibility(jetman->sprite, FALSE);
 	SPR_releaseSprite(jetman->sprite);
 	jetman->sprite = 0;
-	jetman->status = 0;
+	jetman->player = 0;
 	MEM_free(jetman);
 }
 

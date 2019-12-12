@@ -393,7 +393,7 @@ static void updateJetmanStatus(Jetman* jetman, bool* alive, Planet planet[static
 
 	if (!(*alive = isJetmanAlive(jetman))) {
 
-		dropIfGrabbed(planet->spaceship);
+		dropIfGrabbed(jetman->id, planet->spaceship);
 		jetman->player->lives--;
 	}
 
