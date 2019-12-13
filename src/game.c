@@ -44,6 +44,7 @@ static void leavePlanet(Planet planet[static 1]);
 
 static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]);
 static void handleElementsLeavingScreenUnder(Planet planet[static 1]);
+static void handleCollisionBetweenJetmanAndEnemy(Jetman* jetman, Enemy* enemy, Planet planet[static 1]);
 
 static void scoreBonus(Planet planet[static 1]);
 static void scorePoints(u16 points, u8 player_id);
@@ -336,34 +337,19 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 				continue;
 			}
 
-			// enemy & p1
-			Jetman* jetman = planet->j1;
-			if (!jetman->immunity && overlap(jetman->object.box, enemy->object.box)) {
-				killJetman(jetman, planet, TRUE);
-				killEnemy(enemy, planet, TRUE);
-				break;
-			}
-
-			// enemy & p2
-			jetman = planet->j2;
-			if (jetman && !jetman->immunity && overlap(jetman->object.box, enemy->object.box)) {
-				killJetman(jetman, planet, TRUE);
-				killEnemy(enemy, planet, TRUE);
-				break;
-			}
+			handleCollisionBetweenJetmanAndEnemy(planet->j1, enemy, planet);
+			handleCollisionBetweenJetmanAndEnemy(planet->j2, enemy, planet);
 		}
 	}
 }
 
 static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 
-	// p1
 	Jetman* jetman = planet->j1;
-	if ((ALIVE & jetman->health) && jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
+	if (jetman && (ALIVE & jetman->health) && jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
 		killJetman(jetman, planet, FALSE);
 	}
 
-	// p2
 	jetman = planet->j2;
 	if (jetman && (ALIVE & jetman->health) && jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
 		killJetman(jetman, planet, FALSE);
@@ -376,6 +362,18 @@ static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 		if (enemy && (ALIVE & enemy->health) && enemy->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
 			killEnemy(enemy, planet, FALSE);
 		}
+	}
+}
+
+static void handleCollisionBetweenJetmanAndEnemy(Jetman* jetman, Enemy* enemy, Planet planet[static 1]) {
+
+	if (!jetman) {
+		return;
+	}
+
+	if (!jetman->immunity && overlap(jetman->object.box, enemy->object.box)) {
+		killJetman(jetman, planet, TRUE);
+		killEnemy(enemy, planet, TRUE);
 	}
 }
 
