@@ -82,7 +82,7 @@ struct Spaceship {
 	SpaceshipDefinition definition;
 	u16 step;
 	u16 substep;
-	u8 grabbedBy;
+	Jetman* grabbedBy;
 	Object_f16* base_object;
 	Object_f16* mid_object;
 	Object_f16* top_object;

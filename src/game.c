@@ -86,13 +86,7 @@ GameResult runGame(Config config[static 1]) {
 		startSpaceship(current_planet);
 		waitForLanding(current_planet);
 
-		current_planet->j1 = startJetman(current_game->p1, current_planet);
-		current_planet->j1->immunity = config->difficulty == EASY;
-		if (current_game->p2 && current_game->p2->lives > 0) {
-			current_planet->j2 = startJetman(current_game->p2, current_planet);
-			current_planet->j2->immunity = current_planet->j1->immunity;
-		}
-
+		startJetmen(current_planet);
 		startEnemies(current_planet);
 
 		startCollectables(current_planet);
@@ -111,10 +105,11 @@ GameResult runGame(Config config[static 1]) {
 
 		} else {
 			SPR_setVisibility(current_planet->j1->sprite, HIDDEN);
+			SPR_setVisibility(current_planet->j2->sprite, HIDDEN);
+
 			leavePlanet(current_planet);
+
 			scoreBonus(current_planet);
-			updatePlayerHud(current_game->p1, current_planet->j1->ammo);
-			updatePlayerHud(current_game->p2, current_planet->j2->ammo);
 
 			if (++planet_number == config->num_planets) {
 				planet_number = 0;

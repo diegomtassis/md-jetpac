@@ -10,7 +10,7 @@
 
 #include "elements.h"
 
-Jetman* startJetman(Player* player, Planet planet[static 1]);
+void startJetmen(Planet planet[static 1]);
 void releaseJetmen(Planet planet[static 1]);
 void killJetman(Jetman* jetman, Planet planet[static 1], bool exploding);
 void resetJetman(Jetman* jetman, Planet planet[static 1]);

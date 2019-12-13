@@ -29,7 +29,7 @@ void startSpaceship(Planet planet[static 1]);
 void releaseSpaceship(Planet planet[static 1]);
 
 void handleSpaceship(Planet planet[static 1]);
-void dropIfGrabbed(u8 player_id, Spaceship*);
+void dropIfGrabbed(Jetman* jetman, Spaceship*);
 void launch(Spaceship*);
 
 extern const SpaceshipTypeDefinition u1Definition;

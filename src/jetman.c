@@ -19,6 +19,7 @@
 #include "../res/sprite.h"
 #include "../inc/hud.h"
 #include "../inc/spaceship.h"
+#include "../inc/config.h"
 
 #define ANIM_WALK		0
 #define ANIM_FLY		1
@@ -41,6 +42,7 @@
 #define JETMAN_HEIGHT 24
 #define JETMAN_WIDTH 16
 
+static Jetman* startJetman(Player* player, Planet planet[static 1]);
 static Jetman* createJetman(Player* player);
 static void releaseJetman(Jetman jetman[static 1]);
 static void handleInputJetman(Jetman* jetman);
@@ -60,13 +62,21 @@ static void drawJetman(Jetman*);
 bool joy_pushed[2];
 bool joy_flank[2];
 
-Jetman* startJetman(Player* player, Planet planet[static 1]) {
+void startJetmen(Planet planet[static 1]) {
 
-	Jetman* jetman = createJetman(player);
-	moveToStart(jetman, figureOutInitPosition(planet, player->id));
-	shapeJetman(jetman, player->id == P1 ? &carl_sprite : &ann_sprite, planet->def.ammo);
+	Game* game = planet->game;
 
-	return jetman;
+	bool immunity = game->config->difficulty == EASY;
+
+	if (game->p1->lives > 0) {
+		planet->j1 = startJetman(game->p1, planet);
+		planet->j1->immunity = immunity;
+	}
+
+	if (game->p2 && game->p2->lives > 0) {
+		planet->j2 = startJetman(game->p2, planet);
+		planet->j2->immunity = immunity;
+	}
 }
 
 void releaseJetmen(Planet planet[static 1]) {
@@ -161,11 +171,21 @@ void updateJetmanStatus(Jetman* jetman, bool* alive, Planet planet[static 1]) {
 
 	if (!(*alive = isJetmanAlive(jetman))) {
 
-		dropIfGrabbed(jetman->id, planet->spaceship);
+		dropIfGrabbed(jetman, planet->spaceship);
 		jetman->player->lives--;
 	}
 
 	updatePlayerHud(jetman->player, jetman->ammo);
+}
+
+static Jetman* startJetman(Player* player, Planet planet[static 1]) {
+
+	Jetman* jetman = createJetman(player);
+
+	moveToStart(jetman, figureOutInitPosition(planet, player->id));
+	shapeJetman(jetman, player->id == P1 ? &carl_sprite : &ann_sprite, planet->def.ammo);
+
+	return jetman;
 }
 
 static Jetman* createJetman(Player* player) {
