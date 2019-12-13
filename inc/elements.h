@@ -113,7 +113,7 @@ struct Jetman {
 	bool limited_ammo;
 	u16 ammo;
 	u8 shots;
-	bool immune;
+	bool immunity;
 	Sprite* sprite;
 };
 

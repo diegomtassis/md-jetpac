@@ -38,8 +38,6 @@ static void releaseGame(Game* game);
 static bool runPlanet(Planet planet[static 1]);
 
 static void updateJetmanStatus(Jetman* jetman, bool* alive, Planet planet[static 1]);
-static bool resurrectOrRelease(Jetman* jetman, Planet planet[static 1]);
-static bool isJetmanAlive(Jetman* jetman);
 static bool isMissionAccomplished(Planet planet[static 1]);
 
 static void waitForLanding(Planet planet[static 1]);
@@ -89,10 +87,10 @@ GameResult runGame(Config config[static 1]) {
 		waitForLanding(current_planet);
 
 		current_planet->j1 = startJetman(current_game->p1, current_planet);
-		current_planet->j1->immune = config->difficulty == EASY;
+		current_planet->j1->immunity = config->difficulty == EASY;
 		if (current_game->p2 && current_game->p2->lives > 0) {
 			current_planet->j2 = startJetman(current_game->p2, current_planet);
-			current_planet->j2->immune = current_planet->j1->immune;
+			current_planet->j2->immunity = current_planet->j1->immunity;
 		}
 
 		startEnemies(current_planet);
@@ -129,10 +127,7 @@ GameResult runGame(Config config[static 1]) {
 		releaseShots(current_planet);
 		releaseCollectables(current_planet);
 		releaseEnemies(current_planet);
-		releaseJetmanFromPlanet(P1, current_planet);
-		if (current_game->p2) {
-			releaseJetmanFromPlanet(P2, current_planet);
-		}
+		releaseJetmen(current_planet);
 		releaseSpaceship(current_planet);
 		releasePlanet(current_planet);
 		current_planet = 0;
@@ -344,7 +339,7 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 
 			// enemy & p1
 			Jetman* jetman = planet->j1;
-			if (!jetman->immune && overlap(jetman->object.box, enemy->object.box)) {
+			if (!jetman->immunity && overlap(jetman->object.box, enemy->object.box)) {
 				killJetman(jetman, planet, TRUE);
 				killEnemy(enemy, planet, TRUE);
 				break;
@@ -352,7 +347,7 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 
 			// enemy & p2
 			jetman = planet->j2;
-			if (jetman && !jetman->immune && overlap(jetman->object.box, enemy->object.box)) {
+			if (jetman && !jetman->immunity && overlap(jetman->object.box, enemy->object.box)) {
 				killJetman(jetman, planet, TRUE);
 				killEnemy(enemy, planet, TRUE);
 				break;
@@ -398,27 +393,6 @@ static void updateJetmanStatus(Jetman* jetman, bool* alive, Planet planet[static
 	}
 
 	updatePlayerHud(jetman->player, jetman->ammo);
-}
-
-static bool resurrectOrRelease(Jetman* jetman, Planet planet[static 1]) {
-
-	if (!jetman) {
-		return FALSE;
-	}
-
-	if (jetman->player->lives) {
-		resetJetman(jetman, planet);
-		return TRUE;
-	}
-
-	releaseJetmanFromPlanet(jetman->player->id, planet);
-
-	return FALSE;
-}
-
-static bool isJetmanAlive(Jetman* jetman) {
-
-	return jetman && (ALIVE & jetman->health);
 }
 
 static bool isMissionAccomplished(Planet planet[static 1]) {
@@ -520,7 +494,6 @@ static void scorePoints(u16 points, u8 player_id) {
 	} else if (player_id == P2) {
 		current_game->p2->score += points;
 	}
-
 }
 
 static void printMessage(const char *message) {

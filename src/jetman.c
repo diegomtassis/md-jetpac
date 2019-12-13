@@ -67,17 +67,14 @@ Jetman* startJetman(Player* player, Planet planet[static 1]) {
 	return jetman;
 }
 
-void releaseJetmanFromPlanet(u8 player_id, Planet planet[static 1]) {
+void releaseJetmen(Planet planet[static 1]) {
 
-	// May be optimized
-
-	if (player_id == P1 && planet->j1) {
+	if (planet->j1) {
 		releaseJetman(planet->j1);
 		planet->j1 = 0;
-		return;
 	}
 
-	if (player_id == P2 && planet->j2) {
+	if (planet->j2) {
 		releaseJetman(planet->j2);
 		planet->j2 = 0;
 	}
@@ -96,7 +93,7 @@ void resetJetman(Jetman* jetman, Planet planet[static 1]) {
 
 void killJetman(Jetman* jetman, Planet planet[static 1], bool exploding) {
 
-	if (jetman->immune) {
+	if (jetman->immunity) {
 		return;
 	}
 
@@ -125,6 +122,33 @@ void jetmanActs(Jetman* jetman, Planet planet[static 1]) {
 			joy_flank[jetman->joystick] = FALSE;
 		}
 	}
+}
+
+bool resurrectOrRelease(Jetman* jetman, Planet planet[static 1]) {
+
+	if (!jetman) {
+		return FALSE;
+	}
+
+	if (jetman->player->lives) {
+		resetJetman(jetman, planet);
+		return TRUE;
+	}
+
+	if (jetman->id == P1) {
+		planet->j1 = 0;
+	} else {
+		planet->j2 = 0;
+	}
+
+	releaseJetman(jetman);
+
+	return FALSE;
+}
+
+bool isJetmanAlive(Jetman* jetman) {
+
+	return jetman && (ALIVE & jetman->health);
 }
 
 static Jetman* createJetman(Player* player) {

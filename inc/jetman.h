@@ -11,9 +11,12 @@
 #include "elements.h"
 
 Jetman* startJetman(Player* player, Planet planet[static 1]);
-void releaseJetmanFromPlanet(u8 player_id, Planet planet[static 1]);
+void releaseJetmen(Planet planet[static 1]);
 void killJetman(Jetman* jetman, Planet planet[static 1], bool exploding);
 void resetJetman(Jetman* jetman, Planet planet[static 1]);
+
+bool resurrectOrRelease(Jetman* jetman, Planet planet[static 1]);
+bool isJetmanAlive(Jetman* jetman);
 
 void jetmanActs(Jetman* jetman, Planet planet[static 1]);
 
