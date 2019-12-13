@@ -37,7 +37,6 @@ static void releaseGame(Game* game);
 
 static bool runPlanet(Planet planet[static 1]);
 
-static void updateJetmanStatus(Jetman* jetman, bool* alive, Planet planet[static 1]);
 static bool isMissionAccomplished(Planet planet[static 1]);
 
 static void waitForLanding(Planet planet[static 1]);
@@ -378,21 +377,6 @@ static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 			killEnemy(enemy, planet, FALSE);
 		}
 	}
-}
-
-static void updateJetmanStatus(Jetman* jetman, bool* alive, Planet planet[static 1]) {
-
-	if (!(*alive)) {
-		return;
-	}
-
-	if (!(*alive = isJetmanAlive(jetman))) {
-
-		dropIfGrabbed(jetman->id, planet->spaceship);
-		jetman->player->lives--;
-	}
-
-	updatePlayerHud(jetman->player, jetman->ammo);
 }
 
 static bool isMissionAccomplished(Planet planet[static 1]) {

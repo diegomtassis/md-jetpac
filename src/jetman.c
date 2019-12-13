@@ -17,6 +17,8 @@
 #include "../inc/planet.h"
 #include "../inc/shooting.h"
 #include "../res/sprite.h"
+#include "../inc/hud.h"
+#include "../inc/spaceship.h"
 
 #define ANIM_WALK		0
 #define ANIM_FLY		1
@@ -149,6 +151,21 @@ bool resurrectOrRelease(Jetman* jetman, Planet planet[static 1]) {
 bool isJetmanAlive(Jetman* jetman) {
 
 	return jetman && (ALIVE & jetman->health);
+}
+
+void updateJetmanStatus(Jetman* jetman, bool* alive, Planet planet[static 1]) {
+
+	if (!(*alive)) {
+		return;
+	}
+
+	if (!(*alive = isJetmanAlive(jetman))) {
+
+		dropIfGrabbed(jetman->id, planet->spaceship);
+		jetman->player->lives--;
+	}
+
+	updatePlayerHud(jetman->player, jetman->ammo);
 }
 
 static Jetman* createJetman(Player* player) {
