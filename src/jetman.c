@@ -118,22 +118,24 @@ void killJetman(Jetman* jetman, Planet planet[static 1], bool exploding) {
 
 void jetmanActs(Jetman* jetman, Planet planet[static 1]) {
 
-	if (!jetman) {
+	if (!jetman || !(jetman->health & ALIVE) || jetman->finished) {
 		return;
 	}
 
-	if (jetman->health & ALIVE) {
-		handleInputJetman(jetman);
-		moveJetman(jetman, planet);
-		drawJetman(jetman);
+	handleInputJetman(jetman);
+	moveJetman(jetman, planet);
 
-		if (joy_flank[jetman->joystick] && (jetman->ammo || !planet->game->config->limited_ammo)) {
+	if (planet->spaceship->step == READY && shareBase(jetman->object.box, planet->spaceship->base_object->box)) {
+		jetman->finished = TRUE;
 
-			shoot(jetman, planet);
-			jetman->ammo--;
-			joy_flank[jetman->joystick] = FALSE;
-		}
+	} else if (joy_flank[jetman->joystick] && (jetman->ammo || !planet->game->config->limited_ammo)) {
+
+		shoot(jetman, planet);
+		jetman->ammo--;
+		joy_flank[jetman->joystick] = FALSE;
 	}
+
+	drawJetman(jetman);
 }
 
 bool resurrectOrRelease(Jetman* jetman, Planet planet[static 1]) {
@@ -423,7 +425,10 @@ static void drawJetman(Jetman* jetman) {
 
 	Sprite* sprite = jetman->sprite;
 
-	if (jetman->airborne) {
+	if (jetman->finished) {
+		SPR_setVisibility(sprite, HIDDEN);
+
+	} else if (jetman->airborne) {
 		// somewhere in the air
 		SPR_setAnim(sprite, ANIM_FLY);
 

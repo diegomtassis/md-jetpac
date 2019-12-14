@@ -108,6 +108,7 @@ struct Jetman {
 	V2s16 order;
 	u8 walk_step_counter;
 	u8 health;
+	u8 finished;
 	bool airborne;
 	bool head_back;
 	bool limited_ammo;

@@ -233,13 +233,16 @@ static bool runPlanet(Planet current_planet[static 1]) {
 	bool game_over = FALSE;
 	bool mission_accomplished = FALSE;
 
+	u8 num_players_playing;
+
 	while (!game_over && !mission_accomplished) {
 
 		if (!paused) {
 
-			u8 num_alive_before = p1_alive + p2_alive;
+			num_players_playing = (p1_alive && !current_planet->j1->finished)
+					+ (p2_alive && !current_planet->j2->finished);
 
-			if (num_alive_before) {
+			if (num_players_playing) {
 
 				jetmanActs(current_planet->j1, current_planet);
 				jetmanActs(current_planet->j2, current_planet);
@@ -267,7 +270,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 			 * while another player is alive then the enemies stay as they are but the resurrected player has immunity
 			 * for a short period of time.
 			 */
-			if (!num_alive_before) {
+			if (!num_players_playing) {
 
 				// Scenario 1: No players alive, though one may still have lives. Wait for the explosions to extinguish and try to resurrect the player.
 				if (!current_planet->booms.count) {
@@ -288,7 +291,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 					}
 				}
 
-			} else if (num_alive_before == 2 && p1_alive + p2_alive == 1) {
+			} else if (num_players_playing == 2 && p1_alive + p2_alive == 1) {
 
 				// Scenario 2: There was 2 alive before the ACT and one has just passed. Try to resurrect it.
 				if (current_planet->j1 && !p1_alive) {
@@ -362,11 +365,11 @@ static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 
 static void handleCollisionBetweenJetmanAndEnemy(Jetman* jetman, Enemy* enemy, Planet planet[static 1]) {
 
-	if (!jetman) {
+	if (!jetman || jetman->immunity || jetman->finished) {
 		return;
 	}
 
-	if (!jetman->immunity && overlap(jetman->object.box, enemy->object.box)) {
+	if (overlap(jetman->object.box, enemy->object.box)) {
 		killJetman(jetman, planet, TRUE);
 		killEnemy(enemy, planet, TRUE);
 	}
@@ -374,7 +377,8 @@ static void handleCollisionBetweenJetmanAndEnemy(Jetman* jetman, Enemy* enemy, P
 
 static bool isMissionAccomplished(Planet planet[static 1]) {
 
-	return (planet->spaceship->step == READY) && shareBase(planet->j1->object.box, planet->spaceship->base_object->box);
+	return (planet->spaceship->step == READY) && (!planet->j1 || planet->j1->finished)
+			&& (!planet->j2 || planet->j2->finished);
 }
 
 static void waitForLanding(Planet planet[static 1]) {
@@ -475,7 +479,7 @@ static void scorePoints(u16 points, u8 player_id) {
 
 static void printMessage(const char *message) {
 
-	// center the message
+// center the message
 	u8 x_pos = message_pos.x - strlen(message) / 2;
 	VDP_drawText(message, x_pos, message_pos.y);
 }
