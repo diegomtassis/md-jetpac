@@ -24,7 +24,6 @@ https://github.com/diegomtassis/md-jetpac
 
 #### To be implemented
 * Sound.
-* 2nd player.
 * Enemies IAs.
 * Refine difficulty levels.
 * More levels in MD mode.
