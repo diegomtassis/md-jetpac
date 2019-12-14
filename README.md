@@ -29,7 +29,7 @@ https://github.com/diegomtassis/md-jetpac
 * More levels in MD mode.
 * Bouncing after contact with platforms.
 * Smart drop of spaceship parts after dying.
-* Polishing and optimization. 
+* Polishing and optimization.
 
 
 #### Cover

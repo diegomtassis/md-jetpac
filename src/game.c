@@ -37,8 +37,6 @@ static void releaseGame(Game* game);
 
 static bool runPlanet(Planet planet[static 1]);
 
-static bool isMissionAccomplished(Planet planet[static 1]);
-
 static void waitForLanding(Planet planet[static 1]);
 static void leavePlanet(Planet planet[static 1]);
 
@@ -104,8 +102,8 @@ GameResult runGame(Config config[static 1]) {
 			flashMessage("Game Over", DEFAULT_FLASH_WAIT);
 
 		} else {
-			SPR_setVisibility(current_planet->j1->sprite, HIDDEN);
-			SPR_setVisibility(current_planet->j2->sprite, HIDDEN);
+			SPR_setVisibility(j1->sprite, HIDDEN);
+			SPR_setVisibility(j2->sprite, HIDDEN);
 
 			leavePlanet(current_planet);
 
@@ -229,7 +227,7 @@ static void releaseGame(Game* game) {
 static bool runPlanet(Planet current_planet[static 1]) {
 
 	bool p1_alive = TRUE;
-	bool p2_alive = current_planet->j2 != 0; // comparison to avoid a warning
+	bool p2_alive = j2 != 0; // comparison to avoid a warning
 	bool game_over = FALSE;
 	bool mission_accomplished = FALSE;
 
@@ -239,13 +237,17 @@ static bool runPlanet(Planet current_planet[static 1]) {
 
 		if (!paused) {
 
-			num_players_playing = (p1_alive && !current_planet->j1->finished)
-					+ (p2_alive && !current_planet->j2->finished);
+			num_players_playing = (p1_alive && !j1->finished) + (p2_alive && !j2->finished);
 
 			if (num_players_playing) {
 
-				jetmanActs(current_planet->j1, current_planet);
-				jetmanActs(current_planet->j2, current_planet);
+				if (j1) {
+					jetmanActs(j1, current_planet);
+				}
+
+				if (j2) {
+					jetmanActs(j2, current_planet);
+				}
 
 				enemiesAct(current_planet);
 				handleCollisionsBetweenMovingObjects(current_planet);
@@ -256,11 +258,11 @@ static bool runPlanet(Planet current_planet[static 1]) {
 				handleSpaceship(current_planet);
 
 				if (p1_alive) {
-					updateJetmanStatus(current_planet->j1, &p1_alive, current_planet);
+					updateJetmanStatus(j1, &p1_alive, current_planet);
 				}
 
 				if (p2_alive) {
-					updateJetmanStatus(current_planet->j2, &p2_alive, current_planet);
+					updateJetmanStatus(j2, &p2_alive, current_planet);
 				}
 			}
 
@@ -278,11 +280,11 @@ static bool runPlanet(Planet current_planet[static 1]) {
 					waitMs(100);
 
 					// Explosions extinguished, resurrect the player with lives if there is any
-					if (current_planet->j1 && !p1_alive) {
-						p1_alive = resurrectOrRelease(current_planet->j1, current_planet);
+					if (j1 && !p1_alive) {
+						p1_alive = resurrectOrRelease(j1, current_planet);
 					}
-					if (current_planet->j2 && !p2_alive) {
-						p2_alive = resurrectOrRelease(current_planet->j2, current_planet);
+					if (j2 && !p2_alive) {
+						p2_alive = resurrectOrRelease(j2, current_planet);
 					}
 
 					releaseEnemies(current_planet);
@@ -294,12 +296,12 @@ static bool runPlanet(Planet current_planet[static 1]) {
 			} else if (num_players_playing == 2 && p1_alive + p2_alive == 1) {
 
 				// Scenario 2: There was 2 alive before the ACT and one has just passed. Try to resurrect it.
-				if (current_planet->j1 && !p1_alive) {
-					p1_alive = resurrectOrRelease(current_planet->j1, current_planet);
+				if (j1 && !p1_alive) {
+					p1_alive = resurrectOrRelease(j1, current_planet);
 					// TODO add immunity
 				}
-				if (current_planet->j2 && !p2_alive) {
-					p2_alive = resurrectOrRelease(current_planet->j2, current_planet);
+				if (j2 && !p2_alive) {
+					p2_alive = resurrectOrRelease(j2, current_planet);
 					// TODO add immunity
 				}
 			}
@@ -308,7 +310,10 @@ static bool runPlanet(Planet current_planet[static 1]) {
 			updateShots(current_planet);
 			updateExplosions(current_planet);
 
-			mission_accomplished = (p1_alive || p2_alive) && isMissionAccomplished(current_planet);
+			mission_accomplished = //
+					spaceship_ready && (p1_alive || p2_alive) //
+							&& (!j1 || j1->finished) //
+							&& (!j2 || j2->finished);
 			game_over = (!current_game->p1->lives && (!current_game->p2 || !current_game->p2->lives))
 					&& !current_planet->booms.count;
 			SPR_update();
@@ -335,20 +340,20 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 				continue;
 			}
 
-			handleCollisionBetweenJetmanAndEnemy(planet->j1, enemy, planet);
-			handleCollisionBetweenJetmanAndEnemy(planet->j2, enemy, planet);
+			handleCollisionBetweenJetmanAndEnemy(j1, enemy, planet);
+			handleCollisionBetweenJetmanAndEnemy(j2, enemy, planet);
 		}
 	}
 }
 
 static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 
-	Jetman* jetman = planet->j1;
+	Jetman* jetman = j1;
 	if (jetman && (ALIVE & jetman->health) && jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
 		killJetman(jetman, planet, FALSE);
 	}
 
-	jetman = planet->j2;
+	jetman = j2;
 	if (jetman && (ALIVE & jetman->health) && jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
 		killJetman(jetman, planet, FALSE);
 	}
@@ -373,12 +378,6 @@ static void handleCollisionBetweenJetmanAndEnemy(Jetman* jetman, Enemy* enemy, P
 		killJetman(jetman, planet, TRUE);
 		killEnemy(enemy, planet, TRUE);
 	}
-}
-
-static bool isMissionAccomplished(Planet planet[static 1]) {
-
-	return (planet->spaceship->step == READY) && (!planet->j1 || planet->j1->finished)
-			&& (!planet->j2 || planet->j2->finished);
 }
 
 static void waitForLanding(Planet planet[static 1]) {
@@ -420,22 +419,22 @@ void static scoreBonus(Planet planet[static 1]) {
 		printMessage(bonus_message);
 		waitMs(500);
 
-		while (planet->j1->ammo--) {
+		while (j1->ammo--) {
 
 			ammo_bonus += 10;
 			sprintf(bonus_message, "Bonus P1 %03d", ammo_bonus);
 			printMessage(bonus_message);
 			waitMs(25);
-			updateAmmo(P1, planet->j1->ammo);
+			updateAmmo(P1, j1->ammo);
 			VDP_waitVSync();
 		}
 
 		flashMessage(bonus_message, 1000);
-		planet->j1->ammo = 0;
+		j1->ammo = 0;
 		scorePoints(ammo_bonus, P1);
 
 		// REFACTOR
-		if (planet->j2) {
+		if (j2) {
 
 			VDP_clearTextLine(message_pos.y);
 
@@ -446,18 +445,18 @@ void static scoreBonus(Planet planet[static 1]) {
 
 			waitMs(25);
 
-			while (planet->j2->ammo--) {
+			while (j2->ammo--) {
 
 				ammo_bonus += 10;
 				sprintf(bonus_message, "Bonus P2 %03d", ammo_bonus);
 				printMessage(bonus_message);
 				waitMs(25);
-				updateAmmo(P2, planet->j2->ammo);
+				updateAmmo(P2, j2->ammo);
 				VDP_waitVSync();
 			}
 
 			flashMessage(bonus_message, 1000);
-			planet->j2->ammo = 0;
+			j2->ammo = 0;
 			scorePoints(ammo_bonus, P2);
 		}
 	}

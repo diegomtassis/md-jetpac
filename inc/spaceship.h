@@ -37,4 +37,6 @@ extern const SpaceshipTypeDefinition u2Definition;
 extern const SpaceshipTypeDefinition u3Definition;
 extern const SpaceshipTypeDefinition u4Definition;
 
+extern bool spaceship_ready;
+
 #endif /* INC_SPACESHIP_H_ */

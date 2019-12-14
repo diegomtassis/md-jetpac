@@ -20,4 +20,7 @@ bool isJetmanAlive(Jetman* jetman);
 void jetmanActs(Jetman* jetman, Planet planet[static 1]);
 void updateJetmanStatus(Jetman* jetman, bool* alive, Planet planet[static 1]);
 
+extern Jetman* j1;
+extern Jetman* j2;
+
 #endif /* INC_JETMAN_H_ */

@@ -42,6 +42,9 @@
 #define JETMAN_HEIGHT 24
 #define JETMAN_WIDTH 16
 
+Jetman* j1;
+Jetman* j2;
+
 static Jetman* startJetman(Player* player, Planet planet[static 1]);
 static Jetman* createJetman(Player* player);
 static void releaseJetman(Jetman jetman[static 1]);
@@ -71,11 +74,13 @@ void startJetmen(Planet planet[static 1]) {
 	if (game->p1->lives > 0) {
 		planet->j1 = startJetman(game->p1, planet);
 		planet->j1->immunity = immunity;
+		j1 = planet->j1;
 	}
 
 	if (game->p2 && game->p2->lives > 0) {
 		planet->j2 = startJetman(game->p2, planet);
 		planet->j2->immunity = immunity;
+		j2 = planet->j2;
 	}
 }
 
@@ -84,11 +89,13 @@ void releaseJetmen(Planet planet[static 1]) {
 	if (planet->j1) {
 		releaseJetman(planet->j1);
 		planet->j1 = 0;
+		j1 = 0;
 	}
 
 	if (planet->j2) {
 		releaseJetman(planet->j2);
 		planet->j2 = 0;
+		j2 = 0;
 	}
 }
 
@@ -125,7 +132,7 @@ void jetmanActs(Jetman* jetman, Planet planet[static 1]) {
 	handleInputJetman(jetman);
 	moveJetman(jetman, planet);
 
-	if (planet->spaceship->step == READY && shareBase(jetman->object.box, planet->spaceship->base_object->box)) {
+	if (spaceship_ready && shareBase(jetman->object.box, planet->spaceship->base_object->box)) {
 		jetman->finished = TRUE;
 
 	} else if (joy_flank[jetman->joystick] && (jetman->ammo || !planet->game->config->limited_ammo)) {
@@ -151,8 +158,10 @@ bool resurrectOrRelease(Jetman* jetman, Planet planet[static 1]) {
 
 	if (jetman->id == P1) {
 		planet->j1 = 0;
+		j1 = 0;
 	} else {
 		planet->j2 = 0;
+		j2 = 0;
 	}
 
 	releaseJetman(jetman);

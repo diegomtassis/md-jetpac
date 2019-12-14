@@ -16,6 +16,7 @@
 #include "../inc/events.h"
 #include "../res/sprite.h"
 #include "../inc/players.h"
+#include "../inc/jetman.h"
 
 #define BASE	0x01
 #define MID		0x02
@@ -58,6 +59,8 @@ const SpaceshipTypeDefinition u4Definition = { //
 				.middle_sprite_def = &u4_middle_sprite, //
 				.top_sprite_def = &u4_top_sprite };
 
+bool spaceship_ready;
+
 static Object_f16* createModule(u8 module, V2s16 pos);
 
 static void handleAssembly(Planet planet[static 1]);
@@ -75,6 +78,7 @@ void startSpaceship(Planet planet[static 1]) {
 
 	Spaceship* spaceship = MEM_calloc(sizeof *spaceship);
 	planet->spaceship = spaceship;
+	spaceship_ready = FALSE;
 
 	SpaceshipDefinition spaceship_definition = planet->def.spaceship_def;
 	spaceship->definition = spaceship_definition;
@@ -359,16 +363,16 @@ static void handleFuelling(Planet planet[static 1]) {
 
 	} else if (spaceship->substep & WAITING) {
 
-		if (planet->j1 && grab(&planet->j1->object, spaceship->fuel_object)) {
+		if (j1 && grab(&j1->object, spaceship->fuel_object)) {
 			// fuel grabbed by j1 while waiting
 			spaceship->substep = GRABBED;
-			spaceship->grabbedBy = planet->j1;
+			spaceship->grabbedBy = j1;
 			onEvent(GRABBED_FUEL, P1);
 
-		} else if (planet->j2 && grab(&planet->j2->object, spaceship->fuel_object)) {
+		} else if (j2 && grab(&j2->object, spaceship->fuel_object)) {
 			// fuel grabbed by j2 while waiting
 			spaceship->substep = GRABBED;
-			spaceship->grabbedBy = planet->j2;
+			spaceship->grabbedBy = j2;
 			onEvent(GRABBED_FUEL, P2);
 		}
 
@@ -389,16 +393,16 @@ static void handleFuelling(Planet planet[static 1]) {
 
 	} else if (spaceship->substep & FALLING) {
 
-		if (planet->j1 && grab(&planet->j1->object, spaceship->fuel_object)) {
+		if (j1 && grab(&j1->object, spaceship->fuel_object)) {
 			// fuel grabbed by j1 while falling
 			spaceship->substep = GRABBED;
-			spaceship->grabbedBy = planet->j1;
+			spaceship->grabbedBy = j1;
 			onEvent(GRABBED_FUEL, P1);
 
-		} else if (planet->j2 && grab(&planet->j2->object, spaceship->fuel_object)) {
+		} else if (j2 && grab(&j2->object, spaceship->fuel_object)) {
 			// fuel grabbed by j2 while falling
 			spaceship->substep = GRABBED;
-			spaceship->grabbedBy = planet->j2;
+			spaceship->grabbedBy = j2;
 			onEvent(GRABBED_FUEL, P2);
 
 		} else {
@@ -421,10 +425,13 @@ static void handleFuelling(Planet planet[static 1]) {
 
 		Box_s16 target_v = targetVBox(*spaceship->fuel_object);
 		if (overlap(target_v, spaceship->base_object->box)) {
+
 			spaceship->step++;
 			spaceship->substep = NONE;
 			SPR_nextFrame(spaceship->base_sprite);
-			if (spaceship->step == READY) {
+
+			if (spaceship->step == READY) { // fuelling just completed
+				spaceship_ready = TRUE;
 				MEM_free(spaceship->fuel_object);
 				spaceship->fuel_object = 0;
 				SPR_releaseSprite(spaceship->fuel_sprite);
@@ -446,40 +453,28 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 
 	V2f16 jetman_pos;
 
-	if (isAboveBaseUpwardProjection(part->box, spaceship->base_object->box)) {
+	if (spaceship->substep & GRABBED) {
 
-		if (spaceship->substep & GRABBED) {
+		if (isAboveBaseUpwardProjection(part->box, spaceship->base_object->box)) {
 			// release right over the base
 			spaceship->substep = ASSEMBLING;
 			spaceship->grabbedBy = 0;
 			part->pos.x = spaceship->base_object->pos.x;
 
 		} else {
-			// falling
-			part->pos.y += SPEED_V_DOWN;
-			fix16 v_limit = spaceship->base_object->pos.y - v_offset_px;
-			if (part->pos.y >= v_limit) {
-				part->pos.y = v_limit;
-				spaceship->step = goal;
-				spaceship->substep = WAITING;
-			}
+			jetman_pos = spaceship->grabbedBy->object.pos;
+			part->pos.x = jetman_pos.x;
+			part->pos.y = fix16Add(jetman_pos.y, FIX16_8); // the rocket part is 8px shorter than the jetman
 		}
 
-	} else if (spaceship->substep & GRABBED) {
-
-		jetman_pos = spaceship->grabbedBy->object.pos;
-		part->pos.x = jetman_pos.x;
-		part->pos.y = fix16Add(jetman_pos.y, FIX16_8); // the rocket part is 8px shorter than the jetman
-
-	} else {
-
+	} else if (spaceship->substep & WAITING) {
 		// has anyone just grabbed it?
 		Jetman* jetman = 0;
-		if (planet->j1 && overlap(planet->j1->object.box, part->box)) {
-			jetman = planet->j1;
+		if (j1 && overlap(j1->object.box, part->box)) {
+			jetman = j1;
 
-		} else if (planet->j2 && overlap(planet->j2->object.box, part->box)) {
-			jetman = planet->j2;
+		} else if (j2 && overlap(j2->object.box, part->box)) {
+			jetman = j2;
 		}
 
 		if (jetman) { // someone just grabbed it
@@ -487,10 +482,16 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 			spaceship->substep = GRABBED;
 			spaceship->grabbedBy = jetman;
 			onEvent(GRABBED_SPACESHIP_PART, jetman->id);
+		}
 
-			jetman_pos = jetman->object.pos;
-			part->pos.x = jetman_pos.x;
-			part->pos.y = fix16Add(jetman_pos.y, FIX16_8); // the rocket part is 8px shorter than the jetman
+	} else if (spaceship->substep & ASSEMBLING) {
+		// falling
+		part->pos.y += SPEED_V_DOWN;
+		fix16 v_limit = spaceship->base_object->pos.y - v_offset_px;
+		if (part->pos.y >= v_limit) {
+			part->pos.y = v_limit;
+			spaceship->step = goal;
+			spaceship->substep = WAITING;
 		}
 	}
 
@@ -500,13 +501,13 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 
 static void mergeParts(Spaceship* spaceship) {
 
-	// release mid and top modules
+// release mid and top modules
 	SPR_releaseSprite(spaceship->mid_sprite);
 	spaceship->mid_sprite = 0;
 	SPR_releaseSprite(spaceship->top_sprite);
 	spaceship->top_sprite = 0;
 
-	// the base becomes a whole spaceship
+// the base becomes a whole spaceship
 	spaceship->base_object->pos.y -= FIX16_32;
 	spaceship->base_object->size.y = 48;
 	SPR_releaseSprite(spaceship->base_sprite);
@@ -521,7 +522,7 @@ static void handleLanding(Spaceship* spaceship, Planet planet[static 1]) {
 		return;
 	}
 
-	// spaceship
+// spaceship
 	Box_s16 target_v = targetVBox(*spaceship->base_object);
 
 	f16 landed_y = landed(target_v, planet);
