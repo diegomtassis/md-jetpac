@@ -31,6 +31,8 @@
 static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Planet planet[static 1]);
 static bool checkCollision(Shot shot[static 1], Grape grape[static 1], Box_s16 object_box);
 
+static u8 checkShotHit(Shot* shot, Box_s16 object);
+
 static void releaseShotIfNoGrapes(Planet planet[static 1], u8 shot_idx);
 static void releaseShot(Shot* shot);
 static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst);
@@ -112,6 +114,7 @@ void updateShots(Planet planet[static 1]) {
 		if (shot) {
 
 			Grape* grape = 0;
+			bool leading_grape = TRUE;
 			for (int idx_grape = 0; idx_grape < shot->grapes_size; ++idx_grape) {
 
 				grape = shot->grapes[idx_grape];
@@ -131,11 +134,11 @@ void updateShots(Planet planet[static 1]) {
 							grape->object->pos.x += grape->object->mov.x;
 						}
 
-						if (crashedIntoPlatform(shot, grape, planet)) {
+						// check collisions only for the first grape in shot
+						if (leading_grape && crashedIntoPlatform(shot, grape, planet)) {
 							releaseShot(shot);
 							planet->shots.e[idx_shot] = 0;
 							planet->shots.count--;
-
 						} else {
 							updateBox(grape->object);
 							SPR_setPosition(grape->sprite, grape->object->box.pos.x, grape->object->box.pos.y);
@@ -145,6 +148,8 @@ void updateShots(Planet planet[static 1]) {
 						// release
 						releaseGrapeInShot(planet, idx_shot, idx_grape);
 					}
+
+					leading_grape = FALSE;
 				}
 			}
 
@@ -168,24 +173,38 @@ void updateShots(Planet planet[static 1]) {
 u8 checkHit(Box_s16 subject, Planet planet[static 1]) {
 
 	Shot* shot = 0;
-	Grape* grape = 0;
 
 	for (int idx_shot = 0; idx_shot < planet->shots.size; idx_shot++) {
+
 		shot = planet->shots.e[idx_shot];
-		if (shot) {
-			for (int idx_grape = 0; idx_grape < shot->grapes_size; idx_grape++) {
-				grape = shot->grapes[idx_grape];
-				if (grape) {
-					if (checkCollision(shot, grape, subject)) {
+		if (shot && checkShotHit(shot, subject)) {
 
-						u8 who = shot->shooter->id;
+			releaseShot(shot);
+			planet->shots.e[idx_shot] = 0;
+			planet->shots.count--;
 
-						releaseShot(shot);
-						planet->shots.e[idx_shot] = 0;
-						planet->shots.count--;
+			return TRUE;
+		}
+	}
 
-						return who;
-					}
+	return 0;
+}
+
+static u8 checkShotHit(Shot* shot, Box_s16 object) {
+
+	if (shot) {
+
+		Grape* grape = 0;
+
+		for (int idx_grape = 0; idx_grape < shot->grapes_size; idx_grape++) {
+			grape = shot->grapes[idx_grape];
+			if (grape) {
+				if (checkCollision(shot, grape, object)) {
+					return shot->shooter->id;
+
+				} else {
+					// check only the first grape
+					return FALSE;
 				}
 			}
 		}
@@ -281,13 +300,8 @@ static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Plan
 
 static bool checkCollision(Shot shot[static 1], Grape grape[static 1], Box_s16 object_box) {
 
-	Box_s16 grape_box = grape->object->box;
-	V2s16 grape_tip = { .x = grape_box.pos.x, .y = grape_box.pos.y };
-	if (!shot->to_left) {
-		grape_tip.x += grape_box.w - 1;
-	}
-
-	return contained(grape_tip, object_box);
+	// A possible optimization is to check only the tip and the tail
+	return overlap(grape->object->box, object_box);
 }
 
 static void releaseGrapeInShot(Planet planet[static 1], u8 idx_shot, u8 idx_grape) {
