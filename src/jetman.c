@@ -29,8 +29,9 @@
 #define SPEED_H_WALK		FIX16(1)
 #define SPEED_H_FLY			FIX16(1.5)
 #define SPEED_V_UP_MAX		FIX16(-1.5)
-#define UP_ACCELERATION    	FIX16(-0.2)
 #define SPEED_V_DOWN_MAX	FIX16(1.5)
+#define ACCELERATION_H   	FIX16(0.1)
+#define UP_ACCELERATION    	FIX16(-0.2)
 #define GRAVITY         	FIX16(0.2)
 #define SPEED_LOST_IN_CRASH	FIX16(0.15)
 
@@ -293,17 +294,45 @@ static u8 calculateNextMovement(Jetman* jetman) {
 
 // horizontal movement
 	if (jetman->order.x > 0) {
-		jetman->object.mov.x = jetman->airborne ? SPEED_H_FLY : SPEED_H_WALK;
-		jetman->head_back = FALSE;
-		movement |= RIGHT;
+
+		jetman->object.mov.x += ACCELERATION_H;
+		f16 max_speed = jetman->airborne ? SPEED_H_FLY : SPEED_H_WALK;
+
+		if (jetman->object.mov.x > 0) {
+			jetman->head_back = FALSE;
+			movement |= RIGHT;
+			if (jetman->object.mov.x > max_speed) {
+				jetman->object.mov.x = max_speed;
+			}
+		}
 
 	} else if (jetman->order.x < 0) {
-		jetman->object.mov.x = jetman->airborne ? -SPEED_H_FLY : -SPEED_H_WALK;
-		jetman->head_back = TRUE;
-		movement |= LEFT;
+
+		jetman->object.mov.x -= ACCELERATION_H;
+		f16 max_speed = jetman->airborne ? -SPEED_H_FLY : -SPEED_H_WALK;
+
+		if (jetman->object.mov.x < 0) {
+			jetman->head_back = TRUE;
+			movement |= LEFT;
+			if (jetman->object.mov.x < max_speed) {
+				jetman->object.mov.x = max_speed;
+			}
+		}
 
 	} else {
-		jetman->object.mov.x = SPEED_ZERO;
+		// do not stop suddenly
+		if (jetman->object.mov.x > 0) {
+			jetman->object.mov.x -= ACCELERATION_H;
+			if (jetman->object.mov.x < 0) {
+				jetman->object.mov.x = SPEED_ZERO;
+			}
+
+		} else if (jetman->object.mov.x < 0) {
+			jetman->object.mov.x += ACCELERATION_H;
+			if (jetman->object.mov.x > 0) {
+				jetman->object.mov.x = SPEED_ZERO;
+			}
+		}
 	}
 
 // vertical movement
