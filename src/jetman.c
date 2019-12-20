@@ -28,10 +28,11 @@
 #define SPEED_ZERO			FIX16_0
 #define SPEED_H_WALK		FIX16(1)
 #define SPEED_H_FLY			FIX16(1.5)
-#define SPEED_V_UP			FIX16(-1.5)
+#define SPEED_V_UP_MAX		FIX16(-1.5)
+#define UP_ACCELERATION    	FIX16(-0.2)
 #define SPEED_V_DOWN_MAX	FIX16(1.5)
 #define GRAVITY         	FIX16(0.2)
-#define SPEED_V_DOWN_MAX_MINUS_GRAVITY	SPEED_V_DOWN_MAX - GRAVITY
+#define SPEED_LOST_IN_CRASH	FIX16(0.15)
 
 #define UP			0x01
 #define DOWN		0x02
@@ -57,6 +58,7 @@ static void moveJetman(Jetman*, Planet*);
 static u8 calculateNextMovement(Jetman*);
 static void updatePosition(Jetman*, Planet*);
 static f16 reachedTop(Box_s16, const Planet*);
+static f16 hitPlatformUnder(Box_s16, const Planet*);
 static f16 blockedByLeft(Box_s16, const Planet*);
 static f16 blockedByRight(Box_s16, const Planet*);
 
@@ -310,7 +312,11 @@ static u8 calculateNextMovement(Jetman* jetman) {
 			movement |= BOOST;
 		}
 
-		jetman->object.mov.y = SPEED_V_UP;
+		jetman->object.mov.y += UP_ACCELERATION;
+		if (jetman->object.mov.y < SPEED_V_UP_MAX) {
+			jetman->object.mov.y = SPEED_V_UP_MAX;
+		}
+
 		movement |= UP;
 
 	} else {
@@ -318,8 +324,9 @@ static u8 calculateNextMovement(Jetman* jetman) {
 		 * either falling or walking. But at this point it's not known yet whether he's walking,
 		 * so by default he's falling.
 		 */
-		if (jetman->object.mov.y <= SPEED_V_DOWN_MAX_MINUS_GRAVITY) {
-			jetman->object.mov.y += GRAVITY;
+		jetman->object.mov.y += GRAVITY;
+		if (jetman->object.mov.y > SPEED_V_DOWN_MAX) {
+			jetman->object.mov.y = SPEED_V_DOWN_MAX;
 		}
 		movement |= DOWN;
 	}
@@ -329,7 +336,7 @@ static u8 calculateNextMovement(Jetman* jetman) {
 
 static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 
-// horizontal position
+	// horizontal position
 	Box_s16 target_h = targetHBox(jetman->object);
 	if (target_h.pos.x > MAX_POS_H_PX_S16) {
 		jetman->object.pos.x = MIN_POS_H_PX_F16;
@@ -352,7 +359,7 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 		}
 	}
 
-// vertical position
+	// vertical position
 	Box_s16 target_v = targetVBox(jetman->object);
 	f16 landed_pos_y = landed(target_v, planet);
 	jetman->airborne = !landed_pos_y;
@@ -362,15 +369,29 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 		jetman->object.mov.y = SPEED_ZERO;
 
 	} else {
-		f16 top_pos_y = reachedTop(target_v, planet);
-		if (top_pos_y) {
-			jetman->object.pos.y = top_pos_y;
+		f16 limit_pos_y = reachedTop(target_v, planet);
+		if (limit_pos_y) {
+			jetman->object.pos.y = limit_pos_y;
 			if (jetman->object.mov.y < 0) {
 				jetman->object.mov.y = SPEED_ZERO;
 			}
 
 		} else {
-			jetman->object.pos.y += jetman->object.mov.y;
+			// hitting a platform underneath?
+			limit_pos_y = hitPlatformUnder(target_v, planet);
+			if (limit_pos_y && jetman->object.mov.y < 0) {
+				// bounce by reversing its speed, losing some momentum in the bounce
+				jetman->object.mov.y = -jetman->object.mov.y - SPEED_LOST_IN_CRASH;
+				if (jetman->object.mov.y < 0) {
+					jetman->object.mov.y = SPEED_ZERO;
+					jetman->object.pos.y = limit_pos_y;
+				} else {
+					jetman->object.pos.y = limit_pos_y + jetman->object.mov.y;
+				}
+
+			} else {
+				jetman->object.pos.y += jetman->object.mov.y;
+			}
 		}
 	}
 
@@ -383,6 +404,11 @@ static f16 reachedTop(Box_s16 subject_box, const Planet planet[static 1]) {
 	if (subject_box.pos.y <= MIN_POS_V_PX_S16) {
 		return MIN_POS_V_PX_F16;
 	}
+
+	return FIX16_0;
+}
+
+static f16 hitPlatformUnder(Box_s16 subject_box, const Planet planet[static 1]) {
 
 	for (u8 i = 0; i < planet->num_platforms; i++) {
 		Box_s16 object_box = planet->platforms[i]->object.box;
