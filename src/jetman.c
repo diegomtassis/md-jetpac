@@ -30,7 +30,7 @@
 #define SPEED_H_FLY			FIX16(1.5)
 #define SPEED_V_UP_MAX		FIX16(-1.5)
 #define SPEED_V_DOWN_MAX	FIX16(1.5)
-#define ACCELERATION_H   	FIX16(0.1)
+#define ACCELERATION_H   	FIX16(0.15)
 #define UP_ACCELERATION    	FIX16(-0.2)
 #define GRAVITY         	FIX16(0.2)
 #define SPEED_LOST_IN_CRASH	FIX16(0.15)
@@ -60,8 +60,8 @@ static u8 calculateNextMovement(Jetman*);
 static void updatePosition(Jetman*, Planet*);
 static f16 reachedTop(Box_s16, const Planet*);
 static f16 hitPlatformUnder(Box_s16, const Planet*);
-static f16 blockedByLeft(Box_s16, const Planet*);
 static f16 blockedByRight(Box_s16, const Planet*);
+static f16 blockedByLeft(Box_s16, const Planet*);
 
 static void drawJetman(Jetman*);
 
@@ -322,14 +322,16 @@ static u8 calculateNextMovement(Jetman* jetman) {
 	} else {
 		// do not stop suddenly
 		if (jetman->object.mov.x > 0) {
-			jetman->object.mov.x -= ACCELERATION_H;
-			if (jetman->object.mov.x < 0) {
+			if (jetman->object.mov.x >= ACCELERATION_H) {
+				jetman->object.mov.x -= ACCELERATION_H;
+			} else {
 				jetman->object.mov.x = SPEED_ZERO;
 			}
 
 		} else if (jetman->object.mov.x < 0) {
-			jetman->object.mov.x += ACCELERATION_H;
-			if (jetman->object.mov.x > 0) {
+			if (jetman->object.mov.x <= -ACCELERATION_H) {
+				jetman->object.mov.x += ACCELERATION_H;
+			} else {
 				jetman->object.mov.x = SPEED_ZERO;
 			}
 		}
@@ -375,16 +377,34 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 
 	} else {
 
-		f16 blockedHorizontally = blockedByLeft(target_h, planet);
-		if (!blockedHorizontally) {
-			blockedHorizontally = blockedByRight(target_h, planet);
-		}
+		f16 blockedInAxisX = blockedByLeft(target_h, planet);
+		if (blockedInAxisX && jetman->object.mov.x < 0) {
 
-		if (blockedHorizontally) {
-			jetman->object.pos.x = blockedHorizontally;
+			// bounce by reversing its speed, losing some momentum in the bounce
+			jetman->object.mov.x = -jetman->object.mov.x - SPEED_LOST_IN_CRASH;
+			if (jetman->object.mov.x < 0) {
+				jetman->object.mov.x = SPEED_ZERO;
+				jetman->object.pos.x = blockedInAxisX;
+			} else {
+				jetman->object.pos.x = blockedInAxisX + jetman->object.mov.x;
+			}
 
 		} else {
-			jetman->object.pos.x += jetman->object.mov.x;
+			blockedInAxisX = blockedByRight(target_h, planet);
+			if (blockedInAxisX && jetman->object.mov.x > 0) {
+
+				// bounce by reversing its speed, losing some momentum in the bounce
+				jetman->object.mov.x = -jetman->object.mov.x + SPEED_LOST_IN_CRASH;
+				if (jetman->object.mov.x > 0) {
+					jetman->object.mov.x = SPEED_ZERO;
+					jetman->object.pos.x = blockedInAxisX;
+				} else {
+					jetman->object.pos.x = blockedInAxisX + jetman->object.mov.x;
+				}
+
+			} else {
+				jetman->object.pos.x += jetman->object.mov.x;
+			}
 		}
 	}
 
@@ -453,9 +473,9 @@ static f16 hitPlatformUnder(Box_s16 subject_box, const Planet planet[static 1]) 
 	return FIX16_0;
 }
 
-static f16 blockedByLeft(Box_s16 target_box, const Planet planet[static 1]) {
+static f16 blockedByRight(Box_s16 target_box, const Planet planet[static 1]) {
 
-	if (hitLeft(target_box, planet->floor->object.box)) {
+	if (planet->floor && hitLeft(target_box, planet->floor->object.box)) {
 		return FIX16(adjacentXOnTheLeft(target_box, planet->floor->object.box));
 	}
 
@@ -469,9 +489,9 @@ static f16 blockedByLeft(Box_s16 target_box, const Planet planet[static 1]) {
 	return FIX16_0;
 }
 
-static f16 blockedByRight(Box_s16 target_box, const Planet planet[static 1]) {
+static f16 blockedByLeft(Box_s16 target_box, const Planet planet[static 1]) {
 
-	if (hitRight(target_box, planet->floor->object.box)) {
+	if (planet->floor && hitRight(target_box, planet->floor->object.box)) {
 		return FIX16(adjacentXOnTheRight(target_box, planet->floor->object.box));
 	}
 
