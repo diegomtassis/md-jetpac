@@ -56,7 +56,7 @@ s16 list_find(List* list, void* e) {
 
 void list_remove_at(List* list, int pos) {
 
-	if (!list || pos >= list->size) {
+	if (!list || list->count <= 0 || pos >= list->size || !list->e[pos]) {
 		return;
 	}
 
