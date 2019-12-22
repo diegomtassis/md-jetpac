@@ -7,19 +7,6 @@
 
 #include "../../inc/fwk/physics.h"
 
-// relative position
-#define IN_BETWEEN		0x01
-#define OVERLAPPED		0x02
-#define TO_THE_LEFT		0x04
-#define TO_THE_RIGHT	0x08
-#define ABOVE			0x10
-#define UNDER			0x20
-
-static u8 axisXBoxRelativePos(Box_s16, Box_s16);
-static u8 axisYBoxRelativePos(Box_s16, Box_s16);
-static u8 axisXPxRelativePos(s16, Box_s16);
-static u8 axisYPxRelativePos(s16, Box_s16);
-
 void updateBox(Object_f16* object) {
 
 	object->box.pos.x = fix16ToInt(object->pos.x);
@@ -135,7 +122,7 @@ s16 adjacentXOnTheRight(Box_s16 subject_box, Box_s16 object_box) {
 	return object_box.pos.x + object_box.w;
 }
 
-static u8 axisXBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
+u8 axisXBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
 
 	if (TO_THE_RIGHT & axisXPxRelativePos(subject_box.pos.x, object_box)) {
 		return TO_THE_RIGHT;
@@ -148,7 +135,7 @@ static u8 axisXBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
 	return OVERLAPPED;
 }
 
-static u8 axisYBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
+u8 axisYBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
 
 	if (UNDER & axisYPxRelativePos(subject_box.pos.y, object_box)) {
 		return UNDER;
@@ -161,7 +148,7 @@ static u8 axisYBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
 	return OVERLAPPED;
 }
 
-static u8 axisXPxRelativePos(s16 x_px, Box_s16 object_box) {
+u8 axisXPxRelativePos(s16 x_px, Box_s16 object_box) {
 
 	s16 x_s16 = object_box.pos.x;
 	if (x_px < x_s16) {
@@ -175,7 +162,7 @@ static u8 axisXPxRelativePos(s16 x_px, Box_s16 object_box) {
 	return IN_BETWEEN;
 }
 
-static u8 axisYPxRelativePos(s16 y_px, Box_s16 object_box) {
+u8 axisYPxRelativePos(s16 y_px, Box_s16 object_box) {
 
 	s16 y_s16 = object_box.pos.y;
 	if (y_px < y_s16) {

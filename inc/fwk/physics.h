@@ -20,6 +20,13 @@
 #define TOP_POS_V_PX_F16 		FIX16(TOP_POS_V_PX_S16)
 #define BOTTOM_POS_V_PX_F16 	FIX16(BOTTOM_POS_V_PX_S16)
 
+#define IN_BETWEEN		0x01
+#define OVERLAPPED		0x02
+#define TO_THE_LEFT		0x04
+#define TO_THE_RIGHT	0x08
+#define ABOVE			0x10
+#define UNDER			0x20
+
 typedef struct {
 	V2s16 pos;
 	u16 w;
@@ -54,5 +61,10 @@ s16 adjacentYAbove(Box_s16 subject_box, Box_s16 object_box);
 s16 adjacentYUnder(Box_s16 subject_box, Box_s16 object_box);
 s16 adjacentXOnTheLeft(Box_s16 subject_box, Box_s16 object_box);
 s16 adjacentXOnTheRight(Box_s16 subject_box, Box_s16 object_box);
+
+u8 axisXBoxRelativePos(Box_s16, Box_s16);
+u8 axisYBoxRelativePos(Box_s16, Box_s16);
+u8 axisXPxRelativePos(s16, Box_s16);
+u8 axisYPxRelativePos(s16, Box_s16);
 
 #endif /* INC_PHYSICS_H_ */

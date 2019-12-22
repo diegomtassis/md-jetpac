@@ -14,6 +14,11 @@
 #include "../inc/fwk/physics.h"
 #include "../res/sprite.h"
 
+#define JETMAN_WIDTH 16
+#define GUN_Y_OFFSET 11
+
+#define SHOT_TYPES	3
+
 #define RANGE_SHORT 22
 #define RANGE_MEDIUM 28
 #define RANGE_LONG 35
@@ -28,16 +33,17 @@
 #define GRAPE_WIDTH 16
 #define GRAPE_HEIGHT 1
 
-static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Planet planet[static 1]);
-static bool checkCollision(Shot shot[static 1], Grape grape[static 1], Box_s16 object_box);
-
-static u8 checkShotHit(Shot* shot, Box_s16 object);
+static const u8 BURST_TYPE_PER_GRAPE[6] = { BURST_A, BURST_A, BURST_B, BURST_B, BURST_C, BURST_C };
 
 static void releaseShotIfNoGrapes(Planet planet[static 1], u8 shot_idx);
 static void releaseShot(Shot* shot);
 static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst);
 static void releaseGrapeInShot(Planet planet[static 1], u8 idx_shot, u8 idx_grape);
 static void releaseGrape(Grape* grape);
+
+static u8 checkShotHit(Shot* shot, Box_s16 object);
+static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Planet planet[static 1]);
+static bool checkGrapeHit(Grape grape[static 1], Box_s16 object_box);
 
 void initShots(Planet planet[static 1]) {
 
@@ -70,19 +76,12 @@ void shoot(Jetman* shooter, Planet planet[static 1]) {
 	shot->shooter = shooter;
 	shooter->shots++;
 
-	for (int idx = 0; idx < planet->shots.size; idx++) {
-		// Find an empty spot for the shot
-		if (!planet->shots.e[idx]) {
-			planet->shots.e[idx] = shot;
-			planet->shots.count++;
-			break;
-		}
-	}
+	list_add(&planet->shots, shot);
 
-	shot->where.x = shooter->object.box.pos.x + (shooter->head_back ? 0 : 16);
-	shot->where.y = shooter->object.box.pos.y + 11;
+	shot->where.x = shooter->object.box.pos.x + (shooter->head_back ? 0 : JETMAN_WIDTH);
+	shot->where.y = shooter->object.box.pos.y + GUN_Y_OFFSET;
 	shot->to_left = shooter->head_back;
-	shot->type = abs(random()) % 3;
+	shot->type = abs(random()) % SHOT_TYPES;
 
 	u8 range = abs(random()) % 3;
 	if (range == 0) {
@@ -93,16 +92,14 @@ void shoot(Jetman* shooter, Planet planet[static 1]) {
 		shot->range = RANGE_LONG;
 	}
 
-	shot->grapes_size = 6;
-	shot->grapes_count = 0;
+	shot->grapes.size = 6;
+	shot->grapes.count = 0;
+	shot->grapes.e = MEM_calloc(sizeof(Grape*) * shot->grapes.size);
 	shot->grapes_created = 0;
-	shot->grapes = MEM_calloc(shot->grapes_size * sizeof(Grape*));
 
-	shot->grapes[0] = createGrape(shot->where, shot->to_left, shot->type, shot->range, BURST_A);
-	shot->grapes_count++;
+	list_add(&shot->grapes, createGrape(shot->where, shot->to_left, shot->type, shot->range, BURST_A));
 	shot->grapes_created++;
 	shot->distance_to_last = 0;
-
 }
 
 void updateShots(Planet planet[static 1]) {
@@ -114,14 +111,17 @@ void updateShots(Planet planet[static 1]) {
 		if (shot) {
 
 			Grape* grape = 0;
-			bool leading_grape = TRUE;
-			for (int idx_grape = 0; idx_grape < shot->grapes_size; ++idx_grape) {
+			for (int idx_grape = 0; idx_grape < shot->grapes.size; ++idx_grape) {
 
-				grape = shot->grapes[idx_grape];
+				grape = shot->grapes.e[idx_grape];
 				if (grape) {
 
 					grape->life_left--;
-					if (grape->life_left) {
+					if (!grape->life_left) {
+						// release
+						releaseGrapeInShot(planet, idx_shot, idx_grape);
+
+					} else {
 						// move
 						Box_s16 target_h = targetHBox(*grape->object);
 						if (target_h.pos.x > MAX_POS_H_PX_S16) {
@@ -134,36 +134,27 @@ void updateShots(Planet planet[static 1]) {
 							grape->object->pos.x += grape->object->mov.x;
 						}
 
-						// check collisions only for the first grape in shot
-						if (leading_grape && crashedIntoPlatform(shot, grape, planet)) {
-							releaseShot(shot);
-							planet->shots.e[idx_shot] = 0;
-							planet->shots.count--;
-						} else {
-							updateBox(grape->object);
-							SPR_setPosition(grape->sprite, grape->object->box.pos.x, grape->object->box.pos.y);
-						}
-
-					} else {
-						// release
-						releaseGrapeInShot(planet, idx_shot, idx_grape);
+						updateBox(grape->object);
+						SPR_setPosition(grape->sprite, grape->object->box.pos.x, grape->object->box.pos.y);
 					}
-
-					leading_grape = FALSE;
 				}
 			}
 
+			// check if the first grape crashed into a platform
+			grape = shot->grapes.e[0];
+			if (grape && crashedIntoPlatform(shot, grape, planet)) {
+				list_remove_at(&planet->shots, idx_shot);
+				releaseShot(shot);
+				continue;
+			}
+
 			shot->distance_to_last += SPEED_LASER;
-			if (shot->grapes_created < shot->grapes_size && shot->distance_to_last >= GRAPE_WIDTH) {
+			if (shot->grapes_created < shot->grapes.size && shot->distance_to_last >= GRAPE_WIDTH) {
 
-				u8 burst = BURST_A;
-				if (shot->grapes_created > 1) {
-					burst = shot->grapes_created < 5 ? BURST_B : BURST_C;
-				}
-
-				shot->grapes[shot->grapes_created++] = createGrape(shot->where, shot->to_left, shot->type, shot->range,
-						burst);
-				shot->grapes_count++;
+				list_add(&shot->grapes,
+						createGrape(shot->where, shot->to_left, shot->type, shot->range,
+								BURST_TYPE_PER_GRAPE[shot->grapes_created]));
+				shot->grapes_created++;
 				shot->distance_to_last = 0;
 			}
 		}
@@ -179,9 +170,8 @@ u8 checkHit(Box_s16 subject, Planet planet[static 1]) {
 		shot = planet->shots.e[idx_shot];
 		if (shot && checkShotHit(shot, subject)) {
 
+			list_remove_at(&planet->shots, idx_shot);
 			releaseShot(shot);
-			planet->shots.e[idx_shot] = 0;
-			planet->shots.count--;
 
 			return TRUE;
 		}
@@ -194,19 +184,10 @@ static u8 checkShotHit(Shot* shot, Box_s16 object) {
 
 	if (shot) {
 
-		Grape* grape = 0;
-
-		for (int idx_grape = 0; idx_grape < shot->grapes_size; idx_grape++) {
-			grape = shot->grapes[idx_grape];
-			if (grape) {
-				if (checkCollision(shot, grape, object)) {
-					return shot->shooter->id;
-
-				} else {
-					// check only the first grape
-					return FALSE;
-				}
-			}
+		// check only the first grape
+		Grape* grape = shot->grapes.e[0];
+		if (grape && checkGrapeHit(grape, object)) {
+			return shot->shooter->id;
 		}
 	}
 
@@ -220,11 +201,10 @@ static void releaseShotIfNoGrapes(Planet planet[static 1], u8 idx_shot) {
 	}
 
 	Shot* shot = planet->shots.e[idx_shot];
-	if (shot && !shot->grapes_count) {
+	if (shot && !shot->grapes.count) {
 
+		list_remove_at(&planet->shots, idx_shot);
 		releaseShot(shot);
-		planet->shots.e[idx_shot] = 0;
-		planet->shots.count--;
 	}
 }
 
@@ -235,17 +215,18 @@ static void releaseShot(Shot* shot) {
 	}
 
 	Grape* grape = 0;
-	for (int idx = 0; idx < shot->grapes_size; idx++) {
+	for (int idx = 0; idx < shot->grapes.size; idx++) {
 
-		grape = shot->grapes[idx];
+		grape = shot->grapes.e[idx];
 		if (grape) {
 			releaseGrape(grape);
-			shot->grapes[idx] = 0;
 		}
 	}
 
-	shot->grapes_count = 0;
-	shot->grapes_size = 0;
+	shot->grapes.count = 0;
+	shot->grapes.size = 0;
+	MEM_free(shot->grapes.e);
+	shot->grapes.e = 0;
 
 	shot->shooter->shots--;
 	shot->shooter = 0;
@@ -255,12 +236,11 @@ static void releaseShot(Shot* shot) {
 
 static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst) {
 
-	Grape* grape = 0;
-	grape = MEM_calloc(sizeof(Grape));
+	Grape* grape = MEM_calloc(sizeof(*grape));
 
 	Object_f16* object = MEM_calloc(sizeof(Object_f16));
 	grape->object = object;
-	grape->object->pos.x = FIX16(where.x - (to_left ? 16 : 0));
+	grape->object->pos.x = FIX16(where.x - (to_left ? JETMAN_WIDTH : 0));
 	grape->object->pos.y = FIX16(where.y);
 	grape->object->mov.x = to_left ? -SPEED_LASER_F16 : SPEED_LASER_F16;
 	grape->object->mov.y = FIX16_0;
@@ -282,15 +262,12 @@ static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst
 
 static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Planet planet[static 1]) {
 
-	Box_s16 grape_box = grape->object->box;
-	bool crashed = overlap(grape_box, planet->floor->object.box);
-	if (crashed) {
+	if (checkGrapeHit(grape, planet->floor->object.box)) {
 		return TRUE;
 	}
 
 	for (u8 i = 0; i < planet->num_platforms; i++) {
-		crashed = overlap(grape->object->box, planet->platforms[i]->object.box);
-		if (crashed) {
+		if (checkGrapeHit(grape, planet->platforms[i]->object.box)) {
 			return TRUE;
 		}
 	}
@@ -298,10 +275,11 @@ static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Plan
 	return FALSE;
 }
 
-static bool checkCollision(Shot shot[static 1], Grape grape[static 1], Box_s16 object_box) {
+static bool checkGrapeHit(Grape grape[static 1], Box_s16 object_box) {
 
-	// A possible optimization is to check only the tip and the tail
-	return overlap(grape->object->box, object_box);
+	// optimization cause grapes have height 1
+	return ((IN_BETWEEN & axisYPxRelativePos(grape->object->box.pos.y, object_box))
+			&& (OVERLAPPED & axisXBoxRelativePos(grape->object->box, object_box)));
 }
 
 static void releaseGrapeInShot(Planet planet[static 1], u8 idx_shot, u8 idx_grape) {
@@ -311,14 +289,13 @@ static void releaseGrapeInShot(Planet planet[static 1], u8 idx_shot, u8 idx_grap
 		return;
 	}
 
-	Grape* grape = shot->grapes[idx_grape];
+	Grape* grape = shot->grapes.e[idx_grape];
 	if (!grape) {
 		return;
 	}
 
+	list_remove_at(&shot->grapes, idx_grape);
 	releaseGrape(grape);
-	shot->grapes[idx_grape] = 0;
-	shot->grapes_count--;
 	releaseShotIfNoGrapes(planet, idx_shot);
 }
 

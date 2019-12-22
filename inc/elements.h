@@ -152,11 +152,9 @@ struct Shot {
 	bool to_left;
 	u8 type;
 	u8 range;
-	u8 grapes_count;
+	List grapes;
 	u8 grapes_created;
-	u8 grapes_size;
 	u16 distance_to_last;
-	Grape** grapes;
 };
 
 struct Grape {
