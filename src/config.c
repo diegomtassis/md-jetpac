@@ -9,6 +9,8 @@
 
 #include <genesis.h>
 
+#include "../inc/fwk/commons.h"
+#include "../inc/elements.h"
 #include "../inc/planets.h"
 
 static const char* JETPAC_GAME_SELECTION = "JETPAC GAME SELECTION";
@@ -61,11 +63,34 @@ volatile bool refresh = TRUE;
 
 const V2u16 pos_init = { .x = 6, .y = 8 };
 
-Planet* (**zxCreatePlanet)(void);
-u8 zx_num_planets;
+static const u8 ZX_NUM_PLANETS = 16;
+Planet* (* const zxCreatePlanet[16])(void) = { //
+			createPlanetZX01,//
+			createPlanetZX02,//
+			createPlanetZX03,//
+			createPlanetZX04,//
+			createPlanetZX05,//
+			createPlanetZX06,//
+			createPlanetZX07,//
+			createPlanetZX08,//
+			createPlanetZX09,//
+			createPlanetZX10,//
+			createPlanetZX11,//
+			createPlanetZX12,//
+			createPlanetZX13,//
+			createPlanetZX14,//
+			createPlanetZX15,//
+			createPlanetZX16,//
+};
 
-Planet* (**mdCreatePlanet)(void);
-u8 md_num_planets;
+static const u8 MD_NUM_PLANETS = 5;
+Planet* (* const mdCreatePlanet[5])(void) = { //
+			createPlanetZX01,//
+			createPlanetMD01,//
+			createPlanetMD02,//
+			createPlanetMD03,//
+			createPlanetMD04,//
+};
 
 Config setUpGame() {
 
@@ -74,7 +99,7 @@ Config setUpGame() {
 	u8 prev_priority = VDP_getTextPriority();
 
 	if (!current_config) {
-		current_config = MEM_alloc(sizeof(*current_config));
+		current_config = MEM_calloc(sizeof(*current_config));
 		current_config->mode = ZX;
 		current_config->difficulty = NORMAL;
 		current_config->players = ONE_PLAYER;
@@ -106,40 +131,6 @@ Config setUpGame() {
 
 static void setUpDefaults() {
 
-	if (!zxCreatePlanet) {
-
-		zx_num_planets = 16;
-		u8 planet = 0;
-		zxCreatePlanet = MEM_alloc(zx_num_planets * sizeof(Planet*));
-		zxCreatePlanet[planet++] = createPlanetZX01;
-		zxCreatePlanet[planet++] = createPlanetZX02;
-		zxCreatePlanet[planet++] = createPlanetZX03;
-		zxCreatePlanet[planet++] = createPlanetZX04;
-		zxCreatePlanet[planet++] = createPlanetZX05;
-		zxCreatePlanet[planet++] = createPlanetZX06;
-		zxCreatePlanet[planet++] = createPlanetZX07;
-		zxCreatePlanet[planet++] = createPlanetZX08;
-		zxCreatePlanet[planet++] = createPlanetZX09;
-		zxCreatePlanet[planet++] = createPlanetZX10;
-		zxCreatePlanet[planet++] = createPlanetZX11;
-		zxCreatePlanet[planet++] = createPlanetZX12;
-		zxCreatePlanet[planet++] = createPlanetZX13;
-		zxCreatePlanet[planet++] = createPlanetZX14;
-		zxCreatePlanet[planet++] = createPlanetZX15;
-		zxCreatePlanet[planet++] = createPlanetZX16;
-	}
-
-	if (!mdCreatePlanet) {
-
-		md_num_planets = 5;
-		u8 planet = 0;
-		mdCreatePlanet = MEM_alloc(md_num_planets * sizeof(Planet*));
-		mdCreatePlanet[planet++] = createPlanetZX01;
-		mdCreatePlanet[planet++] = createPlanetMD01;
-		mdCreatePlanet[planet++] = createPlanetMD02;
-		mdCreatePlanet[planet++] = createPlanetMD03;
-		mdCreatePlanet[planet++] = createPlanetMD04;
-	}
 }
 
 static void initConfigScreen() {
@@ -255,11 +246,11 @@ static void expandGameConfig(Config config[static 1]) {
 
 	if (current_config->mode == ZX) {
 		config->limited_ammo = FALSE;
-		config->num_planets = zx_num_planets;
+		config->num_planets = ZX_NUM_PLANETS;
 		config->createPlanet = zxCreatePlanet;
 	} else {
 		config->limited_ammo = TRUE;
-		config->num_planets = md_num_planets;
+		config->num_planets = MD_NUM_PLANETS;
 		config->createPlanet = mdCreatePlanet;
 	}
 

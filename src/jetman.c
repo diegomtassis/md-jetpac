@@ -30,7 +30,7 @@
 #define SPEED_H_FLY			FIX16(1.5)
 #define SPEED_V_UP_MAX		FIX16(-1.5)
 #define SPEED_V_DOWN_MAX	FIX16(1.5)
-#define ACCELERATION_H   	FIX16(0.15)
+#define ACCELERATION_H   	FIX16(0.2)
 #define UP_ACCELERATION    	FIX16(-0.2)
 #define GRAVITY         	FIX16(0.2)
 #define SPEED_LOST_IN_CRASH	FIX16(0.15)

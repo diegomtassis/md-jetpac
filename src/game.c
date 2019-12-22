@@ -11,20 +11,21 @@
 
 #include "../inc/collectables.h"
 #include "../inc/config.h"
-#include "../inc/elements.h"
 #include "../inc/enemies.h"
-#include "../inc/spaceship.h"
 #include "../inc/explosions.h"
-#include "../inc/shooting.h"
+#include "../inc/fwk/commons.h"
+#include "../inc/fwk/physics.h"
 #include "../inc/hud.h"
-#include "../inc/events.h"
 #include "../inc/jetman.h"
 #include "../inc/planet.h"
-#include "../inc/planets.h"
 #include "../inc/players.h"
-#include "../inc/fwk/physics.h"
+#include "../inc/shooting.h"
+#include "../inc/spaceship.h"
 
 #define DEFAULT_FLASH_WAIT	2000
+
+static Game* createGame(Config config[static 1]);
+static void releaseGame(Game* game);
 
 /**
  * @brief run a planet.
@@ -32,9 +33,6 @@
  * @param planet
  * @return goal accomplished
  */
-static Game* createGame(Config config[static 1]);
-static void releaseGame(Game* game);
-
 static bool runPlanet(Planet planet[static 1]);
 
 static void waitForLanding(Planet planet[static 1]);
@@ -60,6 +58,12 @@ Game * current_game;
 
 GameResult runGame(Config config[static 1]) {
 
+	// may be trash if there's been a soft reset
+	if (current_game) {
+		releaseGame(current_game);
+		current_game = 0;
+	}
+
 	current_game = createGame(config);
 
 	SPR_init();
@@ -69,14 +73,15 @@ GameResult runGame(Config config[static 1]) {
 	/* when all the planets are passed start again */
 
 	u8 planet_number = 0;
+	Planet* current_planet;
 
 	displayAmmo(config->mode == MD);
 
 	while (!game_over) {
 
 		//	log_memory();
-
-		Planet* current_planet = config->createPlanet[planet_number]();
+		current_game->planet = config->createPlanet[planet_number]();
+		current_planet = current_game->planet;
 		current_planet->game = current_game;
 
 		startPlanet(current_planet);
@@ -116,13 +121,8 @@ GameResult runGame(Config config[static 1]) {
 			waitMs(500);
 		}
 
-		releaseExplosions(current_planet);
-		releaseShots(current_planet);
-		releaseCollectables(current_planet);
-		releaseEnemies(current_planet);
-		releaseJetmen(current_planet);
-		releaseSpaceship(current_planet);
 		releasePlanet(current_planet);
+		current_game->planet = 0;
 		current_planet = 0;
 
 		SPR_update();
@@ -187,18 +187,17 @@ void scoreByEvent(GameEvent event, u8 player_id) {
 
 static Game* createGame(Config config[static 1]) {
 
-	Game* game = MEM_alloc(sizeof *game);
+	Game* game = MEM_calloc(sizeof *game);
 
 	game->config = config;
-	game->planet = 0;
 
-	game->p1 = MEM_alloc(sizeof(*game->p1));
+	game->p1 = MEM_calloc(sizeof(*game->p1));
 	game->p1->id = P1;
 	game->p1->lives = config->lives;
 	game->p1->score = 0;
 
 	if (config->players == TWO_PLAYERS) {
-		game->p2 = MEM_alloc(sizeof(*game->p2));
+		game->p2 = MEM_calloc(sizeof(*game->p2));
 		game->p2->id = P2;
 		game->p2->lives = config->lives;
 		game->p2->score = 0;
@@ -213,12 +212,19 @@ static void releaseGame(Game* game) {
 		return;
 	}
 
+	if (game->planet) {
+		releasePlanet(game->planet);
+		game->planet = 0;
+	}
+
 	if (game->p1) {
 		MEM_free(game->p1);
+		game->p1 = 0;
 	}
 
 	if (game->p2) {
 		MEM_free(game->p2);
+		game->p2 = 0;
 	}
 
 	MEM_free(game);
@@ -319,6 +325,8 @@ static bool runPlanet(Planet current_planet[static 1]) {
 			SPR_update();
 		}
 
+		// VDP_showFPS(FALSE);
+		// VDP_showCPULoad();
 		VDP_waitVSync();
 	}
 
@@ -358,7 +366,7 @@ static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 		killJetman(jetman, planet, FALSE);
 	}
 
-	// enemies
+// enemies
 	for (u8 enemy_idx = 0; enemy_idx < planet->enemies.size; enemy_idx++) {
 
 		Enemy* enemy = planet->enemies.e[enemy_idx];

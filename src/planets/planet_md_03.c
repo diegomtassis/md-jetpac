@@ -27,7 +27,7 @@ Planet* createPlanetMD03() {
 	defineEnemiesPopulation(planet, bubbleDefinition, 6);
 	defineSpaceship(planet);
 
-	planet->def.p1_init_pos = MEM_alloc(sizeof *planet->def.p1_init_pos);
+	planet->def.p1_init_pos = MEM_calloc(sizeof *planet->def.p1_init_pos);
 	setV2s16(planet->def.p1_init_pos, 68, 176);
 
 	planet->def.mind_bottom = TRUE;

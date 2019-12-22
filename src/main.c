@@ -41,8 +41,7 @@ int main() {
 
 	while (1) {
 
-		//	log_memory();
-
+		// log_memory();
 		Config config = setUpGame();
 		GameResult result = runGame(&config);
 

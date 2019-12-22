@@ -41,7 +41,7 @@ struct Config {
 	u8 players;
 	u8 lives;
 	bool limited_ammo;
-	Planet* (**createPlanet)(void);
+	Planet* (* const *createPlanet)(void);
 	u8 num_planets;
 };
 
@@ -55,7 +55,7 @@ struct Game {
 	const Config* config;
 	Player* p1;
 	Player* p2;
-	u8 planet;
+	Planet* planet;
 };
 
 struct GameResult {

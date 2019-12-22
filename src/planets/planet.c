@@ -5,15 +5,19 @@
  *      Author: diegomtassis
  */
 
-#include <types.h>
-
 #include "../../inc/planet.h"
-#include "../../inc/elements.h"
-#include "../../inc/fwk/commons.h"
-#include "../../inc/spaceship.h"
 
-#include "../inc/fwk/vdp_utils.h"
-#include "../res/gfx.h"
+#include <genesis.h>
+
+#include "../../inc/collectables.h"
+#include "../../inc/enemies.h"
+#include "../../inc/explosions.h"
+#include "../../inc/fwk/commons.h"
+#include "../../inc/fwk/vdp_utils.h"
+#include "../../inc/jetman.h"
+#include "../../inc/shooting.h"
+#include "../../inc/spaceship.h"
+#include "../../res/gfx.h"
 
 static u16 palette[64];
 
@@ -28,19 +32,7 @@ static void drawPlatform(VDPPlan plan, Platform platform[static 1], u16 idx_tile
 
 Planet* allocPlanet() {
 
-	Planet* planet = (Planet*) MEM_calloc(sizeof(Planet));
-
-	planet->def.p1_init_pos = 0;
-
-	planet->floor = 0;
-	planet->platforms = 0;
-	planet->j1 = 0;
-	planet->spaceship = 0;
-
-	planet->enemies.e = 0;
-	planet->booms.e = 0;
-
-	return planet;
+	return (Planet*) MEM_calloc(sizeof(Planet));
 }
 
 void startPlanet(Planet planet[static 1]) {
@@ -71,6 +63,13 @@ void releasePlanet(Planet* planet) {
 		return;
 	}
 
+	releaseExplosions(planet);
+	releaseShots(planet);
+	releaseCollectables(planet);
+	releaseEnemies(planet);
+	releaseJetmen(planet);
+	releaseSpaceship(planet);
+
 	// floor
 	if (planet->floor) {
 		releasePlatform(planet->floor);
@@ -87,12 +86,15 @@ void releasePlanet(Planet* planet) {
 		planet->platforms = 0;
 	}
 
-	// spaceship
-
 	// jetman definition
 	if (planet->def.p1_init_pos) {
 		MEM_free(planet->def.p1_init_pos);
 		planet->def.p1_init_pos = 0;
+	}
+
+	if (planet->def.p2_init_pos) {
+		MEM_free(planet->def.p2_init_pos);
+		planet->def.p2_init_pos = 0;
 	}
 
 	if (planet->game) {

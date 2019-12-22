@@ -168,7 +168,7 @@ static void createCollectable(Planet planet[static 1], u8 idx) {
 			default_sprite_attrs);
 
 	if (collectableDef.blinks) {
-		collectable->blinker = MEM_alloc(sizeof(*collectable->blinker));
+		collectable->blinker = MEM_calloc(sizeof(*collectable->blinker));
 		collectable->blinker->init_value = BLINK_TIME;
 		collectable->blinker->counter = BLINK_TIME;
 		collectable->blinker->visible = TRUE;
