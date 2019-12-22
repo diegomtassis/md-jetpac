@@ -18,23 +18,30 @@
 
 #define LOADING_TIME	3000
 
-int main() {
+int main(u16 hard) {
 
 	// default resolution
 	VDP_setScreenWidth256();
 	VDP_setScreenHeight224();
 
-	// jetpac file
-	printDisclaimer();
-	JOY_waitPress(JOY_1, BUTTON_BTN);
-	clearDisclaimer();
+	if (hard) {
 
-	waitMs(50);
+		// jetpac file
+		printDisclaimer();
+		JOY_waitPress(JOY_1, BUTTON_BTN);
+		clearDisclaimer();
 
-	// splash screen
-	showSplashScreen();
-	waitMs(LOADING_TIME);
-	clearSplashScreen();
+		waitMs(50);
+
+		// splash screen
+		showSplashScreen();
+		waitMs(LOADING_TIME);
+		clearSplashScreen();
+
+	} else {
+
+		releaseCurrentGame();
+	}
 
 	resetTileMemory();
 	initHud();

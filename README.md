@@ -27,7 +27,6 @@ https://github.com/diegomtassis/md-jetpac
 * Enemies IAs.
 * Refine difficulty levels.
 * More levels in MD mode.
-* Bouncing after contact with platforms.
 * Smart drop of spaceship parts after dying.
 * Polishing and optimization.
 

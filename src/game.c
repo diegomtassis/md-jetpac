@@ -56,13 +56,15 @@ static const V2u16 message_pos = { .x = 16, .y = 7 };
 
 Game * current_game;
 
-GameResult runGame(Config config[static 1]) {
+void releaseCurrentGame() {
 
-	// may be trash if there's been a soft reset
 	if (current_game) {
 		releaseGame(current_game);
 		current_game = 0;
 	}
+}
+
+GameResult runGame(Config config[static 1]) {
 
 	current_game = createGame(config);
 
