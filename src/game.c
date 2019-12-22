@@ -101,8 +101,13 @@ GameResult runGame(const Config config[static 1]) {
 			flashMessage("Game Over", DEFAULT_FLASH_WAIT);
 
 		} else {
-			SPR_setVisibility(j1->sprite, HIDDEN);
-			SPR_setVisibility(j2->sprite, HIDDEN);
+			if (j1) {
+				SPR_setVisibility(j1->sprite, HIDDEN);
+			}
+
+			if (j2) {
+				SPR_setVisibility(j2->sprite, HIDDEN);
+			}
 
 			leavePlanet(current_planet);
 
@@ -143,35 +148,35 @@ void scoreByEvent(GameEvent event, u8 player_id) {
 		return;
 	}
 
-	Player* status = player_id == P1 ? current_game->p1 : current_game->p2;
-	if (!status) {
+	Player* player = player_id == P1 ? current_game->p1 : current_game->p2;
+	if (!player) {
 		return;
 	}
 
 	switch (event) {
 
 	case KILLED_ENEMY:
-		status->score += 25;
+		player->score += 25;
 		break;
 
 	case GRABBED_SPACESHIP_PART:
-		status->score += 100;
+		player->score += 100;
 		break;
 
 	case GRABBED_FUEL:
-		status->score += 100;
+		player->score += 100;
 		break;
 
 	case GRABBED_COLLECTABLE:
-		status->score += 250;
+		player->score += 250;
 		break;
 
 	case LOST_FUEL:
-		status->score -= 50;
+		player->score -= 50;
 		break;
 
 	case LOST_COLLECTABLE:
-		status->score -= 25;
+		player->score -= 25;
 		break;
 
 	default:
@@ -226,8 +231,8 @@ static void releaseGame(Game* game) {
 
 static bool runPlanet(Planet current_planet[static 1]) {
 
-	bool p1_alive = TRUE;
-	bool p2_alive = j2 != 0; // comparison to avoid a warning
+	bool p1_alive = j1 != 0; // comparison to avoid a warning
+	bool p2_alive = j2 != 0;
 	bool game_over = FALSE;
 	bool mission_accomplished = FALSE;
 
