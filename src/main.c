@@ -37,14 +37,12 @@ int main(u16 hard) {
 		showSplashScreen();
 		waitMs(LOADING_TIME);
 		clearSplashScreen();
-
-	} else {
-
-		releaseCurrentGame();
 	}
 
 	resetTileMemory();
 	initHud();
+
+	initConfig();
 
 	while (1) {
 

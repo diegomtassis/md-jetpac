@@ -11,8 +11,7 @@
 #include "elements.h"
 #include "events.h"
 
-void releaseCurrentGame();
-GameResult runGame(Config config[static 1]);
+GameResult runGame(const Config config[static 1]);
 
 void scoreByEvent(GameEvent event, u8 player_id);
 

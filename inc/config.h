@@ -29,6 +29,7 @@ typedef enum {
 	TWO_PLAYERS,
 } Players;
 
+void initConfig();
 Config setUpGame();
 
 #endif /* INC_CONFIG_H_ */

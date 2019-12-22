@@ -24,7 +24,7 @@
 
 #define DEFAULT_FLASH_WAIT	2000
 
-static Game* createGame(Config config[static 1]);
+static Game* createGame(const Config config[static 1]);
 static void releaseGame(Game* game);
 
 /**
@@ -54,17 +54,9 @@ volatile bool paused = FALSE;
 
 static const V2u16 message_pos = { .x = 16, .y = 7 };
 
-Game * current_game;
+static Game * current_game;
 
-void releaseCurrentGame() {
-
-	if (current_game) {
-		releaseGame(current_game);
-		current_game = 0;
-	}
-}
-
-GameResult runGame(Config config[static 1]) {
+GameResult runGame(const Config config[static 1]) {
 
 	current_game = createGame(config);
 
@@ -187,7 +179,7 @@ void scoreByEvent(GameEvent event, u8 player_id) {
 	}
 }
 
-static Game* createGame(Config config[static 1]) {
+static Game* createGame(const Config config[static 1]) {
 
 	Game* game = MEM_calloc(sizeof *game);
 

@@ -56,7 +56,7 @@ volatile enum option {
 	OPTION_START,
 } current_option;
 
-Config* current_config;
+static Config* current_config;
 
 volatile bool start = FALSE;
 volatile bool refresh = TRUE;
@@ -91,6 +91,12 @@ Planet* (* const mdCreatePlanet[5])(void) = { //
 			createPlanetMD03,//
 			createPlanetMD04,//
 };
+
+void initConfig() {
+
+	// whatever is the current config is trash, no need to free
+	current_config = 0;
+}
 
 Config setUpGame() {
 
@@ -185,6 +191,7 @@ static const char* printablePlayers(Config config) {
 	switch (config.players) {
 	case ONE_PLAYER:
 		return TEXT_ONE_PLAYER;
+
 	default:
 		return TEXT_TWO_PLAYERS;
 	}
