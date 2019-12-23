@@ -1,12 +1,12 @@
 /*
- * types.h
+ * lists.h
  *
- *  Created on: Nov 27, 2019
+ *  Created on: Dec 23, 2019
  *      Author: diegomtassis
  */
 
-#ifndef INC_FWK_TYPES_H_
-#define INC_FWK_TYPES_H_
+#ifndef INC_FWK_LISTS_H_
+#define INC_FWK_LISTS_H_
 
 #include <types.h>
 
@@ -21,4 +21,4 @@ s16 list_find_empty(List* list);
 s16 list_find(List* list, void* e);
 void list_remove_at(List* list, int idx);
 
-#endif /* INC_FWK_TYPES_H_ */
+#endif /* INC_FWK_LISTS_H_ */

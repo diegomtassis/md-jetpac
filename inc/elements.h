@@ -12,7 +12,7 @@
 
 #include "fwk/blinker.h"
 #include "fwk/physics.h"
-#include "fwk/types.h"
+#include "fwk/lists.h"
 
 #define ALIVE		0x01
 #define DEAD		0x02

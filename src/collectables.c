@@ -67,8 +67,8 @@ typedef enum {
 static const int MIN_TIME_BETWEEN_COLLECTABLES = SUBTICKPERSECOND * 7;
 static const int MAX_TIME_BETWEEN_COLLECTABLES = SUBTICKPERSECOND * 12;
 
-static void addCollectables(Planet planet[static 1]);
-static void createCollectable(Planet planet[static 1], u8);
+static void addCollectable(Planet planet[static 1]);
+static void createCollectable(Planet planet[static 1]);
 static void updateCollectable(Collectable* collectable, Planet planet[static 1]);
 static void releaseCollectable(Collectable* collectable);
 
@@ -119,37 +119,25 @@ void updateCollectables(Planet planet[static 1]) {
 
 			if (collectable->step == GRABBED || collectable->step == LOST) {
 
+				list_remove_at(&planet->collectables, idx);
 				releaseCollectable(collectable);
-				planet->collectables.e[idx] = 0;
-				planet->collectables.count--;
 			}
 		}
 	}
 
-	addCollectables(planet);
+	addCollectable(planet);
 }
 
-static void addCollectables(Planet planet[static 1]) {
+static void addCollectable(Planet planet[static 1]) {
 
 	if (planet->collectables.count < planet->collectables.size
 			&& isCountDownFinished(COLLECTABLE_CREATION_COUNTDOWN, FALSE)) {
 
-		u8 num_collectables = planet->collectables.size;
-		u8 idx;
-		while (num_collectables--) {
-			// find the first empty slot
-			Collectable* collectable = planet->collectables.e[num_collectables];
-			if (!collectable) {
-				idx = num_collectables;
-				break;
-			}
-		}
-
-		createCollectable(planet, idx);
+		createCollectable(planet);
 	}
 }
 
-static void createCollectable(Planet planet[static 1], u8 idx) {
+static void createCollectable(Planet planet[static 1]) {
 
 	Collectable* collectable = MEM_calloc(sizeof *collectable);
 
@@ -174,9 +162,7 @@ static void createCollectable(Planet planet[static 1], u8 idx) {
 		collectable->blinker->visible = TRUE;
 	}
 
-	planet->collectables.e[idx] = collectable;
-	planet->collectables.count++;
-
+	list_add(&planet->collectables, collectable);
 	startCountDownRandom(COLLECTABLE_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_COLLECTABLES, MAX_TIME_BETWEEN_COLLECTABLES);
 }
 

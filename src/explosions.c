@@ -80,9 +80,8 @@ static void releaseFinishedExplosions(Planet planet[static 1]) {
 		Explosion* boom = planet->booms.e[idx];
 		if (boom && boom->step == FINISHED) {
 			SPR_releaseSprite(boom->sprite);
+			list_remove_at(&planet->booms, idx);
 			MEM_free(boom);
-			planet->booms.e[idx] = 0;
-			planet->booms.count--;
 		}
 	}
 }
@@ -99,25 +98,16 @@ void boost(Box_s16 what, Planet planet[static 1]) {
 
 static void boom(Box_s16 what, Planet planet[static 1], u8 style) {
 
-	// Find an empty slot
-	u8 num_booms = planet->booms.size;
-	u8 boom_idx;
-	while (num_booms--) {
-		// find the first empty slot
-		Explosion* boom = planet->booms.e[num_booms];
-		if (!boom) {
-			boom_idx = num_booms;
-			break;
-		}
+	if (planet->booms.count >= planet->booms.size) {
+		return;
 	}
 
 	// Create the explosion
 	Explosion* boom = MEM_calloc(sizeof *boom);
-	planet->booms.e[boom_idx] = boom;
 	boom->step = 0;
-	planet->booms.count++;
 	boom->where.x = what.min.x;
 	boom->where.y = what.max.y - BOOM_H_PX;
+	list_add(&planet->booms, boom);
 
 	// Create sprite
 	Sprite* sprite = SPR_addSprite(&boom_sprite, boom->where.x, boom->where.y, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));

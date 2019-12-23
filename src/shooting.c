@@ -11,6 +11,7 @@
 
 #include "../inc/constants.h"
 #include "../inc/fwk/commons.h"
+#include "../inc/fwk/lists.h"
 #include "../inc/fwk/physics.h"
 #include "../res/sprite.h"
 
