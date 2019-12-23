@@ -63,7 +63,7 @@ static void actAlien(Enemy enemy[static 1], Planet planet[static 1]) {
 
 	Box_s16 target = targetBox(enemy->object);
 
-	if (target.pos.y <= MIN_POS_V_PX_S16 || target.pos.y >= MAX_POS_V_PX_S16) {
+	if (target.min.y <= MIN_POS_V_PX_S16 || target.min.y >= MAX_POS_V_PX_S16) {
 		enemy->object.mov.y = -enemy->object.mov.y;
 		target = targetBox(enemy->object);
 

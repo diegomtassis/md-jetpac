@@ -7,17 +7,21 @@
 
 #include "../../inc/fwk/physics.h"
 
+static void updateBoxMax(Box_s16* box);
+
 void updateBox(Object_f16* object) {
 
-	object->box.pos.x = fix16ToInt(object->pos.x);
-	object->box.pos.y = fix16ToInt(object->pos.y);
+	object->box.min.x = fix16ToInt(object->pos.x);
+	object->box.min.y = fix16ToInt(object->pos.y);
+	updateBoxMax(&object->box);
 }
 
 Box_s16 targetBox(Object_f16 object) {
 
 	Box_s16 box = { .w = object.size.x, .h = object.size.y };
-	box.pos.x = fix16ToInt(fix16Add(object.pos.x, object.mov.x));
-	box.pos.y = fix16ToInt(fix16Add(object.pos.y, object.mov.y));
+	box.min.x = fix16ToInt(fix16Add(object.pos.x, object.mov.x));
+	box.min.y = fix16ToInt(fix16Add(object.pos.y, object.mov.y));
+	updateBoxMax(&box);
 
 	return box;
 }
@@ -25,8 +29,9 @@ Box_s16 targetBox(Object_f16 object) {
 Box_s16 targetHBox(Object_f16 object) {
 
 	Box_s16 box = { .w = object.size.x, .h = object.size.y };
-	box.pos.x = fix16ToInt(fix16Add(object.pos.x, object.mov.x));
-	box.pos.y = fix16ToInt(object.pos.y);
+	box.min.x = fix16ToInt(fix16Add(object.pos.x, object.mov.x));
+	box.min.y = fix16ToInt(object.pos.y);
+	updateBoxMax(&box);
 
 	return box;
 }
@@ -34,10 +39,17 @@ Box_s16 targetHBox(Object_f16 object) {
 Box_s16 targetVBox(Object_f16 object) {
 
 	Box_s16 box = { .w = object.size.x, .h = object.size.y };
-	box.pos.x = fix16ToInt(object.pos.x);
-	box.pos.y = fix16ToInt(fix16Add(object.pos.y, object.mov.y));
+	box.min.x = fix16ToInt(object.pos.x);
+	box.min.y = fix16ToInt(fix16Add(object.pos.y, object.mov.y));
+	updateBoxMax(&box);
 
 	return box;
+}
+
+static void updateBoxMax(Box_s16* box) {
+
+	box->max.x = box->min.x + box->w;
+	box->max.y = box->min.y + box->h;
 }
 
 bool contained(V2s16 subject_pos, Box_s16 object_box) {
@@ -54,26 +66,26 @@ bool overlap(Box_s16 subject_box, Box_s16 object_box) {
 
 bool isAboveBaseUpwardProjection(Box_s16 subject_box, Box_s16 object_box) {
 
-	if (subject_box.pos.y + subject_box.h > object_box.pos.y + object_box.h) {
+	if (subject_box.max.y > object_box.max.y) {
 		return FALSE;
 	}
 
-	return IN_BETWEEN & axisXPxRelativePos(subject_box.pos.x + subject_box.w / 2, object_box);
+	return IN_BETWEEN & axisXPxRelativePos(subject_box.min.x + subject_box.w / 2, object_box);
 }
 
 bool shareBase(Box_s16 subject_box, Box_s16 object_box) {
 
-	if (subject_box.pos.y + subject_box.h != object_box.pos.y + object_box.h) {
+	if (subject_box.max.y != object_box.max.y) {
 		return FALSE;
 	}
 
-	return IN_BETWEEN & axisXPxRelativePos(subject_box.pos.x + subject_box.w / 2, object_box);
+	return IN_BETWEEN & axisXPxRelativePos(subject_box.min.x + subject_box.w / 2, object_box);
 }
 
 bool hitAbove(Box_s16 subject_box, Box_s16 object_box) {
 
 	if (OVERLAPPED & axisXBoxRelativePos(subject_box, object_box)) {
-		return IN_BETWEEN & axisYPxRelativePos(subject_box.pos.y + subject_box.h, object_box);
+		return IN_BETWEEN & axisYPxRelativePos(subject_box.max.y, object_box);
 	}
 
 	return FALSE;
@@ -82,7 +94,7 @@ bool hitAbove(Box_s16 subject_box, Box_s16 object_box) {
 bool hitUnder(Box_s16 subject_box, Box_s16 object_box) {
 
 	if (OVERLAPPED & axisXBoxRelativePos(subject_box, object_box)) {
-		return IN_BETWEEN & axisYPxRelativePos(subject_box.pos.y - 1, object_box);
+		return IN_BETWEEN & axisYPxRelativePos(subject_box.min.y - 1, object_box);
 	}
 
 	return FALSE;
@@ -91,7 +103,7 @@ bool hitUnder(Box_s16 subject_box, Box_s16 object_box) {
 bool hitLeft(Box_s16 subject_box, Box_s16 object_box) {
 
 	if (OVERLAPPED & axisYBoxRelativePos(subject_box, object_box)) {
-		return IN_BETWEEN & axisXPxRelativePos(subject_box.pos.x + subject_box.w, object_box);
+		return IN_BETWEEN & axisXPxRelativePos(subject_box.max.x, object_box);
 	}
 
 	return FALSE;
@@ -100,35 +112,35 @@ bool hitLeft(Box_s16 subject_box, Box_s16 object_box) {
 bool hitRight(Box_s16 subject_box, Box_s16 object_box) {
 
 	if (OVERLAPPED & axisYBoxRelativePos(subject_box, object_box)) {
-		return IN_BETWEEN & axisXPxRelativePos(subject_box.pos.x - 1, object_box);
+		return IN_BETWEEN & axisXPxRelativePos(subject_box.min.x - 1, object_box);
 	}
 
 	return FALSE;
 }
 
 s16 adjacentYAbove(Box_s16 subject_box, Box_s16 object_box) {
-	return object_box.pos.y - subject_box.h;
+	return object_box.min.y - subject_box.h;
 }
 
 s16 adjacentYUnder(Box_s16 subject_box, Box_s16 object_box) {
-	return object_box.pos.y + object_box.h;
+	return object_box.max.y;
 }
 
 s16 adjacentXOnTheLeft(Box_s16 subject_box, Box_s16 object_box) {
-	return object_box.pos.x - subject_box.w;
+	return object_box.min.x - subject_box.w;
 }
 
 s16 adjacentXOnTheRight(Box_s16 subject_box, Box_s16 object_box) {
-	return object_box.pos.x + object_box.w;
+	return object_box.max.x;
 }
 
 u8 axisXBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
 
-	if (TO_THE_RIGHT & axisXPxRelativePos(subject_box.pos.x, object_box)) {
+	if (TO_THE_RIGHT & axisXPxRelativePos(subject_box.min.x, object_box)) {
 		return TO_THE_RIGHT;
 	}
 
-	if (TO_THE_LEFT & axisXPxRelativePos(subject_box.pos.x + subject_box.w - 1, object_box)) {
+	if (TO_THE_LEFT & axisXPxRelativePos(subject_box.max.x - 1, object_box)) {
 		return TO_THE_LEFT;
 	}
 
@@ -137,11 +149,11 @@ u8 axisXBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
 
 u8 axisYBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
 
-	if (UNDER & axisYPxRelativePos(subject_box.pos.y, object_box)) {
+	if (UNDER & axisYPxRelativePos(subject_box.min.y, object_box)) {
 		return UNDER;
 	}
 
-	if (ABOVE & axisYPxRelativePos(subject_box.pos.y + subject_box.h - 1, object_box)) {
+	if (ABOVE & axisYPxRelativePos(subject_box.max.y - 1, object_box)) {
 		return ABOVE;
 	}
 
@@ -150,7 +162,7 @@ u8 axisYBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
 
 u8 axisXPxRelativePos(s16 x_px, Box_s16 object_box) {
 
-	s16 x_s16 = object_box.pos.x;
+	s16 x_s16 = object_box.min.x;
 	if (x_px < x_s16) {
 		return TO_THE_LEFT;
 	}
@@ -164,7 +176,7 @@ u8 axisXPxRelativePos(s16 x_px, Box_s16 object_box) {
 
 u8 axisYPxRelativePos(s16 y_px, Box_s16 object_box) {
 
-	s16 y_s16 = object_box.pos.y;
+	s16 y_s16 = object_box.min.y;
 	if (y_px < y_s16) {
 		return ABOVE;
 	}

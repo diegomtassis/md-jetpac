@@ -78,8 +78,8 @@ void shoot(Jetman* shooter, Planet planet[static 1]) {
 
 	list_add(&planet->shots, shot);
 
-	shot->where.x = shooter->object.box.pos.x + (shooter->head_back ? 0 : JETMAN_WIDTH);
-	shot->where.y = shooter->object.box.pos.y + GUN_Y_OFFSET;
+	shot->where.x = shooter->object.box.min.x + (shooter->head_back ? 0 : JETMAN_WIDTH);
+	shot->where.y = shooter->object.box.min.y + GUN_Y_OFFSET;
 	shot->to_left = shooter->head_back;
 	shot->type = abs(random()) % SHOT_TYPES;
 
@@ -124,18 +124,18 @@ void updateShots(Planet planet[static 1]) {
 					} else {
 						// move
 						Box_s16 target_h = targetHBox(*grape->object);
-						if (target_h.pos.x > MAX_POS_H_PX_S16) {
-							grape->object->pos.x = FIX16(target_h.pos.x - LEVEL_WIDTH_PX_S16);
+						if (target_h.min.x > MAX_POS_H_PX_S16) {
+							grape->object->pos.x = FIX16(target_h.min.x - LEVEL_WIDTH_PX_S16);
 
-						} else if (target_h.pos.x < MIN_POS_H_PX_S16) {
-							grape->object->pos.x = FIX16(LEVEL_WIDTH_PX_S16 + target_h.pos.x);
+						} else if (target_h.min.x < MIN_POS_H_PX_S16) {
+							grape->object->pos.x = FIX16(LEVEL_WIDTH_PX_S16 + target_h.min.x);
 
 						} else {
 							grape->object->pos.x += grape->object->mov.x;
 						}
 
 						updateBox(grape->object);
-						SPR_setPosition(grape->sprite, grape->object->box.pos.x, grape->object->box.pos.y);
+						SPR_setPosition(grape->sprite, grape->object->box.min.x, grape->object->box.min.y);
 					}
 				}
 			}
@@ -252,7 +252,7 @@ static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst
 
 	grape->life_left = range;
 
-	grape->sprite = SPR_addSprite(&shot_sprite, grape->object->box.pos.x, grape->object->box.pos.y,
+	grape->sprite = SPR_addSprite(&shot_sprite, grape->object->box.min.x, grape->object->box.min.y,
 			TILE_ATTR(PAL0, TRUE, FALSE, to_left));
 	SPR_setAnim(grape->sprite, type);
 	SPR_setFrame(grape->sprite, burst);
@@ -278,7 +278,7 @@ static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Plan
 static bool checkGrapeHit(Grape grape[static 1], Box_s16 object_box) {
 
 	// optimization cause grapes have height 1
-	return ((IN_BETWEEN & axisYPxRelativePos(grape->object->box.pos.y, object_box))
+	return ((IN_BETWEEN & axisYPxRelativePos(grape->object->box.min.y, object_box))
 			&& (OVERLAPPED & axisXBoxRelativePos(grape->object->box, object_box)));
 }
 

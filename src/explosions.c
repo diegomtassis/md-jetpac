@@ -116,8 +116,8 @@ static void boom(Box_s16 what, Planet planet[static 1], u8 style) {
 	planet->booms.e[boom_idx] = boom;
 	boom->step = 0;
 	planet->booms.count++;
-	boom->where.x = what.pos.x;
-	boom->where.y = what.pos.y + what.h - BOOM_H_PX;
+	boom->where.x = what.min.x;
+	boom->where.y = what.max.y - BOOM_H_PX;
 
 	// Create sprite
 	Sprite* sprite = SPR_addSprite(&boom_sprite, boom->where.x, boom->where.y, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));

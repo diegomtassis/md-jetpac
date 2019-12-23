@@ -369,10 +369,10 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 
 	// horizontal position
 	Box_s16 target_h = targetHBox(jetman->object);
-	if (target_h.pos.x > MAX_POS_H_PX_S16) {
+	if (target_h.min.x > MAX_POS_H_PX_S16) {
 		jetman->object.pos.x = MIN_POS_H_PX_F16;
 
-	} else if (target_h.pos.x < MIN_POS_H_PX_S16) {
+	} else if (target_h.min.x < MIN_POS_H_PX_S16) {
 		jetman->object.pos.x = MAX_POS_H_PX_F16;
 
 	} else {
@@ -450,7 +450,7 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 
 static f16 reachedTop(Box_s16 subject_box, const Planet planet[static 1]) {
 
-	if (subject_box.pos.y <= MIN_POS_V_PX_S16) {
+	if (subject_box.min.y <= MIN_POS_V_PX_S16) {
 		return MIN_POS_V_PX_F16;
 	}
 

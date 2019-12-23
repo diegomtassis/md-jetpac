@@ -356,12 +356,12 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 
 	Jetman* jetman = j1;
-	if (jetman && (ALIVE & jetman->health) && jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
+	if (jetman && (ALIVE & jetman->health) && jetman->object.box.min.y > BOTTOM_POS_V_PX_S16) {
 		killJetman(jetman, planet, FALSE);
 	}
 
 	jetman = j2;
-	if (jetman && (ALIVE & jetman->health) && jetman->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
+	if (jetman && (ALIVE & jetman->health) && jetman->object.box.min.y > BOTTOM_POS_V_PX_S16) {
 		killJetman(jetman, planet, FALSE);
 	}
 
@@ -369,7 +369,7 @@ static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 	for (u8 enemy_idx = 0; enemy_idx < planet->enemies.size; enemy_idx++) {
 
 		Enemy* enemy = planet->enemies.e[enemy_idx];
-		if (enemy && (ALIVE & enemy->health) && enemy->object.box.pos.y > BOTTOM_POS_V_PX_S16) {
+		if (enemy && (ALIVE & enemy->health) && enemy->object.box.min.y > BOTTOM_POS_V_PX_S16) {
 			killEnemy(enemy, planet, FALSE);
 		}
 	}

@@ -28,7 +28,8 @@
 #define UNDER			0x20
 
 typedef struct {
-	V2s16 pos;
+	V2s16 min;
+	V2s16 max;
 	u16 w;
 	u16 h;
 } Box_s16;

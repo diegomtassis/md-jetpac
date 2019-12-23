@@ -51,17 +51,17 @@ void initBox(Enemy enemy[static 1]) {
 	enemy->object.box.w = enemy->definition->size_t.x;
 	enemy->object.box.h = enemy->definition->size_t.y;
 
-	enemy->object.box.pos.x = fix16ToInt(enemy->object.pos.x);
-	enemy->object.box.pos.y = fix16ToInt(enemy->object.pos.y);
+	enemy->object.box.min.x = fix16ToInt(enemy->object.pos.x);
+	enemy->object.box.min.y = fix16ToInt(enemy->object.pos.y);
 }
 
 void updatePosition(Enemy* enemy, Box_s16 target) {
 
 	// horizontal position
-	if (target.pos.x > ENEMY_DEFAULT_MAX_POS_H_PX_S16) {
+	if (target.min.x > ENEMY_DEFAULT_MAX_POS_H_PX_S16) {
 		enemy->object.pos.x = ENEMY_DEFAULT_MIN_POS_H_PX_F16;
 
-	} else if (target.pos.x < ENEMY_DEFAULT_MIN_POS_H_PX_S16) {
+	} else if (target.min.x < ENEMY_DEFAULT_MIN_POS_H_PX_S16) {
 		enemy->object.pos.x = ENEMY_DEFAULT_MAX_POS_H_PX_F16;
 	} else {
 		enemy->object.pos.x += enemy->object.mov.x;

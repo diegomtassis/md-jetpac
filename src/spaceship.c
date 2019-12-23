@@ -411,7 +411,7 @@ static void handleFuelling(Planet planet[static 1]) {
 				spaceship->substep = WAITING;
 				spaceship->fuel_object->mov.y = SPEED_0;
 
-			} else if (planet->def.mind_bottom && target_v.pos.y > BOTTOM_POS_V_PX_S16) {
+			} else if (planet->def.mind_bottom && target_v.min.y > BOTTOM_POS_V_PX_S16) {
 				// fuel lost
 				spaceship->substep = NONE;
 				onEvent(LOST_FUEL, 0);
@@ -543,7 +543,7 @@ static void handleLanding(Spaceship* spaceship, Planet planet[static 1]) {
 // fire
 	if (spaceship->fire_sprite) {
 		u16 v_fire_u16 = v_pos_u16 + 52;
-		if (v_fire_u16 + 12 >= planet->floor->object.box.pos.y) {
+		if (v_fire_u16 + 12 >= planet->floor->object.box.min.y) {
 			SPR_releaseSprite(spaceship->fire_sprite);
 			spaceship->fire_sprite = 0;
 
@@ -572,7 +572,7 @@ static void handleFlight(Spaceship* spaceship, Planet planet[static 1]) {
 			// fire
 			u16 v_fire_u16 = v_pos_u16 + 52;
 			if (!spaceship->fire_sprite) {
-				if (v_fire_u16 + 12 < planet->floor->object.box.pos.y) { // leave room for the fire
+				if (v_fire_u16 + 12 < planet->floor->object.box.min.y) { // leave room for the fire
 					spaceship->fire_sprite = SPR_addSprite(&fire_sprite, h_pos_u16, v_fire_u16,
 							TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
 				}
