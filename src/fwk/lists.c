@@ -9,13 +9,38 @@
 
 #include <genesis.h>
 
-s16 list_add(List* list, void* e) {
+#include "../../inc/fwk/commons.h"
+
+void fixedlist_init(FixedList* list, u8 size) {
+
+	if (!list) {
+		return;
+	}
+
+	list->e = MEM_calloc(sizeof(void*) * size);
+	list->size = size;
+	list->count = 0;
+}
+
+void fixedlist_release(FixedList* list) {
+
+	if (!list) {
+		return;
+	}
+
+	memset(list->e, 0, list->size);
+	MEM_free(list->e);
+	list->e = 0;
+	list->count = 0;
+}
+
+s16 fixedlist_add(FixedList* list, void* e) {
 
 	if (!list) {
 		return -1;
 	}
 
-	s16 empty_pos = list_find_empty(list);
+	s16 empty_pos = fixedlist_find_empty(list);
 	if (empty_pos >= 0) {
 		list->e[empty_pos] = e;
 		list->count++;
@@ -24,7 +49,7 @@ s16 list_add(List* list, void* e) {
 	return empty_pos;
 }
 
-s16 list_find_empty(List* list) {
+s16 fixedlist_find_empty(FixedList* list) {
 
 	if (!list) {
 		return -1;
@@ -39,7 +64,7 @@ s16 list_find_empty(List* list) {
 	return -1;
 }
 
-s16 list_find(List* list, void* e) {
+s16 fixedlist_find(FixedList* list, void* e) {
 
 	if (!list) {
 		return -1;
@@ -54,7 +79,7 @@ s16 list_find(List* list, void* e) {
 	return -1;
 }
 
-void list_remove_at(List* list, int pos) {
+void fixedlist_remove_at(FixedList* list, int pos) {
 
 	if (!list || list->count <= 0 || pos >= list->size || !list->e[pos]) {
 		return;

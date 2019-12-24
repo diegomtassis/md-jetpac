@@ -149,10 +149,8 @@ void defineSpaceshipInDefaultPlanet(Planet planet[static 1], SpaceshipTypeDefini
 
 void defineEnemiesPopulation(Planet planet[static 1], const EnemyDefinition enemyDefinition, u16 size) {
 
-	planet->def.enemy_def = enemyDefinition;
-
-	planet->enemies.size = size;
-	planet->enemies.count = 0;
+	planet->def.enemies_def.enemy_def = enemyDefinition;
+	planet->def.enemies_def.num_enemies = size;
 }
 
 Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {

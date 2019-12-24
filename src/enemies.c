@@ -33,8 +33,7 @@ bool nuclear_bomb;
 
 void startEnemies(Planet planet[static 1]) {
 
-	// First time
-	planet->enemies.e = MEM_calloc(sizeof(Enemy*) * planet->enemies.size);
+	fixedlist_init(&planet->enemies, planet->def.enemies_def.num_enemies);
 
 	setRandomSeed(getTick());
 
@@ -101,10 +100,7 @@ void releaseEnemies(Planet planet[static 1]) {
 		}
 	}
 
-	planet->enemies.count = 0;
-	memset(planet->enemies.e, 0, planet->enemies.size);
-	MEM_free(planet->enemies.e);
-	planet->enemies.e = 0;
+	fixedlist_release(&planet->enemies);
 }
 
 void releaseDeadEnemies(Planet planet[static 1]) {
@@ -118,7 +114,7 @@ void releaseDeadEnemies(Planet planet[static 1]) {
 		Enemy* enemy = planet->enemies.e[idx];
 		if (enemy && (enemy->health & DEAD)) {
 
-			list_remove_at(&planet->enemies, idx);
+			fixedlist_remove_at(&planet->enemies, idx);
 			releaseDeadEnemy(enemy);
 		}
 	}
@@ -133,7 +129,7 @@ static void releaseDeadEnemy(Enemy enemy[static 1]) {
 
 static void addEnemy(Planet planet[static 1]) {
 
-	list_add(&planet->enemies, planet->def.enemy_def.createFunc(&planet->def.enemy_def));
+	fixedlist_add(&planet->enemies, planet->def.enemies_def.enemy_def.createFunc(&planet->def.enemies_def.enemy_def));
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 }
 

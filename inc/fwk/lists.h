@@ -14,11 +14,13 @@ typedef struct List {
 	u8 count;
 	u8 size;
 	void** e;
-} List;
+} FixedList;
 
-s16 list_add(List* list, void* e);
-s16 list_find_empty(List* list);
-s16 list_find(List* list, void* e);
-void list_remove_at(List* list, int idx);
+void fixedlist_init(FixedList* list, u8 size);
+void fixedlist_release(FixedList* list);
+s16 fixedlist_add(FixedList* list, void* e);
+void fixedlist_remove_at(FixedList* list, int idx);
+s16 fixedlist_find_empty(FixedList* list);
+s16 fixedlist_find(FixedList* list, void* e);
 
 #endif /* INC_FWK_LISTS_H_ */

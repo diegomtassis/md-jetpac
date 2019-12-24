@@ -29,6 +29,7 @@ typedef struct Spaceship Spaceship;
 typedef struct Platform Platform;
 typedef struct Jetman Jetman;
 typedef struct EnemyDefinition EnemyDefinition;
+typedef struct EnemiesDefinition EnemiesDefinition;
 typedef struct Enemy Enemy;
 typedef struct Collectable Collectable;
 typedef struct Grape Grape;
@@ -138,6 +139,11 @@ struct EnemyDefinition {
 	V2u16 size_t;
 };
 
+struct EnemiesDefinition {
+	EnemyDefinition enemy_def;
+	u8 num_enemies;
+};
+
 struct Collectable {
 	Object_f16 object;
 	Sprite* sprite;
@@ -152,7 +158,7 @@ struct Shot {
 	bool to_left;
 	u8 type;
 	u8 range;
-	List grapes;
+	FixedList grapes;
 	u8 grapes_created;
 	u16 distance_to_last;
 };
@@ -171,7 +177,7 @@ struct Explosion {
 
 struct PlanetDefinition {
 	SpaceshipDefinition spaceship_def;
-	EnemyDefinition enemy_def;
+	EnemiesDefinition enemies_def;
 	u8 mind_bottom;
 	V2s16* p1_init_pos;
 	V2s16* p2_init_pos;
@@ -187,10 +193,10 @@ struct Planet {
 	Spaceship* spaceship;
 	Jetman* j1;
 	Jetman* j2;
-	List enemies;
-	List collectables;
-	List booms;
-	List shots;
+	FixedList enemies;
+	FixedList collectables;
+	FixedList booms;
+	FixedList shots;
 };
 
 #endif /* INC_ELEMENTS_H_ */
