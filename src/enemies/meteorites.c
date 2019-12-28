@@ -51,8 +51,7 @@ static Enemy* createMeteorite() {
 	// sprite
 	Sprite* enemySprite = SPR_addSprite(&meteorite_sprite, fix16ToInt(enemy->object.pos.x),
 			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-	SPR_setAnim(enemySprite, (abs(random())) % 4);
-	SPR_setFrame(enemySprite, (abs(random())) % 2);
+	SPR_setAnim(enemySprite, (abs(random())) % 8);
 	enemy->sprite = enemySprite;
 
 	if (enemy->object.mov.x < 0) {
