@@ -8,12 +8,14 @@
 #include <genesis.h>
 
 #include "../inc/config.h"
+#include "../inc/elements.h"
+#include "../inc/fwk/printer.h"
 #include "../inc/fwk/vdp_utils.h"
-#include "../inc/fwk/commons.h"
 #include "../inc/game.h"
 #include "../inc/hud.h"
 #include "../inc/jetpac_file.h"
 #include "../inc/splash_screen.h"
+
 //#include "../inc/fwk/logger.h"
 
 #define LOADING_TIME	3000
@@ -24,12 +26,16 @@ int main(u16 hard) {
 	VDP_setScreenWidth256();
 	VDP_setScreenHeight224();
 
+	initPrinter();
+
 	if (hard) {
 
 		// jetpac file
+		VDP_setScreenWidth320();
 		printDisclaimer();
 		JOY_waitPress(JOY_1, BUTTON_BTN);
 		clearDisclaimer();
+		VDP_setScreenWidth256();
 
 		waitMs(50);
 
@@ -48,6 +54,7 @@ int main(u16 hard) {
 
 		// log_memory();
 		Config config = setUpGame();
+
 		GameResult result = runGame(&config);
 
 		registerScore(result.p1_score);
