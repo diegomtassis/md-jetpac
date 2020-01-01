@@ -9,6 +9,7 @@
 
 #include <genesis.h>
 
+#include "../../inc/fwk/blinker.h"
 #include "../../inc/fwk/commons.h"
 #include "../../res/sprite.h"
 
@@ -33,6 +34,10 @@ static Sprite* cursor;
 
 static bool printer_on;
 
+static Blinker blinker;
+
+#define CURSOR_BLINK_TIME	25
+
 void initPrinter() {
 	printer_on = FALSE;
 }
@@ -56,6 +61,10 @@ void turnPrinterOn() {
 
 	cursor = SPR_addSprite(&cursor_sprite, tilesToPx(pos->x), tilesToPx(pos->y),
 			TILE_ATTR(VDP_getTextPalette(), TRUE, FALSE, FALSE));
+
+	blinker.init_value = CURSOR_BLINK_TIME;
+	blinker.counter = CURSOR_BLINK_TIME;
+	blinker.visible = TRUE;
 
 	printer_on = TRUE;
 
@@ -87,9 +96,12 @@ void clearScreen() {
 		return;
 	}
 
+	cursorOff();
+
 	VDP_clearPlan(VDP_getTextPlan(), TRUE);
 	VDP_setVerticalScroll(VDP_getTextPlan(), 0);
 	setV2u16(pos, min_screen.x, min_screen.y);
+
 	cursorOn();
 }
 
@@ -119,7 +131,22 @@ void print(const char* text) {
 		waitMs(WAIT_50);
 	}
 
-	cursorUpdate();
+	cursorOn();
+}
+
+void printerWait(u32 ms) {
+
+	const u32 subticksToWait = ms * SUBTICKPERSECOND / 1000;
+	const u32 startSubtick = getSubTick();
+
+	blinker.counter = blinker.init_value;
+
+	while (getSubTick() - startSubtick < subticksToWait) {
+
+		blink(&blinker, cursor);
+		SPR_update();
+		VDP_waitVInt();
+	}
 }
 
 static void printChar(const char* text, u16 pos, int is_last, V2u16* offset) {
@@ -211,7 +238,11 @@ static void cursorOff() {
 static void cursorUpdate() {
 
 	SPR_setVisibility(cursor, VISIBLE);
-	SPR_setPosition(cursor, tilesToPx(pos->x), tilesToPx(pos->y));
+	/*
+	 * coordinates in the text plan are not the same than in the sprite plan,
+	 * therefore the cursor y position needs to be normalized.
+	 */
+	SPR_setPosition(cursor, tilesToPx(pos->x), tilesToPx(pos->y > max_screen.y ? max_screen.y : pos->y));
 	SPR_update();
 }
 

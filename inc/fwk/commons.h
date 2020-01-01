@@ -18,6 +18,7 @@
 
 void* MEM_calloc(u16 size);
 
+void setV2u16(V2u16* pos, u16 x, u16 y);
 void setV2s16(V2s16* pos, s16 x, s16 y);
 
 f16 randomInRangeFix16(f16 lower, f16 higher);

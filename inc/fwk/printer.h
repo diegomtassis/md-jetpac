@@ -27,4 +27,6 @@ void clearScreen();
 void print(const char *text);
 void println(const char *text);
 
+void printerWait(u32 ms);
+
 #endif /* INC_PRINTER_H_ */
