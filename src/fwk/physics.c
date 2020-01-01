@@ -48,8 +48,8 @@ Box_s16 targetVBox(Object_f16 object) {
 
 static void updateBoxMax(Box_s16* box) {
 
-	box->max.x = box->min.x + box->w;
-	box->max.y = box->min.y + box->h;
+	box->max.x = box->min.x + box->w - 1;
+	box->max.y = box->min.y + box->h - 1;
 }
 
 bool contained(V2s16 subject_pos, Box_s16 object_box) {
@@ -85,7 +85,7 @@ bool shareBase(Box_s16 subject_box, Box_s16 object_box) {
 bool hitAbove(Box_s16 subject_box, Box_s16 object_box) {
 
 	if (OVERLAPPED & axisXBoxRelativePos(subject_box, object_box)) {
-		return IN_BETWEEN & axisYPxRelativePos(subject_box.max.y, object_box);
+		return IN_BETWEEN & axisYPxRelativePos(subject_box.max.y + 1, object_box);
 	}
 
 	return FALSE;
@@ -103,7 +103,7 @@ bool hitUnder(Box_s16 subject_box, Box_s16 object_box) {
 bool hitLeft(Box_s16 subject_box, Box_s16 object_box) {
 
 	if (OVERLAPPED & axisYBoxRelativePos(subject_box, object_box)) {
-		return IN_BETWEEN & axisXPxRelativePos(subject_box.max.x, object_box);
+		return IN_BETWEEN & axisXPxRelativePos(subject_box.max.x + 1, object_box);
 	}
 
 	return FALSE;
@@ -119,19 +119,23 @@ bool hitRight(Box_s16 subject_box, Box_s16 object_box) {
 }
 
 s16 adjacentYAbove(Box_s16 subject_box, Box_s16 object_box) {
+
 	return object_box.min.y - subject_box.h;
 }
 
 s16 adjacentYUnder(Box_s16 subject_box, Box_s16 object_box) {
-	return object_box.max.y;
+
+	return object_box.max.y + 1;
 }
 
 s16 adjacentXOnTheLeft(Box_s16 subject_box, Box_s16 object_box) {
+
 	return object_box.min.x - subject_box.w;
 }
 
 s16 adjacentXOnTheRight(Box_s16 subject_box, Box_s16 object_box) {
-	return object_box.max.x;
+
+	return object_box.max.x + 1;
 }
 
 u8 axisXBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
@@ -140,7 +144,7 @@ u8 axisXBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
 		return TO_THE_RIGHT;
 	}
 
-	if (TO_THE_LEFT & axisXPxRelativePos(subject_box.max.x - 1, object_box)) {
+	if (TO_THE_LEFT & axisXPxRelativePos(subject_box.max.x, object_box)) {
 		return TO_THE_LEFT;
 	}
 
@@ -153,7 +157,7 @@ u8 axisYBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
 		return UNDER;
 	}
 
-	if (ABOVE & axisYPxRelativePos(subject_box.max.y - 1, object_box)) {
+	if (ABOVE & axisYPxRelativePos(subject_box.max.y, object_box)) {
 		return ABOVE;
 	}
 
@@ -162,12 +166,11 @@ u8 axisYBoxRelativePos(Box_s16 subject_box, Box_s16 object_box) {
 
 u8 axisXPxRelativePos(s16 x_px, Box_s16 object_box) {
 
-	s16 x_s16 = object_box.min.x;
-	if (x_px < x_s16) {
+	if (x_px < object_box.min.x) {
 		return TO_THE_LEFT;
 	}
 
-	if (x_px >= x_s16 + object_box.w) {
+	if (x_px > object_box.max.x) {
 		return TO_THE_RIGHT;
 	}
 
@@ -176,12 +179,11 @@ u8 axisXPxRelativePos(s16 x_px, Box_s16 object_box) {
 
 u8 axisYPxRelativePos(s16 y_px, Box_s16 object_box) {
 
-	s16 y_s16 = object_box.min.y;
-	if (y_px < y_s16) {
+	if (y_px < object_box.min.y) {
 		return ABOVE;
 	}
 
-	if (y_px >= y_s16 + object_box.h) {
+	if (y_px > object_box.max.y) {
 		return UNDER;
 	}
 
