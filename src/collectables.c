@@ -179,7 +179,7 @@ static void updateCollectable(Collectable* collectable, Planet planet[static 1])
 			onEvent(GRABBED_COLLECTABLE, P2);
 
 		} else {
-			Box_s16 target_v = targetVBox(collectable->object);
+			Box_s16 target_v = targetVBox(&collectable->object);
 			if (landed(target_v, planet)) {
 				collectable->step = WAITING;
 				collectable->object.mov.y = SPEED_0;

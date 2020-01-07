@@ -379,7 +379,7 @@ static void handleFuelling(Planet planet[static 1]) {
 	} else if (spaceship->substep & GRABBED) {
 
 		// fuel in jetman possession
-		if (isAboveBaseUpwardProjection(spaceship->fuel_object->box, spaceship->base_object->box)) {
+		if (isAboveBaseUpwardProjection(&spaceship->fuel_object->box, &spaceship->base_object->box)) {
 			spaceship->fuel_object->pos.x = spaceship->base_object->pos.x;
 			spaceship->substep = ASSEMBLING;
 			spaceship->grabbedBy = 0;
@@ -406,7 +406,7 @@ static void handleFuelling(Planet planet[static 1]) {
 			onEvent(GRABBED_FUEL, P2);
 
 		} else {
-			Box_s16 target_v = targetVBox(*spaceship->fuel_object);
+			Box_s16 target_v = targetVBox(spaceship->fuel_object);
 			if (landed(target_v, planet)) {
 				spaceship->substep = WAITING;
 				spaceship->fuel_object->mov.y = SPEED_0;
@@ -423,8 +423,8 @@ static void handleFuelling(Planet planet[static 1]) {
 
 	} else if (spaceship->substep & ASSEMBLING) {
 
-		Box_s16 target_v = targetVBox(*spaceship->fuel_object);
-		if (overlap(target_v, spaceship->base_object->box)) {
+		Box_s16 target_v = targetVBox(spaceship->fuel_object);
+		if (overlap(&target_v, &spaceship->base_object->box)) {
 
 			spaceship->step++;
 			spaceship->substep = NONE;
@@ -455,7 +455,7 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 
 	if (spaceship->substep & GRABBED) {
 
-		if (isAboveBaseUpwardProjection(part->box, spaceship->base_object->box)) {
+		if (isAboveBaseUpwardProjection(&part->box, &spaceship->base_object->box)) {
 			// release right over the base
 			spaceship->substep = ASSEMBLING;
 			spaceship->grabbedBy = 0;
@@ -470,10 +470,10 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 	} else if (spaceship->substep & WAITING) {
 		// has anyone just grabbed it?
 		Jetman* jetman = 0;
-		if (j1 && overlap(j1->object.box, part->box)) {
+		if (j1 && overlap(&j1->object.box, &part->box)) {
 			jetman = j1;
 
-		} else if (j2 && overlap(j2->object.box, part->box)) {
+		} else if (j2 && overlap(&j2->object.box, &part->box)) {
 			jetman = j2;
 		}
 
@@ -523,7 +523,7 @@ static void handleLanding(Spaceship* spaceship, Planet planet[static 1]) {
 	}
 
 // spaceship
-	Box_s16 target_v = targetVBox(*spaceship->base_object);
+	Box_s16 target_v = targetVBox(spaceship->base_object);
 
 	f16 landed_y = landed(target_v, planet);
 	if (landed_y) {

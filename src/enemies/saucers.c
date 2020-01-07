@@ -65,7 +65,7 @@ static Enemy* createSaucer() {
 
 static void actSaucer(Enemy enemy[static 1], Planet planet[static 1]) {
 
-	Box_s16 target = targetBox(enemy->object);
+	Box_s16 target = targetBox(&enemy->object);
 
 	Saucer* saucer = enemy->extension;
 	saucer->mov_counter--;
@@ -76,7 +76,7 @@ static void actSaucer(Enemy enemy[static 1], Planet planet[static 1]) {
 
 	if (target.min.y <= MIN_POS_V_PX_S16 || target.min.y >= MAX_POS_V_PX_S16) {
 		enemy->object.mov.y = -enemy->object.mov.y;
-		target = targetBox(enemy->object);
+		target = targetBox(&enemy->object);
 
 	} else if (crashedIntoPlatform(target, planet)) {
 
@@ -84,13 +84,13 @@ static void actSaucer(Enemy enemy[static 1], Planet planet[static 1]) {
 
 		// change horizontal direction
 		enemy->object.mov.x = -enemy->object.mov.x;
-		target = targetBox(enemy->object);
+		target = targetBox(&enemy->object);
 
 		if (crashedIntoPlatform(target, planet)) {
 
 			enemy->object.mov.x = -enemy->object.mov.x;
 			enemy->object.mov.y = -enemy->object.mov.y;
-			target = targetBox(enemy->object);
+			target = targetBox(&enemy->object);
 
 		} else {
 			SPR_setHFlip(enemy->sprite, enemy->object.mov.x < 0);

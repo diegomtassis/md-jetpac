@@ -42,30 +42,31 @@ typedef struct {
 } Object_f16;
 
 void updateBox(Object_f16* object);
+void updateBoxMax(Box_s16* box);
 
-Box_s16 targetBox(Object_f16 subject);
-Box_s16 targetHBox(Object_f16 subject);
-Box_s16 targetVBox(Object_f16 subject);
+Box_s16 targetBox(const Object_f16* subject);
+Box_s16 targetHBox(const Object_f16* subject);
+Box_s16 targetVBox(const Object_f16* subject);
 
-bool contained(V2s16 subject_pos, Box_s16 object_box);
-bool overlap(Box_s16 subject_box, Box_s16 object_box);
+bool contained(V2s16 subject_pos, const Box_s16* object_box);
+bool overlap(const Box_s16* subject_box, const Box_s16* object_box);
 
-bool isAboveBaseUpwardProjection(Box_s16 subject_box, Box_s16 object_box);
-bool shareBase(Box_s16 subject_box, Box_s16 object_box);
+bool isAboveBaseUpwardProjection(const Box_s16* subject_box, const Box_s16* object_box);
+bool shareBase(const Box_s16* subject_box, const Box_s16* object_box);
 
-bool hitAbove(Box_s16 subject_box, Box_s16 object_box);
-bool hitUnder(Box_s16 subject_box, Box_s16 object_box);
-bool hitLeft(Box_s16 subject_box, Box_s16 object_box);
-bool hitRight(Box_s16 subject_box, Box_s16 object_box);
+bool hitAbove(const Box_s16* subject_box, const Box_s16* object_box);
+bool hitUnder(const Box_s16* subject_box, const Box_s16* object_box);
+bool hitLeft(const Box_s16* subject_box, const Box_s16* object_box);
+bool hitRight(const Box_s16* subject_box, const Box_s16* object_box);
 
-s16 adjacentYAbove(Box_s16 subject_box, Box_s16 object_box);
-s16 adjacentYUnder(Box_s16 subject_box, Box_s16 object_box);
-s16 adjacentXOnTheLeft(Box_s16 subject_box, Box_s16 object_box);
-s16 adjacentXOnTheRight(Box_s16 subject_box, Box_s16 object_box);
+s16 adjacentYAbove(const Box_s16* subject_box, const Box_s16* object_box);
+s16 adjacentYUnder(const Box_s16* subject_box, const Box_s16* object_box);
+s16 adjacentXOnTheLeft(const Box_s16* subject_box, const Box_s16* object_box);
+s16 adjacentXOnTheRight(const Box_s16* subject_box, const Box_s16* object_box);
 
-u8 axisXBoxRelativePos(Box_s16, Box_s16);
-u8 axisYBoxRelativePos(Box_s16, Box_s16);
-u8 axisXPxRelativePos(s16, Box_s16);
-u8 axisYPxRelativePos(s16, Box_s16);
+u8 axisXBoxRelativePos(const Box_s16*, const Box_s16*);
+u8 axisYBoxRelativePos(const Box_s16*, const Box_s16*);
+u8 axisXPxRelativePos(s16, const Box_s16*);
+u8 axisYPxRelativePos(s16, const Box_s16*);
 
 #endif /* INC_PHYSICS_H_ */

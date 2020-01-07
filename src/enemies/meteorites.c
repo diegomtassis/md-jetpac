@@ -63,7 +63,7 @@ static Enemy* createMeteorite() {
 
 static void actMeteorite(Enemy enemy[static 1], Planet planet[static 1]) {
 
-	Box_s16 target = targetBox(enemy->object);
+	Box_s16 target = targetBox(&enemy->object);
 	if (crashedIntoPlatform(target, planet)) {
 
 		killEnemy(enemy, planet, TRUE);

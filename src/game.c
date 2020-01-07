@@ -381,7 +381,7 @@ static void handleCollisionBetweenJetmanAndEnemy(Jetman* jetman, Enemy* enemy, P
 		return;
 	}
 
-	if (overlap(jetman->object.box, enemy->object.box)) {
+	if (overlap(&jetman->object.box, &enemy->object.box)) {
 		killJetman(jetman, planet, TRUE);
 		killEnemy(enemy, planet, TRUE);
 	}

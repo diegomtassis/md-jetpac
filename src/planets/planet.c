@@ -106,14 +106,14 @@ void releasePlanet(Planet* planet) {
 
 f16 landed(Box_s16 subject_box, const Planet planet[static 1]) {
 
-	if (hitAbove(subject_box, planet->floor->object.box)) {
-		return FIX16(adjacentYAbove(subject_box, planet->floor->object.box));
+	if (hitAbove(&subject_box, &planet->floor->object.box)) {
+		return FIX16(adjacentYAbove(&subject_box, &planet->floor->object.box));
 	}
 
 	for (u8 i = 0; i < planet->num_platforms; i++) {
 		Box_s16 object_box = planet->platforms[i]->object.box;
-		if (hitAbove(subject_box, object_box)) {
-			return FIX16(adjacentYAbove(subject_box, object_box));
+		if (hitAbove(&subject_box, &object_box)) {
+			return FIX16(adjacentYAbove(&subject_box, &object_box));
 		}
 	}
 

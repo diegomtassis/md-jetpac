@@ -135,7 +135,7 @@ void jetmanActs(Jetman* jetman, Planet planet[static 1]) {
 	handleInputJetman(jetman);
 	moveJetman(jetman, planet);
 
-	if (spaceship_ready && shareBase(jetman->object.box, planet->spaceship->base_object->box)) {
+	if (spaceship_ready && shareBase(&jetman->object.box, &planet->spaceship->base_object->box)) {
 		jetman->finished = TRUE;
 
 	} else if (joy_flank[jetman->joystick] && (jetman->ammo || !planet->game->config->limited_ammo)) {
@@ -368,7 +368,7 @@ static u8 calculateNextMovement(Jetman* jetman) {
 static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 
 	// horizontal position
-	Box_s16 target_h = targetHBox(jetman->object);
+	Box_s16 target_h = targetHBox(&jetman->object);
 	if (target_h.min.x > MAX_POS_H_PX_S16) {
 		jetman->object.pos.x = MIN_POS_H_PX_F16;
 
@@ -409,7 +409,7 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 	}
 
 	// vertical position
-	Box_s16 target_v = targetVBox(jetman->object);
+	Box_s16 target_v = targetVBox(&jetman->object);
 	f16 landed_pos_y = landed(target_v, planet);
 	jetman->airborne = !landed_pos_y;
 
@@ -461,13 +461,13 @@ static f16 hitPlatformUnder(Box_s16 subject_box, const Planet planet[static 1]) 
 
 	for (u8 i = 0; i < planet->num_platforms; i++) {
 		Box_s16 object_box = planet->platforms[i]->object.box;
-		if (hitUnder(subject_box, object_box)) {
-			return FIX16(adjacentYUnder(subject_box, object_box));
+		if (hitUnder(&subject_box, &object_box)) {
+			return FIX16(adjacentYUnder(&subject_box, &object_box));
 		}
 	}
 
-	if (hitUnder(subject_box, planet->floor->object.box)) {
-		return FIX16(adjacentYUnder(subject_box, planet->floor->object.box));
+	if (hitUnder(&subject_box, &planet->floor->object.box)) {
+		return FIX16(adjacentYUnder(&subject_box, &planet->floor->object.box));
 	}
 
 	return FIX16_0;
@@ -475,14 +475,14 @@ static f16 hitPlatformUnder(Box_s16 subject_box, const Planet planet[static 1]) 
 
 static f16 blockedByRight(Box_s16 target_box, const Planet planet[static 1]) {
 
-	if (planet->floor && hitLeft(target_box, planet->floor->object.box)) {
-		return FIX16(adjacentXOnTheLeft(target_box, planet->floor->object.box));
+	if (planet->floor && hitLeft(&target_box, &planet->floor->object.box)) {
+		return FIX16(adjacentXOnTheLeft(&target_box, &planet->floor->object.box));
 	}
 
 	for (u8 i = 0; i < planet->num_platforms; i++) {
 		Box_s16 object_box = planet->platforms[i]->object.box;
-		if (hitLeft(target_box, object_box)) {
-			return FIX16(adjacentXOnTheLeft(target_box, object_box));
+		if (hitLeft(&target_box, &object_box)) {
+			return FIX16(adjacentXOnTheLeft(&target_box, &object_box));
 		}
 	}
 
@@ -491,14 +491,14 @@ static f16 blockedByRight(Box_s16 target_box, const Planet planet[static 1]) {
 
 static f16 blockedByLeft(Box_s16 target_box, const Planet planet[static 1]) {
 
-	if (planet->floor && hitRight(target_box, planet->floor->object.box)) {
-		return FIX16(adjacentXOnTheRight(target_box, planet->floor->object.box));
+	if (planet->floor && hitRight(&target_box, &planet->floor->object.box)) {
+		return FIX16(adjacentXOnTheRight(&target_box, &planet->floor->object.box));
 	}
 
 	for (u8 i = 0; i < planet->num_platforms; i++) {
 		Box_s16 object_box = planet->platforms[i]->object.box;
-		if (hitRight(target_box, object_box)) {
-			return FIX16(adjacentXOnTheRight(target_box, object_box));
+		if (hitRight(&target_box, &object_box)) {
+			return FIX16(adjacentXOnTheRight(&target_box, &object_box));
 		}
 	}
 

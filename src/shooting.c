@@ -117,7 +117,7 @@ void updateShots(Planet planet[static 1]) {
 
 					} else {
 						// move
-						Box_s16 target_h = targetHBox(*grape->object);
+						Box_s16 target_h = targetHBox(grape->object);
 						if (target_h.min.x > MAX_POS_H_PX_S16) {
 							grape->object->pos.x = FIX16(target_h.min.x - LEVEL_WIDTH_PX_S16);
 
@@ -269,8 +269,8 @@ static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Plan
 static bool checkGrapeHit(Grape grape[static 1], Box_s16 object_box) {
 
 	// optimization cause grapes have height 1
-	return ((IN_BETWEEN & axisYPxRelativePos(grape->object->box.min.y, object_box))
-			&& (OVERLAPPED & axisXBoxRelativePos(grape->object->box, object_box)));
+	return ((IN_BETWEEN & axisYPxRelativePos(grape->object->box.min.y, &object_box))
+			&& (OVERLAPPED & axisXBoxRelativePos(&grape->object->box, &object_box)));
 }
 
 static void releaseGrapeInShot(Planet planet[static 1], u8 idx_shot, u8 idx_grape) {

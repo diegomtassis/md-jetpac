@@ -22,7 +22,7 @@
 #define SPEED_0			FIX16(0)
 #define SPEED_V_DOWN	FIX16(0.9)
 
-void dropFromSky(Object_f16* object, Box_s16* avoid, u16 itemWidth, u16 itemHeight, f16 minHPos, f16 maxHPos);
+void dropFromSky(Object_f16* object, const Box_s16* avoid, u16 itemWidth, u16 itemHeight, f16 minHPos, f16 maxHPos);
 
 bool grab(Object_f16* subject, Object_f16* object);
 
