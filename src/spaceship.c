@@ -501,13 +501,13 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 
 static void mergeParts(Spaceship* spaceship) {
 
-// release mid and top modules
+	// release mid and top modules
 	SPR_releaseSprite(spaceship->mid_sprite);
 	spaceship->mid_sprite = 0;
 	SPR_releaseSprite(spaceship->top_sprite);
 	spaceship->top_sprite = 0;
 
-// the base becomes a whole spaceship
+	// the base becomes a whole spaceship
 	spaceship->base_object->pos.y -= FIX16_32;
 	spaceship->base_object->size.y = 48;
 	SPR_releaseSprite(spaceship->base_sprite);
@@ -522,7 +522,7 @@ static void handleLanding(Spaceship* spaceship, Planet planet[static 1]) {
 		return;
 	}
 
-// spaceship
+	// spaceship
 	Box_s16 target_v = targetVBox(spaceship->base_object);
 
 	f16 landed_y = landed(target_v, planet);
@@ -540,7 +540,7 @@ static void handleLanding(Spaceship* spaceship, Planet planet[static 1]) {
 	u16 v_pos_u16 = fix16ToInt(spaceship->base_object->pos.y);
 	SPR_setPosition(spaceship->base_sprite, h_pos_u16, v_pos_u16);
 
-// fire
+	// fire
 	if (spaceship->fire_sprite) {
 		u16 v_fire_u16 = v_pos_u16 + 52;
 		if (v_fire_u16 + 12 >= planet->floor->object.box.min.y) {

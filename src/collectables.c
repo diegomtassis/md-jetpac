@@ -86,9 +86,9 @@ void releaseCollectables(Planet planet[static 1]) {
 		return;
 	}
 
-	for (u8 idx = 0; idx < planet->collectables.size; idx++) {
+	for (u8 idx = planet->collectables.size; idx;) {
 
-		Collectable* collectable = planet->collectables.e[idx];
+		Collectable* collectable = planet->collectables.e[--idx];
 		if (collectable) {
 			releaseCollectable(collectable);
 			planet->collectables.e[idx] = 0;
@@ -104,9 +104,9 @@ void updateCollectables(Planet planet[static 1]) {
 		return;
 	}
 
-	for (u8 idx = 0; idx < planet->collectables.size; idx++) {
+	for (u8 idx = planet->collectables.size; idx;) {
 
-		Collectable* collectable = planet->collectables.e[idx];
+		Collectable* collectable = planet->collectables.e[--idx];
 		if (collectable) {
 
 			updateCollectable(collectable, planet);

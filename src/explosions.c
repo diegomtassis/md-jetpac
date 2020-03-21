@@ -32,9 +32,9 @@ void updateExplosions(Planet planet[static 1]) {
 
 	if (getTimer(EXPLOSIONS_TIMER, FALSE) > BOOM_ANIMATION_SPEED) {
 
-		for (u8 idx = 0; idx < planet->booms.size; idx++) {
+		for (u8 idx = planet->booms.size; idx;) {
 
-			Explosion* boom = planet->booms.e[idx];
+			Explosion* boom = planet->booms.e[--idx];
 			if (boom) {
 				if (boom->step < FINISHED) {
 					SPR_setFrame(boom->sprite, ++boom->step);
@@ -54,7 +54,9 @@ void releaseExplosions(Planet planet[static 1]) {
 		return;
 	}
 
-	for (u8 idx = 0; idx < planet->booms.size; idx++) {
+	for (u8 idx = planet->booms.size; idx;) {
+
+		idx--;
 
 		Explosion* boom = planet->booms.e[idx];
 		if (boom) {
@@ -69,9 +71,9 @@ void releaseExplosions(Planet planet[static 1]) {
 
 static void releaseFinishedExplosions(Planet planet[static 1]) {
 
-	for (u8 idx = 0; idx < planet->booms.size; idx++) {
+	for (u8 idx = planet->booms.size; idx;) {
 
-		Explosion* boom = planet->booms.e[idx];
+		Explosion* boom = planet->booms.e[--idx];
 		if (boom && boom->step == FINISHED) {
 			SPR_releaseSprite(boom->sprite);
 			arrayFixedListRemoveAt(&planet->booms, idx);

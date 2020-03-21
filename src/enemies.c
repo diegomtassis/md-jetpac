@@ -55,9 +55,7 @@ void enemiesAct(Planet planet[static 1]) {
 
 	for (u8 idx = planet->enemies.size; idx;) {
 
-		idx--;
-
-		Enemy* enemy = planet->enemies.e[idx];
+		Enemy* enemy = planet->enemies.e[--idx];
 		if (enemy) {
 
 			if (ALIVE & enemy->health) {
@@ -96,9 +94,7 @@ void releaseEnemies(Planet planet[static 1]) {
 
 	for (u8 idx = planet->enemies.size; idx;) {
 
-		idx--;
-
-		Enemy* enemy = planet->enemies.e[idx];
+		Enemy* enemy = planet->enemies.e[--idx];
 		if (enemy) {
 			releaseDeadEnemy(enemy);
 		}
@@ -115,9 +111,7 @@ void releaseDeadEnemies(Planet planet[static 1]) {
 
 	for (u8 idx = planet->enemies.size; idx;) {
 
-		idx--;
-
-		Enemy* enemy = planet->enemies.e[idx];
+		Enemy* enemy = planet->enemies.e[--idx];
 		if (enemy && (enemy->health & DEAD)) {
 
 			arrayFixedListRemoveAt(&planet->enemies, idx);

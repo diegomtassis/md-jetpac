@@ -60,9 +60,7 @@ void releaseShots(Planet planet[static 1]) {
 
 	for (u8 idx = planet->shots.size; idx;) {
 
-		idx--;
-
-		releaseShot(planet->shots.e[idx]);
+		releaseShot(planet->shots.e[--idx]);
 		planet->shots.e[idx] = 0;
 	}
 
@@ -109,9 +107,7 @@ void updateShots(Planet planet[static 1]) {
 	Shot* shot = 0;
 	for (u8 idx_shot = planet->shots.size; idx_shot;) {
 
-		idx_shot--;
-
-		shot = planet->shots.e[idx_shot];
+		shot = planet->shots.e[--idx_shot];
 		if (shot) {
 
 			Grape* grape = 0;
@@ -171,9 +167,7 @@ u8 checkHit(Box_s16 subject, Planet planet[static 1]) {
 
 	for (u8 idx_shot = planet->shots.size; idx_shot;) {
 
-		idx_shot--;
-
-		shot = planet->shots.e[idx_shot];
+		shot = planet->shots.e[--idx_shot];
 		if (shot && checkShotHit(shot, subject)) {
 
 			arrayFixedListRemoveAt(&planet->shots, idx_shot);
@@ -223,9 +217,7 @@ static void releaseShot(Shot* shot) {
 	Grape* grape = 0;
 	for (u8 idx = shot->grapes.size; idx;) {
 
-		idx--;
-
-		grape = shot->grapes.e[idx];
+		grape = shot->grapes.e[--idx];
 		if (grape) {
 			releaseGrape(grape);
 		}
@@ -272,10 +264,7 @@ static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Plan
 	}
 
 	for (u8 idx = planet->num_platforms; idx;) {
-
-		idx--;
-
-		if (checkGrapeHit(grape, planet->platforms[idx]->object.box)) {
+		if (checkGrapeHit(grape, planet->platforms[--idx]->object.box)) {
 			return TRUE;
 		}
 	}
