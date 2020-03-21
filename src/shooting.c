@@ -7,11 +7,16 @@
 
 #include "../inc/shooting.h"
 
-#include <genesis.h>
+#include <maths.h>
+#include <memory.h>
+#include <sprite_eng.h>
+#include <tools.h>
+#include <types.h>
+#include <vdp_tile.h>
 
 #include "../inc/constants.h"
 #include "../inc/fwk/commons.h"
-#include "../inc/fwk/lists.h"
+#include "../inc/fwk/array_fixed_list.h"
 #include "../inc/fwk/physics.h"
 #include "../res/sprite.h"
 
@@ -48,17 +53,20 @@ static bool checkGrapeHit(Grape grape[static 1], Box_s16 object_box);
 
 void initShots(Planet planet[static 1]) {
 
-	fixedlist_init(&planet->shots, MAX_SHOTS_PER_PLAYER * planet->game->config->players);
+	arrayFixedListInit(&planet->shots, MAX_SHOTS_PER_PLAYER * planet->game->config->players);
 }
 
 void releaseShots(Planet planet[static 1]) {
 
-	for (int idx = 0; idx < planet->shots.size; idx++) {
+	for (u8 idx = planet->shots.size; idx;) {
+
+		idx--;
+
 		releaseShot(planet->shots.e[idx]);
 		planet->shots.e[idx] = 0;
 	}
 
-	fixedlist_release(&planet->shots);
+	arrayFixedListRelease(&planet->shots);
 }
 
 void shoot(Jetman* shooter, Planet planet[static 1]) {
@@ -72,7 +80,7 @@ void shoot(Jetman* shooter, Planet planet[static 1]) {
 	shot->shooter = shooter;
 	shooter->shots++;
 
-	fixedlist_add(&planet->shots, shot);
+	arrayFixedListAdd(&planet->shots, shot);
 
 	shot->where.x = shooter->object.box.min.x + (shooter->head_back ? 0 : JETMAN_WIDTH);
 	shot->where.y = shooter->object.box.min.y + GUN_Y_OFFSET;
@@ -88,10 +96,10 @@ void shoot(Jetman* shooter, Planet planet[static 1]) {
 		shot->range = RANGE_LONG;
 	}
 
-	fixedlist_init(&shot->grapes, 6);
+	arrayFixedListInit(&shot->grapes, 6);
 	shot->grapes_created = 0;
 
-	fixedlist_add(&shot->grapes, createGrape(shot->where, shot->to_left, shot->type, shot->range, BURST_A));
+	arrayFixedListAdd(&shot->grapes, createGrape(shot->where, shot->to_left, shot->type, shot->range, BURST_A));
 	shot->grapes_created++;
 	shot->distance_to_last = 0;
 }
@@ -99,13 +107,15 @@ void shoot(Jetman* shooter, Planet planet[static 1]) {
 void updateShots(Planet planet[static 1]) {
 
 	Shot* shot = 0;
-	for (int idx_shot = 0; idx_shot < planet->shots.size; idx_shot++) {
+	for (u8 idx_shot = planet->shots.size; idx_shot;) {
+
+		idx_shot--;
 
 		shot = planet->shots.e[idx_shot];
 		if (shot) {
 
 			Grape* grape = 0;
-			for (int idx_grape = 0; idx_grape < shot->grapes.size; ++idx_grape) {
+			for (u8 idx_grape = 0; idx_grape < shot->grapes.size; ++idx_grape) {
 
 				grape = shot->grapes.e[idx_grape];
 				if (grape) {
@@ -137,7 +147,7 @@ void updateShots(Planet planet[static 1]) {
 			// check if the first grape crashed into a platform
 			grape = shot->grapes.e[0];
 			if (grape && crashedIntoPlatform(shot, grape, planet)) {
-				fixedlist_remove_at(&planet->shots, idx_shot);
+				arrayFixedListRemoveAt(&planet->shots, idx_shot);
 				releaseShot(shot);
 				continue;
 			}
@@ -145,7 +155,7 @@ void updateShots(Planet planet[static 1]) {
 			shot->distance_to_last += SPEED_LASER;
 			if (shot->grapes_created < shot->grapes.size && shot->distance_to_last >= GRAPE_WIDTH) {
 
-				fixedlist_add(&shot->grapes,
+				arrayFixedListAdd(&shot->grapes,
 						createGrape(shot->where, shot->to_left, shot->type, shot->range,
 								BURST_TYPE_PER_GRAPE[shot->grapes_created]));
 				shot->grapes_created++;
@@ -159,12 +169,14 @@ u8 checkHit(Box_s16 subject, Planet planet[static 1]) {
 
 	Shot* shot = 0;
 
-	for (int idx_shot = 0; idx_shot < planet->shots.size; idx_shot++) {
+	for (u8 idx_shot = planet->shots.size; idx_shot;) {
+
+		idx_shot--;
 
 		shot = planet->shots.e[idx_shot];
 		if (shot && checkShotHit(shot, subject)) {
 
-			fixedlist_remove_at(&planet->shots, idx_shot);
+			arrayFixedListRemoveAt(&planet->shots, idx_shot);
 			releaseShot(shot);
 
 			return TRUE;
@@ -197,7 +209,7 @@ static void releaseShotIfNoGrapes(Planet planet[static 1], u8 idx_shot) {
 	Shot* shot = planet->shots.e[idx_shot];
 	if (shot && !shot->grapes.count) {
 
-		fixedlist_remove_at(&planet->shots, idx_shot);
+		arrayFixedListRemoveAt(&planet->shots, idx_shot);
 		releaseShot(shot);
 	}
 }
@@ -209,7 +221,9 @@ static void releaseShot(Shot* shot) {
 	}
 
 	Grape* grape = 0;
-	for (int idx = 0; idx < shot->grapes.size; idx++) {
+	for (u8 idx = shot->grapes.size; idx;) {
+
+		idx--;
 
 		grape = shot->grapes.e[idx];
 		if (grape) {
@@ -217,7 +231,7 @@ static void releaseShot(Shot* shot) {
 		}
 	}
 
-	fixedlist_release(&shot->grapes);
+	arrayFixedListRelease(&shot->grapes);
 
 	shot->shooter->shots--;
 	shot->shooter = 0;
@@ -257,8 +271,11 @@ static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Plan
 		return TRUE;
 	}
 
-	for (u8 i = 0; i < planet->num_platforms; i++) {
-		if (checkGrapeHit(grape, planet->platforms[i]->object.box)) {
+	for (u8 idx = planet->num_platforms; idx;) {
+
+		idx--;
+
+		if (checkGrapeHit(grape, planet->platforms[idx]->object.box)) {
 			return TRUE;
 		}
 	}
@@ -285,7 +302,7 @@ static void releaseGrapeInShot(Planet planet[static 1], u8 idx_shot, u8 idx_grap
 		return;
 	}
 
-	fixedlist_remove_at(&shot->grapes, idx_grape);
+	arrayFixedListRemoveAt(&shot->grapes, idx_grape);
 	releaseGrape(grape);
 	releaseShotIfNoGrapes(planet, idx_shot);
 }

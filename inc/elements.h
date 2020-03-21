@@ -12,7 +12,7 @@
 
 #include "fwk/blinker.h"
 #include "fwk/physics.h"
-#include "fwk/lists.h"
+#include "fwk/array_fixed_list.h"
 
 #define ALIVE		0x01
 #define DEAD		0x02
@@ -158,7 +158,7 @@ struct Shot {
 	bool to_left;
 	u8 type;
 	u8 range;
-	FixedList grapes;
+	ArrayFixedList grapes;
 	u8 grapes_created;
 	u16 distance_to_last;
 };
@@ -193,10 +193,10 @@ struct Planet {
 	Spaceship* spaceship;
 	Jetman* j1;
 	Jetman* j2;
-	FixedList enemies;
-	FixedList collectables;
-	FixedList booms;
-	FixedList shots;
+	ArrayFixedList enemies;
+	ArrayFixedList collectables;
+	ArrayFixedList booms;
+	ArrayFixedList shots;
 };
 
 #endif /* INC_ELEMENTS_H_ */

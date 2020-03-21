@@ -325,7 +325,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 		}
 
 		// VDP_showFPS(FALSE);
-		// VDP_showCPULoad();
+		VDP_showCPULoad();
 		VDP_waitVSync();
 	}
 
@@ -334,7 +334,9 @@ static bool runPlanet(Planet current_planet[static 1]) {
 
 static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 
-	for (u8 enemy_idx = 0; enemy_idx < planet->enemies.size; enemy_idx++) {
+	for (u8 enemy_idx = planet->enemies.size; enemy_idx;) {
+
+		--enemy_idx;
 
 		Enemy* enemy = planet->enemies.e[enemy_idx];
 		if (enemy && (ALIVE & enemy->health)) {
@@ -365,7 +367,7 @@ static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
 		killJetman(jetman, planet, FALSE);
 	}
 
-// enemies
+	// enemies
 	for (u8 enemy_idx = 0; enemy_idx < planet->enemies.size; enemy_idx++) {
 
 		Enemy* enemy = planet->enemies.e[enemy_idx];

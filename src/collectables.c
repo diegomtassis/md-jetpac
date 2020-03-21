@@ -76,7 +76,7 @@ extern u16 default_sprite_attrs;
 
 void startCollectables(Planet planet[static 1]) {
 
-	fixedlist_init(&planet->collectables, MAX_COLLECTABLES);
+	arrayFixedListInit(&planet->collectables, MAX_COLLECTABLES);
 	startCountDownRandom(COLLECTABLE_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_COLLECTABLES, MAX_TIME_BETWEEN_COLLECTABLES);
 }
 
@@ -95,7 +95,7 @@ void releaseCollectables(Planet planet[static 1]) {
 		}
 	}
 
-	fixedlist_release(&planet->collectables);
+	arrayFixedListRelease(&planet->collectables);
 }
 
 void updateCollectables(Planet planet[static 1]) {
@@ -113,7 +113,7 @@ void updateCollectables(Planet planet[static 1]) {
 
 			if (collectable->step == GRABBED || collectable->step == LOST) {
 
-				fixedlist_remove_at(&planet->collectables, idx);
+				arrayFixedListRemoveAt(&planet->collectables, idx);
 				releaseCollectable(collectable);
 			}
 		}
@@ -156,7 +156,7 @@ static void createCollectable(Planet planet[static 1]) {
 		collectable->blinker->visible = TRUE;
 	}
 
-	fixedlist_add(&planet->collectables, collectable);
+	arrayFixedListAdd(&planet->collectables, collectable);
 	startCountDownRandom(COLLECTABLE_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_COLLECTABLES, MAX_TIME_BETWEEN_COLLECTABLES);
 }
 

@@ -24,7 +24,7 @@ static void releaseFinishedExplosions(Planet planet[static 1]);
 
 void initExplosions(Planet planet[static 1]) {
 
-	fixedlist_init(&planet->booms, 1 + planet->enemies.size);
+	arrayFixedListInit(&planet->booms, 1 + planet->enemies.size);
 	startTimer(EXPLOSIONS_TIMER);
 }
 
@@ -64,7 +64,7 @@ void releaseExplosions(Planet planet[static 1]) {
 		}
 	}
 
-	fixedlist_release(&planet->booms);
+	arrayFixedListRelease(&planet->booms);
 }
 
 static void releaseFinishedExplosions(Planet planet[static 1]) {
@@ -74,7 +74,7 @@ static void releaseFinishedExplosions(Planet planet[static 1]) {
 		Explosion* boom = planet->booms.e[idx];
 		if (boom && boom->step == FINISHED) {
 			SPR_releaseSprite(boom->sprite);
-			fixedlist_remove_at(&planet->booms, idx);
+			arrayFixedListRemoveAt(&planet->booms, idx);
 			MEM_free(boom);
 		}
 	}
@@ -101,7 +101,7 @@ static void boom(Box_s16 what, Planet planet[static 1], u8 style) {
 	boom->step = 0;
 	boom->where.x = what.min.x;
 	boom->where.y = what.max.y - BOOM_H_PX;
-	fixedlist_add(&planet->booms, boom);
+	arrayFixedListAdd(&planet->booms, boom);
 
 	// Create sprite
 	Sprite* sprite = SPR_addSprite(&boom_sprite, boom->where.x, boom->where.y, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));

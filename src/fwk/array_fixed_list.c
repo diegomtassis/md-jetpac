@@ -1,17 +1,16 @@
 /*
- * lists.c
+ * array_fixed_list.c
  *
  *  Created on: Dec 23, 2019
  *      Author: diegomtassis
  */
 
-#include "../../inc/fwk/lists.h"
-
 #include <genesis.h>
 
+#include "../../inc/fwk/array_fixed_list.h"
 #include "../../inc/fwk/commons.h"
 
-void fixedlist_init(FixedList* list, u8 size) {
+void arrayFixedListInit(ArrayFixedList* list, u8 size) {
 
 	if (!list) {
 		return;
@@ -22,7 +21,7 @@ void fixedlist_init(FixedList* list, u8 size) {
 	list->count = 0;
 }
 
-void fixedlist_release(FixedList* list) {
+void arrayFixedListRelease(ArrayFixedList* list) {
 
 	if (!list) {
 		return;
@@ -32,15 +31,16 @@ void fixedlist_release(FixedList* list) {
 	MEM_free(list->e);
 	list->e = 0;
 	list->count = 0;
+	list->size = 0;
 }
 
-s16 fixedlist_add(FixedList* list, void* e) {
+s16 arrayFixedListAdd(ArrayFixedList* list, const void* e) {
 
 	if (!list) {
 		return -1;
 	}
 
-	s16 empty_pos = fixedlist_find_empty(list);
+	s16 empty_pos = arrayFixedListFindEmpty(list);
 	if (empty_pos >= 0) {
 		list->e[empty_pos] = e;
 		list->count++;
@@ -49,13 +49,13 @@ s16 fixedlist_add(FixedList* list, void* e) {
 	return empty_pos;
 }
 
-s16 fixedlist_find_empty(FixedList* list) {
+s16 arrayFixedListFindEmpty(ArrayFixedList* list) {
 
 	if (!list) {
 		return -1;
 	}
 
-	for (int idx = 0; idx < list->size; idx++) {
+	for (u8 idx = 0; idx < list->size; idx++) {
 		if (!list->e[idx]) {
 			return idx;
 		}
@@ -64,14 +64,15 @@ s16 fixedlist_find_empty(FixedList* list) {
 	return -1;
 }
 
-s16 fixedlist_find(FixedList* list, void* e) {
+s16 arrayFixedListFind(ArrayFixedList* list, const void* e) {
 
 	if (!list) {
 		return -1;
 	}
 
-	for (int idx = 0; idx < list->size; idx++) {
-		if (list->e[idx] == e) {
+	for (u8 idx = list->size; idx;) {
+
+		if (list->e[--idx] == e) {
 			return idx;
 		}
 	}
@@ -79,7 +80,7 @@ s16 fixedlist_find(FixedList* list, void* e) {
 	return -1;
 }
 
-void fixedlist_remove_at(FixedList* list, int pos) {
+void arrayFixedListRemoveAt(ArrayFixedList* list, u8 pos) {
 
 	if (!list || list->count <= 0 || pos >= list->size || !list->e[pos]) {
 		return;

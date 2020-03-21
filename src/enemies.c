@@ -33,7 +33,7 @@ bool nuclear_bomb;
 
 void startEnemies(Planet planet[static 1]) {
 
-	fixedlist_init(&planet->enemies, planet->def.enemies_def.num_enemies);
+	arrayFixedListInit(&planet->enemies, planet->def.enemies_def.num_enemies);
 
 	setRandomSeed(getTick());
 
@@ -51,9 +51,11 @@ void enemiesAct(Planet planet[static 1]) {
 		return;
 	}
 
-//	detectNuclearBomb();
+	// detectNuclearBomb();
 
-	for (u8 idx = 0; idx < planet->enemies.size; idx++) {
+	for (u8 idx = planet->enemies.size; idx;) {
+
+		idx--;
 
 		Enemy* enemy = planet->enemies.e[idx];
 		if (enemy) {
@@ -92,7 +94,9 @@ void releaseEnemies(Planet planet[static 1]) {
 		return;
 	}
 
-	for (u8 idx = 0; idx < planet->enemies.size; idx++) {
+	for (u8 idx = planet->enemies.size; idx;) {
+
+		idx--;
 
 		Enemy* enemy = planet->enemies.e[idx];
 		if (enemy) {
@@ -100,7 +104,7 @@ void releaseEnemies(Planet planet[static 1]) {
 		}
 	}
 
-	fixedlist_release(&planet->enemies);
+	arrayFixedListRelease(&planet->enemies);
 }
 
 void releaseDeadEnemies(Planet planet[static 1]) {
@@ -109,12 +113,14 @@ void releaseDeadEnemies(Planet planet[static 1]) {
 		return;
 	}
 
-	for (u8 idx = 0; idx < planet->enemies.size; idx++) {
+	for (u8 idx = planet->enemies.size; idx;) {
+
+		idx--;
 
 		Enemy* enemy = planet->enemies.e[idx];
 		if (enemy && (enemy->health & DEAD)) {
 
-			fixedlist_remove_at(&planet->enemies, idx);
+			arrayFixedListRemoveAt(&planet->enemies, idx);
 			releaseDeadEnemy(enemy);
 		}
 	}
@@ -129,7 +135,7 @@ static void releaseDeadEnemy(Enemy enemy[static 1]) {
 
 static void addEnemy(Planet planet[static 1]) {
 
-	fixedlist_add(&planet->enemies, planet->def.enemies_def.enemy_def.createFunc(&planet->def.enemies_def.enemy_def));
+	arrayFixedListAdd(&planet->enemies, planet->def.enemies_def.enemy_def.createFunc(&planet->def.enemies_def.enemy_def));
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 }
 
