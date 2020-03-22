@@ -160,7 +160,7 @@ struct Shot {
 	u8 range;
 	ArrayFixedList grapes;
 	u8 grapes_created;
-	u16 distance_to_last;
+	u16 gap_to_start; // distance from the shot place to the tail of the last grape
 };
 
 struct Grape {

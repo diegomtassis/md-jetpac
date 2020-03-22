@@ -99,7 +99,7 @@ void shoot(Jetman* shooter, Planet planet[static 1]) {
 
 	arrayFixedListAdd(&shot->grapes, createGrape(shot->where, shot->to_left, shot->type, shot->range, BURST_A));
 	shot->grapes_created++;
-	shot->distance_to_last = 0;
+	shot->gap_to_start = 0;
 }
 
 void updateShots(Planet planet[static 1]) {
@@ -148,14 +148,26 @@ void updateShots(Planet planet[static 1]) {
 				continue;
 			}
 
-			shot->distance_to_last += SPEED_LASER;
-			if (shot->grapes_created < shot->grapes.size && shot->distance_to_last >= GRAPE_WIDTH) {
+			if (shot->grapes_created < shot->grapes.size) {
 
-				arrayFixedListAdd(&shot->grapes,
-						createGrape(shot->where, shot->to_left, shot->type, shot->range,
-								BURST_TYPE_PER_GRAPE[shot->grapes_created]));
-				shot->grapes_created++;
-				shot->distance_to_last = 0;
+				shot->gap_to_start += SPEED_LASER;
+
+				s16 gap_if_grape_added = shot->gap_to_start - GRAPE_WIDTH;
+				if (gap_if_grape_added >= 0) {
+
+					V2s16 grape_where = { .x = shot->where.x, .y = shot->where.y };
+					if (shot->to_left) {
+						grape_where.x -= gap_if_grape_added;
+					} else {
+						grape_where.x += gap_if_grape_added;
+					}
+
+					arrayFixedListAdd(&shot->grapes,
+							createGrape(grape_where, shot->to_left, shot->type, shot->range,
+									BURST_TYPE_PER_GRAPE[shot->grapes_created]));
+					shot->grapes_created++;
+					shot->gap_to_start = gap_if_grape_added;
+				}
 			}
 		}
 	}
@@ -274,7 +286,7 @@ static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Plan
 
 static bool checkGrapeHit(Grape grape[static 1], Box_s16 object_box) {
 
-	// optimization cause grapes have height 1
+// optimization cause grapes have height 1
 	return ((IN_BETWEEN & axisYPxRelativePos(grape->object->box.min.y, &object_box))
 			&& (OVERLAPPED & axisXBoxRelativePos(&grape->object->box, &object_box)));
 }

@@ -13,7 +13,7 @@
 typedef struct {
 	u8 count;
 	u8 size;
-	const void** e;
+	void** e;
 } ArrayFixedList;
 
 /**
