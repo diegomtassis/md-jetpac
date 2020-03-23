@@ -15,8 +15,8 @@
 #include <vdp_tile.h>
 
 #include "../inc/constants.h"
-#include "../inc/fwk/commons.h"
 #include "../inc/fwk/array_fixed_list.h"
+#include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
 #include "../res/sprite.h"
 
@@ -73,15 +73,23 @@ void shoot(Jetman* shooter, Planet planet[static 1]) {
 		return;
 	}
 
+	s16 where_y = shooter->object.box.min.y + GUN_Y_OFFSET;
+
+	if (shooter->last_shot && shooter->last_shot->where.y == where_y) {
+		// no 2 shots in the same y
+		return;
+	}
+
 	Shot* shot = MEM_calloc(sizeof *shot);
 
 	shot->shooter = shooter;
+	shooter->last_shot = shot;
 	shooter->shots++;
 
 	arrayFixedListAdd(&planet->shots, shot);
 
 	shot->where.x = shooter->object.box.min.x + (shooter->head_back ? 0 : JETMAN_WIDTH);
-	shot->where.y = shooter->object.box.min.y + GUN_Y_OFFSET;
+	shot->where.y = where_y;
 	shot->to_left = shooter->head_back;
 	shot->type = abs(random()) % SHOT_TYPES;
 
@@ -237,7 +245,12 @@ static void releaseShot(Shot* shot) {
 
 	arrayFixedListRelease(&shot->grapes);
 
-	shot->shooter->shots--;
+	Jetman* shooter = shot->shooter;
+	if (shooter->last_shot && shooter->last_shot == shot) {
+		shooter->last_shot = 0;
+	}
+
+	shooter->shots--;
 	shot->shooter = 0;
 
 	MEM_free(shot);
