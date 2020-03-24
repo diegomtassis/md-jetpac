@@ -32,14 +32,17 @@
 #define BURST_A 0
 #define BURST_B 1
 #define BURST_C 2
+#define BURST_D 3
+#define BURST_E 4
 
 #define SPEED_LASER	5
 #define SPEED_LASER_F16	FIX16(SPEED_LASER)
 
-#define GRAPE_WIDTH 16
+#define GRAPE_WIDTH 24
 #define GRAPE_HEIGHT 1
 
-static const u8 BURST_TYPE_PER_GRAPE[6] = { BURST_A, BURST_A, BURST_B, BURST_B, BURST_C, BURST_C };
+#define GRAPES_PER_SHOT 5
+#define GAP_BETWEEN_SHOTS GRAPE_WIDTH + 1
 
 static void releaseShotIfNoGrapes(Planet planet[static 1], u8 shot_idx);
 static void releaseShot(Shot* shot);
@@ -75,7 +78,8 @@ void shoot(Jetman* shooter, Planet planet[static 1]) {
 
 	s16 where_y = shooter->object.box.min.y + GUN_Y_OFFSET;
 
-	if (shooter->last_shot && shooter->last_shot->where.y == where_y) {
+	Shot* last_shot = shooter->last_shot;
+	if (last_shot && last_shot->where.y == where_y && last_shot->gap_to_start < GAP_BETWEEN_SHOTS) {
 		// no 2 shots in the same y
 		return;
 	}
@@ -102,11 +106,11 @@ void shoot(Jetman* shooter, Planet planet[static 1]) {
 		shot->range = RANGE_LONG;
 	}
 
-	arrayFixedListInit(&shot->grapes, 6);
-	shot->grapes_created = 0;
+	arrayFixedListInit(&shot->grapes, GRAPES_PER_SHOT);
+	shot->grapes_left = GRAPES_PER_SHOT;
 
-	arrayFixedListAdd(&shot->grapes, createGrape(shot->where, shot->to_left, shot->type, shot->range, BURST_A));
-	shot->grapes_created++;
+	arrayFixedListAdd(&shot->grapes,
+			createGrape(shot->where, shot->to_left, shot->type, shot->range, --shot->grapes_left));
 	shot->gap_to_start = 0;
 }
 
@@ -119,7 +123,7 @@ void updateShots(Planet planet[static 1]) {
 		if (shot) {
 
 			Grape* grape = 0;
-			for (u8 idx_grape = 0; idx_grape < shot->grapes.size; ++idx_grape) {
+			for (u8 idx_grape = 0; idx_grape < GRAPES_PER_SHOT; ++idx_grape) {
 
 				grape = shot->grapes.e[idx_grape];
 				if (grape) {
@@ -156,9 +160,9 @@ void updateShots(Planet planet[static 1]) {
 				continue;
 			}
 
-			if (shot->grapes_created < shot->grapes.size) {
+			shot->gap_to_start += SPEED_LASER;
 
-				shot->gap_to_start += SPEED_LASER;
+			if (shot->grapes_left) {
 
 				s16 gap_if_grape_added = shot->gap_to_start - GRAPE_WIDTH;
 				if (gap_if_grape_added >= 0) {
@@ -171,9 +175,7 @@ void updateShots(Planet planet[static 1]) {
 					}
 
 					arrayFixedListAdd(&shot->grapes,
-							createGrape(grape_where, shot->to_left, shot->type, shot->range,
-									BURST_TYPE_PER_GRAPE[shot->grapes_created]));
-					shot->grapes_created++;
+							createGrape(grape_where, shot->to_left, shot->type, shot->range, --shot->grapes_left));
 					shot->gap_to_start = gap_if_grape_added;
 				}
 			}
