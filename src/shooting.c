@@ -205,11 +205,11 @@ u8 checkHit(Box_s16 subject, Planet planet[static 1]) {
 static u8 checkShotHit(Shot* shot, Box_s16 object) {
 
 	if (shot) {
-
-		// check only the first grape
-		Grape* grape = shot->grapes.e[0];
-		if (grape && checkGrapeHit(grape, object)) {
-			return shot->shooter->id;
+		for (u8 idx_grape = GRAPES_PER_SHOT; idx_grape;) {
+			Grape* grape = shot->grapes.e[--idx_grape];
+			if (grape && checkGrapeHit(grape, object)) {
+				return shot->shooter->id;
+			}
 		}
 	}
 

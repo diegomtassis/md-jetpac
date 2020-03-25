@@ -325,7 +325,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 		}
 
 		// VDP_showFPS(FALSE);
-		VDP_showCPULoad();
+		// VDP_showCPULoad();
 		VDP_waitVSync();
 	}
 
