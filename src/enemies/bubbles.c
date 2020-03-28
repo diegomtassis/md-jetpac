@@ -65,14 +65,15 @@ static Enemy* createBubble() {
 
 static void actBubble(Enemy enemy[static 1], Planet planet[static 1]) {
 
-	Box_s16 target = targetBox(&enemy->object);
-
 	Bubble* bubble = enemy->extension;
+
 	bubble->mov_counter--;
 	if (!bubble->mov_counter) {
 		enemy->object.mov.y = randomVSpeed();
 		bubble->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;
 	}
+
+	Box_s16 target = targetBox(&enemy->object);
 
 	if (target.min.y <= MIN_POS_V_PX_S16 || target.min.y >= MAX_POS_V_PX_S16) {
 		enemy->object.mov.y = -enemy->object.mov.y;

@@ -12,6 +12,7 @@
 #include "../../inc/enemies.h"
 #include "../../inc/enemy.h"
 #include "../../inc/fwk/commons.h"
+#include "../../inc/fwk/physics.h"
 #include "../../res/sprite.h"
 
 #define FIGHTER_WIDTH    	16
@@ -20,7 +21,7 @@
 #define FIGHTER_DEFAULT_SPEED_H	FIX16(0.9)
 #define FIGHTER_DEFAULT_SPEED_V	FIX16(0.6)
 
-#define WAIT_BETWEEN_DIRECTION_CHANGE    	125
+#define WAIT_BETWEEN_DIRECTION_CHANGE    	25
 
 static Enemy* createFighter();
 static void actFighter(Enemy enemy[static 1], Planet planet[static 1]);
@@ -38,7 +39,7 @@ typedef struct {
 	u16 mov_counter;
 } Fighter;
 
-static f16 randomVSpeed();
+static f16 chaseVSpeed(Object_f16* enemy_object, Planet planet[static 1]);
 
 static Enemy* createFighter() {
 
@@ -49,7 +50,7 @@ static Enemy* createFighter() {
 	enemy->extension = fighter;
 
 	// position & movement
-	initPosAndMov(enemy, FIGHTER_DEFAULT_SPEED_H, randomVSpeed());
+	initPosAndMov(enemy, FIGHTER_DEFAULT_SPEED_H, -FIGHTER_DEFAULT_SPEED_V);
 
 	// box
 	initBox(enemy);
@@ -66,36 +67,20 @@ static Enemy* createFighter() {
 
 static void actFighter(Enemy enemy[static 1], Planet planet[static 1]) {
 
-	Box_s16 target = targetBox(&enemy->object);
-
 	Fighter* fighter = enemy->extension;
+
 	fighter->mov_counter--;
 	if (!fighter->mov_counter) {
-		enemy->object.mov.y = randomVSpeed();
+		enemy->object.mov.y = chaseVSpeed(&enemy->object, planet);
 		fighter->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;
 	}
 
-	if (target.min.y <= MIN_POS_V_PX_S16 || target.min.y >= MAX_POS_V_PX_S16) {
-		enemy->object.mov.y = -enemy->object.mov.y;
-		target = targetBox(&enemy->object);
+	Box_s16 target = targetBox(&enemy->object);
 
-	} else if (crashedIntoPlatform(target, planet)) {
+	if (target.min.y <= MIN_POS_V_PX_S16 || target.min.y >= MAX_POS_V_PX_S16 || crashedIntoPlatform(target, planet)) {
 
-		// THIS MUST BE OPTIMIZED
-
-		// change horizontal direction
-		enemy->object.mov.x = -enemy->object.mov.x;
-		target = targetBox(&enemy->object);
-
-		if (crashedIntoPlatform(target, planet)) {
-
-			enemy->object.mov.x = -enemy->object.mov.x;
-			enemy->object.mov.y = -enemy->object.mov.y;
-			target = targetBox(&enemy->object);
-
-		} else {
-			SPR_setHFlip(enemy->sprite, enemy->object.mov.x < 0);
-		}
+		killEnemy(enemy, planet, TRUE);
+		return;
 	}
 
 	updatePosition(enemy, target);
@@ -112,16 +97,31 @@ static void releaseFighter(Enemy enemy[static 1]) {
 	releaseEnemy(enemy);
 }
 
-static f16 randomVSpeed() {
+static f16 chaseVSpeed(Object_f16* enemy_object, Planet planet[static 1]) {
+	/*
+	 * Follow the jetman alive. If there are more than one alive, chase one randomly.
+	 */
+	Jetman* target;
+	if (planet->j2 == 0) {
+		target = planet->j1;
 
-	int i = random() % 3;
-	if (i == 2) {
+	} else if (planet->j1 == 0) {
+		target = planet->j2;
+
+	} else {
+		/*
+		 * A smarter approach would be to chase the closer jetman, but that is more expensive to figure out.
+		 */
+		if (random() % 2) {
+			target = planet->j2;
+		} else {
+			target = planet->j1;
+		}
+	}
+
+	if (enemy_object->pos.y < target->object.pos.y) {
 		return FIGHTER_DEFAULT_SPEED_V;
 	}
 
-	if (i) {
-		return -FIGHTER_DEFAULT_SPEED_V;
-	}
-
-	return SPEED_ZERO;
+	return -FIGHTER_DEFAULT_SPEED_V;
 }

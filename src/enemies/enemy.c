@@ -7,7 +7,10 @@
 
 #include "../../inc/enemy.h"
 
-#include <genesis.h>
+#include <maths.h>
+#include <memory.h>
+#include <tools.h>
+#include <types.h>
 
 #include "../../inc/fwk/commons.h"
 #include "../../inc/fwk/physics.h"
@@ -75,14 +78,12 @@ void updatePosition(Enemy* enemy, Box_s16 target) {
 
 bool crashedIntoPlatform(Box_s16 subject_box, const Planet planet[static 1]) {
 
-	bool crashed = overlap(&subject_box, &planet->floor->object.box);
-	if (crashed) {
+	if (overlap(&subject_box, &planet->floor->object.box)) {
 		return TRUE;
 	}
 
-	for (u8 i = 0; i < planet->num_platforms; i++) {
-		crashed = overlap(&subject_box, &planet->platforms[i]->object.box);
-		if (crashed) {
+	for (u8 idx = planet->num_platforms; idx;) {
+		if (overlap(&subject_box, &planet->platforms[--idx]->object.box)) {
 			return TRUE;
 		}
 	}
