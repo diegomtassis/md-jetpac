@@ -20,7 +20,7 @@ Planet* createPlanetZX04() {
 	Planet* planet = allocPlanet();
 
 	createDefaultPlatforms(planet);
-	defineEnemiesPopulation(planet, fighterDefinition, 7);
+	defineEnemiesPopulation(planet, fighterDefinition, 11);
 	defineSpaceshipInDefaultPlanet(planet, u1Definition, ASSEMBLED);
 
 	planet->def.p1_init_pos = 0;

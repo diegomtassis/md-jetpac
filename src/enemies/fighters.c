@@ -20,8 +20,17 @@
 
 #define FIGHTER_DEFAULT_SPEED_H	FIX16(0.9)
 #define FIGHTER_DEFAULT_SPEED_V	FIX16(0.6)
+#define FIGHTER_WAITING_SPEED_V	FIX16(0.5)
 
-#define WAIT_BETWEEN_DIRECTION_CHANGE    	25
+#define WAIT_BETWEEN_DIRECTION_CHANGE_WAITING    	40
+#define WAIT_BETWEEN_DIRECTION_CHANGE_CHASING    	25
+#define MIN_WAITING    	20
+#define MAX_WAITING    	450
+
+#define WAITING		0x01
+#define CHASING		0x02
+
+#define ANIM_WHITE		0
 
 static Enemy* createFighter();
 static void actFighter(Enemy enemy[static 1], Planet planet[static 1]);
@@ -37,6 +46,9 @@ const EnemyDefinition fighterDefinition = { //
 
 typedef struct {
 	u16 mov_counter;
+	u16 step;
+	u16 waiting_counter;
+	bool headed_left;
 } Fighter;
 
 static f16 chaseVSpeed(Object_f16* enemy_object, Planet planet[static 1]);
@@ -46,11 +58,25 @@ static Enemy* createFighter() {
 	Enemy* enemy = createEnemy(&fighterDefinition);
 
 	Fighter* fighter = MEM_calloc(sizeof *fighter);
-	fighter->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;
+	fighter->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE_CHASING;
 	enemy->extension = fighter;
 
 	// position & movement
-	initPosAndMov(enemy, FIGHTER_DEFAULT_SPEED_H, -FIGHTER_DEFAULT_SPEED_V);
+	if (random() % 4) {
+		fighter->step = WAITING;
+		fighter->waiting_counter = randomInRangeU16(MIN_WAITING, MAX_WAITING);
+
+		enemy->object.mov.x = 0;
+		fighter->headed_left = random() % 2;
+		enemy->object.mov.y = random() % 2 ? FIGHTER_WAITING_SPEED_V : -FIGHTER_WAITING_SPEED_V;
+		enemy->object.pos.y = randomInRangeFix16(MIN_POS_V_PX_F16, ENEMY_DEFAULT_MAX_POS_START_V_PX_F16);
+		enemy->object.pos.x = ENEMY_DEFAULT_MIN_POS_H_PX_F16; // Begin always in the left side
+
+	} else {
+		fighter->step = CHASING;
+		initPosAndMov(enemy, FIGHTER_DEFAULT_SPEED_H, -FIGHTER_DEFAULT_SPEED_V);
+		fighter->headed_left = enemy->object.mov.x < 0;
+	}
 
 	// box
 	initBox(enemy);
@@ -58,8 +84,8 @@ static Enemy* createFighter() {
 	// sprite
 	Sprite* enemySprite = SPR_addSprite(&fighter_sprite, fix16ToInt(enemy->object.pos.x),
 			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-	SPR_setAnim(enemySprite, (abs(random())) % 5);
-	SPR_setHFlip(enemySprite, enemy->object.mov.x < 0);
+	SPR_setAnim(enemySprite, fighter->step & WAITING ? (abs(random())) % 5 : ANIM_WHITE); // the chasing fighters are all white
+	SPR_setHFlip(enemySprite, fighter->headed_left);
 	enemy->sprite = enemySprite;
 
 	return enemy;
@@ -70,9 +96,28 @@ static void actFighter(Enemy enemy[static 1], Planet planet[static 1]) {
 	Fighter* fighter = enemy->extension;
 
 	fighter->mov_counter--;
-	if (!fighter->mov_counter) {
-		enemy->object.mov.y = chaseVSpeed(&enemy->object, planet);
-		fighter->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;
+
+	if (fighter->step & WAITING) {
+
+		fighter->waiting_counter--;
+		if (fighter->waiting_counter) {
+			if (!fighter->mov_counter) {
+				enemy->object.mov.y = -enemy->object.mov.y;
+				fighter->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE_WAITING;
+			}
+		} else {
+			fighter->step = CHASING;
+			enemy->object.mov.x = fighter->headed_left ? -FIGHTER_DEFAULT_SPEED_H : FIGHTER_DEFAULT_SPEED_H;
+			enemy->object.mov.y = chaseVSpeed(&enemy->object, planet);
+			SPR_setAnim(enemy->sprite, ANIM_WHITE); // the chasing fighters are all white
+			fighter->mov_counter = 1;
+		}
+
+	} else { // fighter->step & CHASING
+		if (!fighter->mov_counter) {
+			enemy->object.mov.y = chaseVSpeed(&enemy->object, planet);
+			fighter->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE_CHASING;
+		}
 	}
 
 	Box_s16 target = targetBox(&enemy->object);
@@ -110,7 +155,7 @@ static f16 chaseVSpeed(Object_f16* enemy_object, Planet planet[static 1]) {
 
 	} else {
 		/*
-		 * A smarter approach would be to chase the closer jetman, but that is more expensive to figure out.
+		 * A better approach would be to chase the closer jetman, but that requires a more expensive operation.
 		 */
 		if (random() % 2) {
 			target = planet->j2;
