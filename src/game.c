@@ -126,7 +126,7 @@ GameResult runGame(const Config config[static 1]) {
 
 		SPR_update();
 
-		VDP_clearPlan(PLAN_B, TRUE);
+		VDP_clearPlane(BG_B, TRUE);
 	}
 
 	SPR_end();
@@ -325,7 +325,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 		}
 
 		// VDP_showFPS(FALSE);
-		// VDP_showCPULoad();
+//		 VDP_showCPULoad();
 		VDP_waitVSync();
 	}
 

@@ -17,7 +17,7 @@ void showSplashScreen() {
 	SYS_disableInts();
 
 	// clear screen
-	VDP_clearPlan(PLAN_B, TRUE);
+	VDP_clearPlane(BG_B, TRUE);
 
 	VDP_setPaletteColors(0, (u16*) palette_black, 16);
 
@@ -27,7 +27,7 @@ void showSplashScreen() {
 //	u16 yOffset = (VDP_getScreenHeight() - splash_image.map->h) / (2 * 8);
 	u16 v_offset = 3; // (224 - 176) / (8 * 2) tiles
 
-	VDP_drawImageEx(PLAN_B, &splash_image, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, idx_tile_alloc), 0, v_offset, FALSE,
+	VDP_drawImageEx(BG_B, &splash_image, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, idx_tile_alloc), 0, v_offset, FALSE,
 			TRUE);
 	idx_tile_alloc += splash_image.tileset->numTile;
 
@@ -42,5 +42,5 @@ void showSplashScreen() {
 
 void clearSplashScreen() {
 
-	VDP_clearPlan(PLAN_B, TRUE);
+	VDP_clearPlane(BG_B, TRUE);
 }

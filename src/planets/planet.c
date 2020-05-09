@@ -27,8 +27,8 @@ static u16 idx_tile_platform;
 
 static void loadPlanetResources();
 
-static void drawPlatforms(VDPPlan plan, const Planet planet[static 1]);
-static void drawPlatform(VDPPlan plan, Platform platform[static 1], u16 idx_tile);
+static void drawPlatforms(VDPPlane plan, const Planet planet[static 1]);
+static void drawPlatform(VDPPlane plan, Platform platform[static 1], u16 idx_tile);
 
 Planet* allocPlanet() {
 
@@ -40,13 +40,13 @@ void startPlanet(Planet planet[static 1]) {
 	SYS_disableInts();
 
 	// initialization
-	VDP_clearPlan(PLAN_B, TRUE);
+	VDP_clearPlane(BG_B, TRUE);
 
 	VDP_setPaletteColors(0, (u16*) palette_black, 16);
 
 	loadPlanetResources();
 
-	drawPlatforms(PLAN_B, planet);
+	drawPlatforms(BG_B, planet);
 
 	SYS_enableInts();
 
@@ -188,18 +188,18 @@ static void loadPlanetResources() {
 	idx_tile_platform = loadTile(&platform, &idx_tile_malloc);
 }
 
-static void drawPlatforms(VDPPlan plan, const Planet planet[static 1]) {
+static void drawPlatforms(VDPPlane plan, const Planet planet[static 1]) {
 
 	// draw floor
-	drawPlatform(PLAN_B, planet->floor, idx_tile_floor);
+	drawPlatform(BG_B, planet->floor, idx_tile_floor);
 
 	// draw platforms
 	for (u8 i = 0; i < planet->num_platforms; i++) {
-		drawPlatform(PLAN_B, planet->platforms[i], idx_tile_platform);
+		drawPlatform(BG_B, planet->platforms[i], idx_tile_platform);
 	}
 }
 
-static void drawPlatform(VDPPlan plan, Platform platform[static 1], u16 idx_tile) {
+static void drawPlatform(VDPPlane plan, Platform platform[static 1], u16 idx_tile) {
 
 	// left edge
 	VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->pos_t.x, platform->pos_t.y);

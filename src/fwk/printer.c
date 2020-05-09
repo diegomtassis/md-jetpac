@@ -52,7 +52,7 @@ void turnPrinterOn() {
 	max_screen.y = VDP_getScreenHeight() == 240 ? 28 : 26;
 
 	VDP_setScrollingMode( HSCROLL_PLANE, VSCROLL_PLANE);
-	VDP_setVerticalScroll(VDP_getTextPlan(), 0);
+	VDP_setVerticalScroll(VDP_getTextPlane(), 0);
 
 	pos = MEM_calloc(sizeof(*pos));
 	setV2u16(pos, min_screen.x, min_screen.y);
@@ -98,8 +98,8 @@ void clearScreen() {
 
 	cursorOff();
 
-	VDP_clearPlan(VDP_getTextPlan(), TRUE);
-	VDP_setVerticalScroll(VDP_getTextPlan(), 0);
+	VDP_clearPlane(VDP_getTextPlane(), TRUE);
+	VDP_setVerticalScroll(VDP_getTextPlane(), 0);
 	setV2u16(pos, min_screen.x, min_screen.y);
 
 	cursorOn();
@@ -217,7 +217,7 @@ static void moveToNextLine(V2u16* offset) {
 
 	if (offset->y > max_screen.y) {
 		int v_offset = offset->y - max_screen.y;
-		VDP_setVerticalScroll(VDP_getTextPlan(), tilesToPx(v_offset));
+		VDP_setVerticalScroll(VDP_getTextPlane(), tilesToPx(v_offset));
 		VDP_clearTextLine(pxToTiles(VDP_getScreenHeight()) + v_offset); // First line not seen
 	}
 

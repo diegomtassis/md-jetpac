@@ -150,7 +150,7 @@ static void initConfigScreen() {
 
 static void clearConfigScreen() {
 
-	VDP_clearTextAreaBG(PLAN_A, 0, 5, 32, 25); // don't clear the HUD
+	VDP_clearTextAreaBG(BG_A, 0, 5, 32, 25); // don't clear the HUD
 	VDP_setHilightShadow(FALSE);
 }
 
