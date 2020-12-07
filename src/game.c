@@ -91,7 +91,7 @@ GameResult runGame(const Config config[static 1]) {
 		initExplosions(current_planet);
 
 		SPR_update();
-		VDP_waitVSync();
+		SYS_doVBlankProcess();
 
 		JOY_setEventHandler(joyEvent);
 
@@ -326,7 +326,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 
 		// VDP_showFPS(FALSE);
 //		 VDP_showCPULoad();
-		VDP_waitVSync();
+		SYS_doVBlankProcess();
 	}
 
 	return mission_accomplished;
@@ -396,7 +396,7 @@ static void waitForLanding(Planet planet[static 1]) {
 		handleSpaceship(planet);
 
 		SPR_update();
-		VDP_waitVSync();
+		SYS_doVBlankProcess();
 	}
 }
 
@@ -412,7 +412,7 @@ static void leavePlanet(Planet planet[static 1]) {
 		updateCollectables(planet);
 
 		SPR_update();
-		VDP_waitVSync();
+		SYS_doVBlankProcess();
 
 	} while (planet->spaceship->step == LIFTING);
 }
@@ -435,7 +435,7 @@ void static scoreBonus(Planet planet[static 1]) {
 			printMessage(bonus_message);
 			waitMs(25);
 			updateAmmo(P1, j1->ammo);
-			VDP_waitVSync();
+			SYS_doVBlankProcess();
 		}
 
 		flashMessage(bonus_message, 1000);
@@ -461,7 +461,7 @@ void static scoreBonus(Planet planet[static 1]) {
 				printMessage(bonus_message);
 				waitMs(25);
 				updateAmmo(P2, j2->ammo);
-				VDP_waitVSync();
+				SYS_doVBlankProcess();
 			}
 
 			flashMessage(bonus_message, 1000);

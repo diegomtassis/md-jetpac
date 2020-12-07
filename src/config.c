@@ -122,7 +122,7 @@ Config setUpGame() {
 
 	do {
 		displayConfig(*current_config, pos_init);
-		VDP_waitVSync();
+		SYS_doVBlankProcess();
 	} while (!start);
 
 	setRandomSeed(getTick());

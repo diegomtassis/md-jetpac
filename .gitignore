@@ -3,3 +3,4 @@ out/*.out
 out/rom_head.bin
 out/**/*.o
 src/boot/sega.s
+out/

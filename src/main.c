@@ -60,7 +60,7 @@ int main(u16 hard) {
 		registerScore(result.p1_score);
 		registerScore(result.p2_score);
 
-		VDP_waitVSync();
+		SYS_doVBlankProcess();
 	}
 
 	return 0;
