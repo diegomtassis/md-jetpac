@@ -57,7 +57,7 @@ void turnPrinterOn() {
 	pos = MEM_calloc(sizeof(*pos));
 	setV2u16(pos, min_screen.x, min_screen.y);
 
-	SPR_init(5, 16, 64);
+	SPR_init();
 
 	cursor = SPR_addSprite(&cursor_sprite, tilesToPx(pos->x), tilesToPx(pos->y),
 			TILE_ATTR(VDP_getTextPalette(), TRUE, FALSE, FALSE));

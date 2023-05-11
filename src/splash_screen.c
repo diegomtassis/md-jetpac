@@ -19,10 +19,10 @@ void showSplashScreen() {
 	// clear screen
 	VDP_clearPlane(BG_B, TRUE);
 
-	VDP_setPaletteColors(0, (u16*) palette_black, 16);
+	PAL_setPaletteColors(0, (u16*) palette_black, 16);
 
 	// load background
-	idx_tile_alloc = TILE_USERINDEX;
+	idx_tile_alloc = TILE_USER_INDEX;
 
 //	u16 yOffset = (VDP_getScreenHeight() - splash_image.map->h) / (2 * 8);
 	u16 v_offset = 3; // (224 - 176) / (8 * 2) tiles
@@ -37,7 +37,7 @@ void showSplashScreen() {
 	memcpy(&palette[0], splash_image.palette->data, 16 * 2);
 
 	// fade in
-	VDP_fadeIn(0, (1 * 16) - 1, palette, 50, FALSE);
+	PAL_fadeIn(0, (1 * 16) - 1, palette, 50, FALSE);
 }
 
 void clearSplashScreen() {

@@ -42,7 +42,7 @@ void startPlanet(Planet planet[static 1]) {
 	// initialization
 	VDP_clearPlane(BG_B, TRUE);
 
-	VDP_setPaletteColors(0, (u16*) palette_black, 16);
+	PAL_setPaletteColors(0, (u16*) palette_black, 16);
 
 	loadPlanetResources();
 
@@ -54,7 +54,7 @@ void startPlanet(Planet planet[static 1]) {
 	memcpy(&palette[0], game_palette.data, 16 * 2);
 
 	// fade in
-	VDP_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
+	PAL_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
 }
 
 void releasePlanet(Planet* planet) {

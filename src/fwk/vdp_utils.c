@@ -11,7 +11,7 @@
 
 void resetTileMemory() {
 
-	idx_tile_malloc = TILE_USERINDEX;
+	idx_tile_malloc = TILE_USER_INDEX;
 }
 
 u16 loadTile(const TileSet * tileset, u16* idx_tile_malloc) {

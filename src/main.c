@@ -20,7 +20,7 @@
 
 #define LOADING_TIME	3000
 
-int main(u16 hard) {
+int main(bool hard) {
 
 	// default resolution
 	VDP_setScreenWidth256();

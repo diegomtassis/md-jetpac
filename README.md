@@ -45,4 +45,4 @@ GitHub page: https://github.com/Stephane-D/SGDK
 
 Wiki page: https://github.com/Stephane-D/SGDK/wiki
 
-JetPac MD is built using SGDK 1.70
+JetPac MD is built using SGDK 1.80

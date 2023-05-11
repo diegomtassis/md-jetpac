@@ -3,5 +3,10 @@
     "${env:GDK}\\res",
     "res",
     "inc"
-]
+],
+"files.associations": {
+    "genesis.h": "c",
+    "vdp.h": "c",
+    "pal.h": "c"
+}
 }

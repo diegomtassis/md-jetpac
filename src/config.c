@@ -141,7 +141,7 @@ static void setUpDefaults() {
 
 static void initConfigScreen() {
 
-	VDP_setPalette(PAL1, palette_grey);
+	PAL_setPalette(PAL1, palette_grey, CPU);
 	VDP_setTextPalette(PAL1);
 	VDP_setTextPriority(0);
 
