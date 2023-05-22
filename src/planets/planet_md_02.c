@@ -28,8 +28,8 @@ Planet* createPlanetMD02() {
 	defineSpaceship(planet);
 	defineJetman(planet);
 
-	planet->def.mind_bottom = TRUE;
-	planet->def.ammo = 30;
+	planet->def->mind_bottom = TRUE;
+	planet->def->ammo = 30;
 
 	return planet;
 }
@@ -44,13 +44,13 @@ static void createPlatforms(Planet planet[static 1]) {
 
 static void defineJetman(Planet planet[static 1]) {
 
-	planet->def.p1_init_pos = MEM_calloc(sizeof *planet->def.p1_init_pos);
-	setV2s16(planet->def.p1_init_pos, 88, 72);
+	planet->def->p1_init_pos = MEM_calloc(sizeof *planet->def->p1_init_pos);
+	setV2s16(planet->def->p1_init_pos, 88, 72);
 }
 
 static void defineSpaceship(Planet planet[static 1]) {
 
-	planet->def.spaceship_def.type_definition = u1Definition;
-	planet->def.spaceship_def.init_step = ASSEMBLED;
-	setV2s16(&planet->def.spaceship_def.base_pos, 124, 96);
+	planet->def->spaceship_def.type_definition = u1Definition;
+	planet->def->spaceship_def.init_step = ASSEMBLED;
+	setV2s16(&planet->def->spaceship_def.base_pos, 124, 96);
 }

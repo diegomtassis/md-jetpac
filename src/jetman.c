@@ -197,7 +197,7 @@ static Jetman* startJetman(Player* player, Planet planet[static 1]) {
 	Jetman* jetman = createJetman(player);
 
 	moveToStart(jetman, figureOutInitPosition(planet, player->id));
-	shapeJetman(jetman, player->id == P1 ? &carl_sprite : &ann_sprite, planet->def.ammo);
+	shapeJetman(jetman, player->id == P1 ? &carl_sprite : &ann_sprite, planet->def->ammo);
 
 	return jetman;
 }
@@ -260,10 +260,10 @@ static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player_id) 
 
 	if (player_id == P1) {
 
-		if (planet->def.p1_init_pos) {
+		if (planet->def->p1_init_pos) {
 
-			init_pos.x = FIX16(planet->def.p1_init_pos->x);
-			init_pos.y = FIX16(planet->def.p1_init_pos->y);
+			init_pos.x = FIX16(planet->def->p1_init_pos->x);
+			init_pos.y = FIX16(planet->def->p1_init_pos->y);
 
 		} else {
 			init_pos.x = FIX16(124);

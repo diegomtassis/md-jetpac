@@ -256,7 +256,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 
 				enemiesAct(current_planet);
 				handleCollisionsBetweenMovingObjects(current_planet);
-				if (current_planet->def.mind_bottom) {
+				if (current_planet->def->mind_bottom) {
 					handleElementsLeavingScreenUnder(current_planet);
 				}
 

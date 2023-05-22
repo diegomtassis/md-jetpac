@@ -184,7 +184,7 @@ static void updateCollectable(Collectable* collectable, Planet planet[static 1])
 				collectable->step = WAITING;
 				collectable->object.mov.y = SPEED_0;
 
-			} else if (planet->def.mind_bottom && target_v.min.y > BOTTOM_POS_V_PX_S16) {
+			} else if (planet->def->mind_bottom && target_v.min.y > BOTTOM_POS_V_PX_S16) {
 				// collectable lost
 				collectable->step = LOST;
 				onEvent(LOST_COLLECTABLE, 0);

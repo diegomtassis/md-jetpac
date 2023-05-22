@@ -80,7 +80,7 @@ void startSpaceship(Planet planet[static 1]) {
 	planet->spaceship = spaceship;
 	spaceship_ready = FALSE;
 
-	SpaceshipDefinition spaceship_definition = planet->def.spaceship_def;
+	SpaceshipDefinition spaceship_definition = planet->def->spaceship_def;
 	spaceship->definition = spaceship_definition;
 
 	if (UNASSEMBLED == spaceship_definition.init_step) {
@@ -113,7 +113,7 @@ void startSpaceship(Planet planet[static 1]) {
 		spaceship->grabbedBy = 0;
 
 		// override whatever comes as vertical starting position
-		V2s16* base_pos = &planet->def.spaceship_def.base_pos;
+		V2s16* base_pos = &planet->def->spaceship_def.base_pos;
 		base_pos->y = TOP_POS_V_PX_S16 - 48;
 
 		spaceship->base_object = createModule(WHOLE, *base_pos);
@@ -411,7 +411,7 @@ static void handleFuelling(Planet planet[static 1]) {
 				spaceship->substep = WAITING;
 				spaceship->fuel_object->mov.y = SPEED_0;
 
-			} else if (planet->def.mind_bottom && target_v.min.y > BOTTOM_POS_V_PX_S16) {
+			} else if (planet->def->mind_bottom && target_v.min.y > BOTTOM_POS_V_PX_S16) {
 				// fuel lost
 				spaceship->substep = NONE;
 				onEvent(LOST_FUEL, 0);

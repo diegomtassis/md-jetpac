@@ -27,11 +27,11 @@ Planet* createPlanetMD03() {
 	defineEnemiesPopulation(planet, bubbleDefinition, 6);
 	defineSpaceship(planet);
 
-	planet->def.p1_init_pos = MEM_calloc(sizeof *planet->def.p1_init_pos);
-	setV2s16(planet->def.p1_init_pos, 68, 176);
+	planet->def->p1_init_pos = MEM_calloc(sizeof *planet->def->p1_init_pos);
+	setV2s16(planet->def->p1_init_pos, 68, 176);
 
-	planet->def.mind_bottom = TRUE;
-	planet->def.ammo = 20;
+	planet->def->mind_bottom = TRUE;
+	planet->def->ammo = 20;
 
 	return planet;
 }
@@ -51,7 +51,7 @@ static void createPlatforms(Planet planet[static 1]) {
 
 static void defineSpaceship(Planet planet[static 1]) {
 
-	planet->def.spaceship_def.type_definition = u1Definition;
-	planet->def.spaceship_def.init_step = ASSEMBLED;
-	setV2s16(&planet->def.spaceship_def.base_pos, 40, 96);
+	planet->def->spaceship_def.type_definition = u1Definition;
+	planet->def->spaceship_def.init_step = ASSEMBLED;
+	setV2s16(&planet->def->spaceship_def.base_pos, 40, 96);
 }

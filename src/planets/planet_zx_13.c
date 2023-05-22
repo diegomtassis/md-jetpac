@@ -23,10 +23,10 @@ Planet* createPlanetZX13() {
 	defineEnemiesPopulation(planet, saucerDefinition, 5);
 	defineSpaceshipInDefaultPlanet(planet, u4Definition, UNASSEMBLED);
 
-	planet->def.p1_init_pos = 0;
-	planet->def.ammo = 50;
+	planet->def->p1_init_pos = 0;
+	planet->def->ammo = 50;
 
-	planet->def.mind_bottom = FALSE;
+	planet->def->mind_bottom = FALSE;
 
 	return planet;
 }

@@ -33,7 +33,7 @@ bool nuclear_bomb;
 
 void startEnemies(Planet planet[static 1]) {
 
-	arrayFixedListInit(&planet->enemies, planet->def.enemies_def.num_enemies);
+	arrayFixedListInit(&planet->enemies, planet->def->enemies_def.num_enemies);
 
 	setRandomSeed(getTick());
 
@@ -129,7 +129,7 @@ static void releaseDeadEnemy(Enemy enemy[static 1]) {
 
 static void addEnemy(Planet planet[static 1]) {
 
-	arrayFixedListAdd(&planet->enemies, planet->def.enemies_def.enemy_def.createFunc(&planet->def.enemies_def.enemy_def));
+	arrayFixedListAdd(&planet->enemies, planet->def->enemies_def.enemy_def.createFunc(&planet->def->enemies_def.enemy_def));
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 }
 
