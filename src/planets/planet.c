@@ -25,15 +25,22 @@ static u16 idx_tile_platform;
 static u16 idx_tile_floor;
 static u16 idx_tile_platform;
 
-static void loadPlanetResources();
-
 static void drawPlatforms(VDPPlane plan, const Planet planet[static 1]);
-static void drawPlatform(VDPPlane plan, Platform platform[static 1],
-                         u16 idx_tile);
+static void drawPlatform(VDPPlane plan, Platform platform[static 1], u16 idx_tile);
+
+void loadPlanetsBaseResources() {
+    // load floor & platform
+    idx_tile_floor = loadTile(&floor, &idx_tile_malloc);
+    idx_tile_platform = loadTile(&platform, &idx_tile_malloc);
+}
+
+void releasePlanetsBaseResources() {
+    // release floor & platform
+}
 
 Planet* allocPlanet() {
-    Planet* planet = (Planet*)MEM_calloc(sizeof(Planet));
-    planet->def = (PlanetDefinition*)MEM_calloc(sizeof(PlanetDefinition));
+    Planet *planet = (Planet *)MEM_calloc(sizeof(Planet));
+    planet->def = (PlanetDefinition *)MEM_calloc(sizeof(PlanetDefinition));
 
     return planet;
 }
@@ -44,13 +51,11 @@ void startPlanet(Planet planet[static 1]) {
     // initialization
     VDP_clearPlane(BG_B, TRUE);
 
-    PAL_setPaletteColors(0, (u16*)palette_black, 16);
+    PAL_setPaletteColors(0, (u16 *)palette_black, 16);
 
     if (planet->def->planet_init_func) {
         planet->def->planet_init_func(planet);
     }
-
-    loadPlanetResources();
 
     drawPlatforms(BG_B, planet);
 
@@ -63,7 +68,7 @@ void startPlanet(Planet planet[static 1]) {
     PAL_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
 }
 
-void releasePlanet(Planet* planet) {
+void releasePlanet(Planet *planet) {
     if (!planet) {
         return;
     }
@@ -137,16 +142,14 @@ void createDefaultPlatforms(Planet planet[static 1]) {
     planet->floor = createPlatform(0, 25, 32);
 
     planet->num_platforms = 3;
-    planet->platforms = MEM_calloc(planet->num_platforms * sizeof(Platform*));
+    planet->platforms = MEM_calloc(planet->num_platforms * sizeof(Platform *));
 
     planet->platforms[0] = createPlatform(4, 11, 6);
     planet->platforms[1] = createPlatform(15, 14, 4);
     planet->platforms[2] = createPlatform(24, 8, 6);
 }
 
-void defineSpaceshipInDefaultPlanet(Planet planet[static 1],
-                                    SpaceshipTypeDefinition type_definition,
-                                    u16 init_step) {
+void defineSpaceshipInDefaultPlanet(Planet planet[static 1], SpaceshipTypeDefinition type_definition, u16 init_step) {
     planet->def->spaceship_def.type_definition = type_definition;
     planet->def->spaceship_def.init_step = init_step;
 
@@ -154,31 +157,29 @@ void defineSpaceshipInDefaultPlanet(Planet planet[static 1],
         setV2s16(&planet->def->spaceship_def.base_pos, 168, 184);
         setV2s16(&planet->def->spaceship_def.middle_pos, 128, 96);
         setV2s16(&planet->def->spaceship_def.top_pos, 48, 72);
-
     } else {
         setV2s16(&planet->def->spaceship_def.base_pos, 168, 152);
     }
 }
 
-void defineEnemiesPopulation(Planet planet[static 1],
-                             const EnemyDefinition enemyDefinition, u16 size) {
+void defineEnemiesPopulation(Planet planet[static 1], const EnemyDefinition enemyDefinition, u16 size) {
     planet->def->enemies_def.enemy_def = enemyDefinition;
     planet->def->enemies_def.num_enemies = size;
 }
 
 Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
-    Platform* platform = MEM_calloc(sizeof *platform);
+    Platform *platform = MEM_calloc(sizeof * platform);
 
-    V2u16 pos_t = {.x = pos_x_t, .y = pos_y_t};
+    V2u16 pos_t = { .x = pos_x_t, .y = pos_y_t };
     platform->pos_t = pos_t;
 
-    V2u16 size = {.x = length_t, .y = 1};
+    V2u16 size = { .x = length_t, .y = 1 };
     platform->size_t = size;
 
-    V2f16 pos_px = {.x = FIX16(pos_x_t * 8), .y = FIX16(pos_y_t * 8)};
+    V2f16 pos_px = { .x = FIX16(pos_x_t * 8), .y = FIX16(pos_y_t * 8) };
     platform->object.pos = pos_px;
 
-    V2u16 size_px = {.x = length_t * 8, .y = 8};
+    V2u16 size_px = { .x = length_t * 8, .y = 8 };
     platform->object.size = size_px;
 
     platform->object.box.w = size_px.x;
@@ -188,13 +189,7 @@ Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
     return platform;
 }
 
-void releasePlatform(Platform* platform) { MEM_free(platform); }
-
-static void loadPlanetResources() {
-    // load floor & platform
-    idx_tile_floor = loadTile(&floor, &idx_tile_malloc);
-    idx_tile_platform = loadTile(&platform, &idx_tile_malloc);
-}
+void releasePlatform(Platform *platform) { MEM_free(platform); }
 
 static void drawPlatforms(VDPPlane plan, const Planet planet[static 1]) {
     // draw floor
@@ -206,19 +201,15 @@ static void drawPlatforms(VDPPlane plan, const Planet planet[static 1]) {
     }
 }
 
-static void drawPlatform(VDPPlane plan, Platform platform[static 1],
-                         u16 idx_tile) {
+static void drawPlatform(VDPPlane plan, Platform platform[static 1], u16 idx_tile) {
     // left edge
-    VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile),
-                     platform->pos_t.x, platform->pos_t.y);
+    VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->pos_t.x, platform->pos_t.y);
 
     // middle section
-    VDP_fillTileMapRect(
-        plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1),
-        platform->pos_t.x + 1, platform->pos_t.y, platform->size_t.x - 2, 1);
+    VDP_fillTileMapRect(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->pos_t.x + 1,
+        platform->pos_t.y, platform->size_t.x - 2, 1);
 
     // right edge
-    VDP_setTileMapXY(
-        plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 2),
+    VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 2),
         platform->pos_t.x + platform->size_t.x - 1, platform->pos_t.y);
 }

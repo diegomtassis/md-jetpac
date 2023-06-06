@@ -9,10 +9,13 @@
 #define INC_PLANET_H_
 
 #include "elements.h"
-
 #include "fwk/physics.h"
 
 Planet* allocPlanet();
+
+void loadPlanetsBaseResources();
+void releasePlanetsBaseResources();
+
 void startPlanet(Planet planet[static 1]);
 void releasePlanet(Planet*);
 
