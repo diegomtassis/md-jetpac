@@ -100,8 +100,7 @@ GameResult runGame(const Config config[static 1]) {
         if (game_over) {
             flashMessage("Game Over", DEFAULT_FLASH_WAIT);
 
-        }
-        else {
+        } else {
             if (j1) {
                 SPR_setVisibility(j1->sprite, HIDDEN);
             }
@@ -126,8 +125,6 @@ GameResult runGame(const Config config[static 1]) {
         current_planet = 0;
 
         SPR_update();
-
-        VDP_clearPlane(BG_B, TRUE);
     }
 
     SPR_end();
@@ -295,8 +292,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
                     }
                 }
 
-            }
-            else if (num_players_playing == 2 && p1_alive + p2_alive == 1) {
+            } else if (num_players_playing == 2 && p1_alive + p2_alive == 1) {
                 // Scenario 2: There was 2 alive before the ACT and one has just
                 // passed. Try to resurrect it.
                 if (j1 && !p1_alive) {
@@ -463,8 +459,7 @@ static void scorePoints(u16 points, u8 player_id) {
     if (player_id == P1) {
         current_game->p1->score += points;
 
-    }
-    else if (player_id == P2) {
+    } else if (player_id == P2) {
         current_game->p2->score += points;
     }
 }

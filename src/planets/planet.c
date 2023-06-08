@@ -25,8 +25,10 @@ static u16 idx_tile_platform;
 static u16 idx_tile_floor;
 static u16 idx_tile_platform;
 
-static void drawPlatforms(VDPPlane plan, const Planet planet[static 1]);
-static void drawPlatform(VDPPlane plan, Platform platform[static 1], u16 idx_tile);
+static void drawPlatforms(VDPPlane plane, const Planet planet[static 1]);
+static void drawPlatform(VDPPlane plane, Platform platform[static 1], u16 idx_tile);
+
+static void clearPlatform(VDPPlane plane, Platform platform[static 1]);
 
 void loadPlanetsBaseResources() {
     // load floor & platform
@@ -57,7 +59,7 @@ void startPlanet(Planet planet[static 1]) {
         planet->def->planet_init_func(planet);
     }
 
-    drawPlatforms(BG_B, planet);
+    drawPlatforms(BG_A, planet);
 
     SYS_enableInts();
 
@@ -82,6 +84,7 @@ void releasePlanet(Planet *planet) {
 
     // floor
     if (planet->floor) {
+        clearPlatform(BG_A, planet->floor);
         releasePlatform(planet->floor);
         planet->floor = 0;
     }
@@ -89,6 +92,7 @@ void releasePlanet(Planet *planet) {
     // platforms
     if (planet->platforms) {
         for (u8 i = 0; i < planet->num_platforms; i++) {
+            clearPlatform(BG_A, planet->platforms[i]);
             releasePlatform(planet->platforms[i]);
             planet->platforms[i] = 0;
         }
@@ -191,25 +195,30 @@ Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
 
 void releasePlatform(Platform *platform) { MEM_free(platform); }
 
-static void drawPlatforms(VDPPlane plan, const Planet planet[static 1]) {
+static void drawPlatforms(VDPPlane plane, const Planet planet[static 1]) {
     // draw floor
-    drawPlatform(BG_B, planet->floor, idx_tile_floor);
+    drawPlatform(plane, planet->floor, idx_tile_floor);
 
     // draw platforms
     for (u8 i = 0; i < planet->num_platforms; i++) {
-        drawPlatform(BG_B, planet->platforms[i], idx_tile_platform);
+        drawPlatform(plane, planet->platforms[i], idx_tile_platform);
     }
 }
 
-static void drawPlatform(VDPPlane plan, Platform platform[static 1], u16 idx_tile) {
+static void drawPlatform(VDPPlane plane, Platform platform[static 1], u16 idx_tile) {
     // left edge
-    VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->pos_t.x, platform->pos_t.y);
+    VDP_setTileMapXY(plane, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile), platform->pos_t.x, platform->pos_t.y);
 
     // middle section
-    VDP_fillTileMapRect(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->pos_t.x + 1,
+    VDP_fillTileMapRect(plane, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 1), platform->pos_t.x + 1,
         platform->pos_t.y, platform->size_t.x - 2, 1);
 
     // right edge
-    VDP_setTileMapXY(plan, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 2),
+    VDP_setTileMapXY(plane, TILE_ATTR_FULL(PAL0, TRUE, FALSE, FALSE, idx_tile + 2),
         platform->pos_t.x + platform->size_t.x - 1, platform->pos_t.y);
+}
+
+static void clearPlatform(VDPPlane plane, Platform platform[static 1]) {
+
+    VDP_clearTileMapRect(plane, platform->pos_t.x, platform->pos_t.y, platform->size_t.x, 1);
 }
