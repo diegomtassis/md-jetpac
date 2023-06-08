@@ -23,7 +23,6 @@ static u16 palette[64];
 
 static u16 idx_tile_platform;
 static u16 idx_tile_floor;
-static u16 idx_tile_platform;
 
 static void drawPlatforms(VDPPlane plane, const Planet planet[static 1]);
 static void drawPlatform(VDPPlane plane, Platform platform[static 1], u16 idx_tile);
