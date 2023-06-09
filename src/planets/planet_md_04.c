@@ -19,6 +19,9 @@ static void createPlatforms(Planet planet[static 1]);
 static void defineJetman(Planet planet[static 1]);
 static void defineSpaceship(Planet planet[static 1]);
 
+static void initMD04(Planet planet[static 1]);
+static void releaseMD04(Planet planet[static 1]);
+
 Planet* createPlanetMD04() {
 
 	Planet* planet = allocPlanet();
@@ -30,6 +33,9 @@ Planet* createPlanetMD04() {
 
 	planet->def->mind_bottom = TRUE;
 	planet->def->ammo = 5;
+
+    planet->def->planet_init_func = &initMD04;
+    planet->def->planet_release_func = &releaseMD04;
 
 	return planet;
 }
@@ -77,4 +83,12 @@ static void defineJetman(Planet planet[static 1]) {
 
 	planet->def->p1_init_pos = MEM_calloc(sizeof *planet->def->p1_init_pos);
 	setV2s16(planet->def->p1_init_pos, 92, 30);
+}
+
+static void initMD04(Planet planet[static 1]) {
+    initGalaxyLeynos();
+}
+
+static void releaseMD04(Planet planet[static 1]) {
+    releaseGalaxyLeynos();
 }

@@ -13,8 +13,8 @@
 #include "../../inc/planet.h"
 #include "../../inc/spaceship.h"
 #include "../../res/sprite.h"
-#include "../../res/leynos.h"
 #include "../../inc/fwk/vdp_utils.h"
+#include "../../inc/galaxies.h"
 
 static void createPlatforms(Planet planet[static 1]);
 static void defineSpaceship(Planet planet[static 1]);
@@ -22,10 +22,6 @@ static void defineJetman(Planet planet[static 1]);
 
 static void initMD01(Planet planet[static 1]);
 static void releaseMD01(Planet planet[static 1]);
-
-u16 idx_tile_bg_leynos;
-
-Map *bg;
 
 Planet* createPlanetMD01() {
     Planet* planet = allocPlanet();
@@ -69,15 +65,9 @@ static void defineJetman(Planet planet[static 1]) {
 }
 
 static void initMD01(Planet planet[static 1]) {
-
-    PAL_setPalette(PAL2, palette_leynos.data, DMA);
-    idx_tile_bg_leynos = loadTile(&tileset_leynos_stars, &idx_tile_malloc);
-    bg = MAP_create(&map_leynos_stars, BG_B, TILE_ATTR_FULL(PAL2, FALSE, FALSE, FALSE, idx_tile_bg_leynos));
-    MAP_scrollTo(bg, 0, 0);
+    initGalaxyLeynos();
 }
 
 static void releaseMD01(Planet planet[static 1]) {
-    PAL_setPalette(PAL2, &palette_black, DMA);
-    MEM_free(bg);
-    idx_tile_malloc = idx_tile_bg_leynos;
+    releaseGalaxyLeynos();
 }

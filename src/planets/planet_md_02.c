@@ -19,6 +19,9 @@ static void createPlatforms(Planet planet[static 1]);
 static void defineJetman(Planet planet[static 1]);
 static void defineSpaceship(Planet planet[static 1]);
 
+static void initMD02(Planet planet[static 1]);
+static void releaseMD02(Planet planet[static 1]);
+
 Planet* createPlanetMD02() {
 
 	Planet* planet = allocPlanet();
@@ -30,6 +33,9 @@ Planet* createPlanetMD02() {
 
 	planet->def->mind_bottom = TRUE;
 	planet->def->ammo = 30;
+
+    planet->def->planet_init_func = &initMD02;
+    planet->def->planet_release_func = &releaseMD02;
 
 	return planet;
 }
@@ -53,4 +59,12 @@ static void defineSpaceship(Planet planet[static 1]) {
 	planet->def->spaceship_def.type_definition = u1Definition;
 	planet->def->spaceship_def.init_step = ASSEMBLED;
 	setV2s16(&planet->def->spaceship_def.base_pos, 124, 96);
+}
+
+static void initMD02(Planet planet[static 1]) {
+    initGalaxyLeynos();
+}
+
+static void releaseMD02(Planet planet[static 1]) {
+    releaseGalaxyLeynos();
 }
