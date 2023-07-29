@@ -19,7 +19,7 @@ void showSplashScreen() {
 	// clear screen
 	VDP_clearPlane(BG_B, TRUE);
 
-	PAL_setPaletteColors(0, (u16*) palette_black, 16);
+	PAL_setPalette(PAL0, palette_black, DMA);
 
 	// load background
 	idx_tile_alloc = TILE_USER_INDEX;

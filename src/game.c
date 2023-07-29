@@ -402,7 +402,7 @@ static void leavePlanet(Planet planet[static 1]) {
     } while (planet->spaceship->step == LIFTING);
 }
 
-void static scoreBonus(Planet planet[static 1]) {
+static void scoreBonus(Planet planet[static 1]) {
     if (current_game->config->mode == MD) {
         u16 ammo_bonus = 0;
         char bonus_message[22];

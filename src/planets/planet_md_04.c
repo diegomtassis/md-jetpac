@@ -14,6 +14,7 @@
 #include "../../inc/planet.h"
 #include "../../inc/spaceship.h"
 #include "../../res/sprite.h"
+#include "../../inc/galaxies.h"
 
 static void createPlatforms(Planet planet[static 1]);
 static void defineJetman(Planet planet[static 1]);

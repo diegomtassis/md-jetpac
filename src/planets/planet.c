@@ -52,7 +52,7 @@ void startPlanet(Planet planet[static 1]) {
     // initialization
     VDP_clearPlane(BG_B, TRUE);
 
-    PAL_setPaletteColors(PAL0, (u16 *)palette_black, DMA);
+    PAL_setPalette(PAL0, palette_black, DMA);
 
     if (planet->def->planet_init_func) {
         planet->def->planet_init_func(planet);

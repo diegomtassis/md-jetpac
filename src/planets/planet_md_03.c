@@ -15,6 +15,8 @@
 #include "../../inc/spaceship.h"
 #include "../../inc/enemies.h"
 #include "../../res/sprite.h"
+#include "../../inc/galaxies.h"
+
 
 static void createPlatforms(Planet planet[static 1]);
 static void defineSpaceship(Planet planet[static 1]);

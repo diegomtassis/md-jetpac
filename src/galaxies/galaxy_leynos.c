@@ -37,7 +37,7 @@ void releaseGalaxyLeynos() {
 
     VDP_clearPlane(BG_B, TRUE);
 
-    PAL_setPalette(PAL2, &palette_black, DMA);
+    PAL_setPalette(PAL2, palette_black, DMA);
 
     MEM_free(bg);
 
