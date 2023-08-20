@@ -1,4 +1,4 @@
-# Sega Mega Drive JetPac
+# JetPac MD - a port of Jetpac to Sega Megadrive
 
 ### JetPac
 
@@ -24,7 +24,15 @@ https://github.com/diegomtassis/md-jetpac
 
 #### To be implemented
 * Sound.
-* Enemies IAs.
+* Enemies IAs:
+    * meteorite - done
+    * alien - partially done
+    * bubble - done
+    * fighter - done
+    * saucer - todo
+    * falcon - todo
+    * cross - todo
+    * owl - todo
 * Refine difficulty levels.
 * More levels in MD mode.
 * Smart drop of spaceship parts after dying.
