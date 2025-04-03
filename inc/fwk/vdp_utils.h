@@ -16,7 +16,7 @@ void resetTileMemory();
 
 u16 loadTile(const TileSet *, u16*);
 
-u16 idx_tile_malloc;
+extern u16 idx_tile_malloc;
 
 #endif /* INC_VDP_UTILS_H_ */
 

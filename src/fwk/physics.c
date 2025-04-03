@@ -17,8 +17,8 @@ void updateBox(Object_f16* object) {
 Box_s16 targetBox(const Object_f16* object) {
 
 	Box_s16 box = { .w = object->size.x, .h = object->size.y };
-	box.min.x = fix16ToInt(fix16Add(object->pos.x, object->mov.x));
-	box.min.y = fix16ToInt(fix16Add(object->pos.y, object->mov.y));
+	box.min.x = fix16ToInt(object->pos.x + object->mov.x);
+	box.min.y = fix16ToInt(object->pos.y + object->mov.y);
 	updateBoxMax(&box);
 
 	return box;
@@ -27,7 +27,7 @@ Box_s16 targetBox(const Object_f16* object) {
 Box_s16 targetHBox(const Object_f16* object) {
 
 	Box_s16 box = { .w = object->size.x, .h = object->size.y };
-	box.min.x = fix16ToInt(fix16Add(object->pos.x, object->mov.x));
+	box.min.x = fix16ToInt(object->pos.x + object->mov.x);
 	box.min.y = fix16ToInt(object->pos.y);
 	updateBoxMax(&box);
 
@@ -38,7 +38,7 @@ Box_s16 targetVBox(const Object_f16* object) {
 
 	Box_s16 box = { .w = object->size.x, .h = object->size.y };
 	box.min.x = fix16ToInt(object->pos.x);
-	box.min.y = fix16ToInt(fix16Add(object->pos.y, object->mov.y));
+	box.min.y = fix16ToInt(object->pos.y + object->mov.y);
 	updateBoxMax(&box);
 
 	return box;

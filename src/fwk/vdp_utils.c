@@ -9,6 +9,8 @@
 
 #include <genesis.h>
 
+u16 idx_tile_malloc;
+
 void resetTileMemory() {
 
 	idx_tile_malloc = TILE_USER_INDEX;

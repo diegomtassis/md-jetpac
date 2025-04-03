@@ -7,7 +7,7 @@
 
 #include <genesis.h>
 
-#include "../inc/config.h"
+#include "../inc/game_config.h"
 #include "../inc/elements.h"
 #include "../inc/fwk/printer.h"
 #include "../inc/fwk/vdp_utils.h"
@@ -31,18 +31,18 @@ int main(bool hard) {
 	if (hard) {
 
 		// jetpac file
-		VDP_setScreenWidth320();
-		printDisclaimer();
-		JOY_waitPress(JOY_1, BUTTON_BTN);
-		clearDisclaimer();
+		// VDP_setScreenWidth320();
+		// printDisclaimer();
+		// JOY_waitPress(JOY_1, BUTTON_BTN);
+		// clearDisclaimer();
 		VDP_setScreenWidth256();
 
 		waitMs(50);
 
 		// splash screen
-		showSplashScreen();
-		waitMs(LOADING_TIME);
-		clearSplashScreen();
+		// showSplashScreen();
+		// waitMs(LOADING_TIME);
+		// clearSplashScreen();
 	}
 
 	resetTileMemory();

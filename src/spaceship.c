@@ -388,7 +388,7 @@ static void handleFuelling(Planet planet[static 1]) {
 		} else {
 			V2f16 jetman_pos = spaceship->grabbedBy->object.pos;
 			spaceship->fuel_object->pos.x = jetman_pos.x;
-			spaceship->fuel_object->pos.y = fix16Add(jetman_pos.y, FIX16_12);
+			spaceship->fuel_object->pos.y = jetman_pos.y + FIX16_12;
 		}
 
 	} else if (spaceship->substep & FALLING) {
@@ -464,7 +464,7 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 		} else {
 			jetman_pos = spaceship->grabbedBy->object.pos;
 			part->pos.x = jetman_pos.x;
-			part->pos.y = fix16Add(jetman_pos.y, FIX16_8); // the rocket part is 8px shorter than the jetman
+			part->pos.y = jetman_pos.y + FIX16_8; // the rocket part is 8px shorter than the jetman
 		}
 
 	} else if (spaceship->substep & WAITING) {

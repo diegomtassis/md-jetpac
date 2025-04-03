@@ -5,7 +5,7 @@
  *      Author: diegomtassis
  */
 
-#include "../inc/config.h"
+#include "../inc/game_config.h"
 
 #include <genesis.h>
 
@@ -85,7 +85,6 @@ Planet* (* const zxCreatePlanet[16])(void) = { //
 
 static const u8 MD_NUM_PLANETS = 5;
 Planet* (* const mdCreatePlanet[5])(void) = { //
-			createPlanetZX01,//
 			createPlanetMD01,//
 			createPlanetMD02,//
 			createPlanetMD03,//

@@ -1,15 +1,16 @@
 /*
- * config.h
+ * game_config.h
  *
  *  Created on: May 5, 2019
  *      Author: diegomtassis
  */
 
-#ifndef INC_CONFIG_H_
-#define INC_CONFIG_H_
+#ifndef INC_GAME_CONFIG_H_
+#define INC_GAME_CONFIG_H_
 
 #include <genesis.h>
 
+#include "elements.h"
 #include "game.h"
 
 typedef enum {
@@ -32,4 +33,4 @@ typedef enum {
 void initConfig();
 Config setUpGame();
 
-#endif /* INC_CONFIG_H_ */
+#endif /* INC_GAME_CONFIG_H_ */

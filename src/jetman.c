@@ -19,7 +19,7 @@
 #include "../res/sprite.h"
 #include "../inc/hud.h"
 #include "../inc/spaceship.h"
-#include "../inc/config.h"
+#include "../inc/game_config.h"
 
 #define ANIM_WALK		0
 #define ANIM_FLY		1
@@ -267,13 +267,13 @@ static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player_id) 
 
 		} else {
 			init_pos.x = FIX16(124);
-			init_pos.y = fix16Sub(planet->floor->object.pos.y, FIX16(8 * 3));
+			init_pos.y = planet->floor->object.pos.y - FIX16(8 * 3);
 		}
 
 	} else {
 
 		init_pos.x = FIX16(80);
-		init_pos.y = fix16Sub(planet->floor->object.pos.y, FIX16(8 * 3));
+		init_pos.y = planet->floor->object.pos.y - FIX16(8 * 3);
 	}
 
 	return init_pos;

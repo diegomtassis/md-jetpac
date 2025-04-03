@@ -15,7 +15,7 @@
 
 #include "../inc/elements.h"
 #include "../inc/players.h"
-#include "../inc/config.h"
+#include "../inc/game_config.h"
 #include "../inc/fwk/vdp_utils.h"
 #include "../res/gfx.h"
 
