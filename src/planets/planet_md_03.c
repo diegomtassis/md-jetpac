@@ -14,7 +14,7 @@
 #include "../../inc/planet.h"
 #include "../../inc/spaceship.h"
 #include "../../inc/enemies.h"
-#include "../../res/sprite.h"
+#include "../../res/zx.h"
 #include "../../inc/galaxies.h"
 
 

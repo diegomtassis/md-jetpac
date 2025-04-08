@@ -18,7 +18,7 @@
 #include "../inc/fwk/array_fixed_list.h"
 #include "../inc/fwk/commons.h"
 #include "../inc/fwk/physics.h"
-#include "../res/sprite.h"
+#include "../res/zx.h"
 
 #define JETMAN_WIDTH 16
 #define GUN_Y_OFFSET 11

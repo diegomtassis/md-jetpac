@@ -16,7 +16,7 @@
 #include "../inc/fwk/physics.h"
 #include "../inc/planet.h"
 #include "../inc/shooting.h"
-#include "../res/sprite.h"
+#include "../res/zx.h"
 #include "../inc/hud.h"
 #include "../inc/spaceship.h"
 #include "../inc/game_config.h"

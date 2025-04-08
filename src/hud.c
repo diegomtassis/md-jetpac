@@ -17,7 +17,7 @@
 #include "../inc/players.h"
 #include "../inc/game_config.h"
 #include "../inc/fwk/vdp_utils.h"
-#include "../res/gfx.h"
+#include "../res/zx.h"
 
 #define P1_LIVES_X 	8
 #define P2_LIVES_X 	20

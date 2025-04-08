@@ -11,4 +11,10 @@
 void initGalaxyLeynos();
 void releaseGalaxyLeynos();
 
+void initGalaxyAnsimuzLegacy();
+void releaseGalaxyAnsimuzLegacy();
+
+void initGalaxyAnsimuzSF();
+void releaseGalaxyAnsimuzSF();
+
 #endif /* INC_GALAXIES_H_ */

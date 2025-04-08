@@ -7,7 +7,7 @@
 
 #include <genesis.h>
 
-#include "../res/gfx.h"
+#include "../res/zx.h"
 
 static u16 idx_tile_alloc;
 static u16 palette[64];

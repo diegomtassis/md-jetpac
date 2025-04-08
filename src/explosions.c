@@ -10,7 +10,7 @@
 #include <genesis.h>
 
 #include "../inc/fwk/commons.h"
-#include "../res/sprite.h"
+#include "../res/zx.h"
 #include "../inc/timers.h"
 
 #define BOOM_H_PX 16

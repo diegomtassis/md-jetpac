@@ -11,9 +11,9 @@
 #include "../../res/leynos.h"
 #include "../../inc/fwk/vdp_utils.h"
 
-u16 idx_tile_bg_leynos;
+static u16 idx_tile_bg_leynos;
 
-Map *bg;
+static Map *bg;
 
 void initGalaxyLeynos() {
 

@@ -12,7 +12,7 @@
 #include "../../inc/enemies.h"
 #include "../../inc/enemy.h"
 #include "../../inc/fwk/commons.h"
-#include "../../res/sprite.h"
+#include "../../res/zx.h"
 
 #define CROSS_WIDTH    		15
 #define CROSS_HEIGHT    	15

@@ -17,7 +17,7 @@
 #include "../../inc/jetman.h"
 #include "../../inc/shooting.h"
 #include "../../inc/spaceship.h"
-#include "../../res/gfx.h"
+#include "../../res/zx.h"
 
 static u16 palette[64];
 
@@ -63,7 +63,7 @@ void startPlanet(Planet planet[static 1]) {
     SYS_enableInts();
 
     // prepare palette
-    memcpy(&palette[0], game_palette.data, 16 * 2);
+    memcpy(&palette[0], palette_zx.data, 16 * 2);
 
     // fade in
     PAL_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);

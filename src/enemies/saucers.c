@@ -12,7 +12,7 @@
 #include "../../inc/enemies.h"
 #include "../../inc/enemy.h"
 #include "../../inc/fwk/commons.h"
-#include "../../res/sprite.h"
+#include "../../res/zx.h"
 
 #define SAUCER_WIDTH    	16
 #define SAUCER_HEIGHT    	8

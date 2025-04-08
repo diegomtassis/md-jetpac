@@ -12,7 +12,7 @@
 #include "../../inc/fwk/commons.h"
 #include "../../inc/planet.h"
 #include "../../inc/spaceship.h"
-#include "../../res/sprite.h"
+#include "../../res/zx.h"
 #include "../../inc/fwk/vdp_utils.h"
 #include "../../inc/galaxies.h"
 
@@ -65,9 +65,9 @@ static void defineJetman(Planet planet[static 1]) {
 }
 
 static void initMD01(Planet planet[static 1]) {
-    initGalaxyLeynos();
+    initGalaxyAnsimuzSF();
 }
 
 static void releaseMD01(Planet planet[static 1]) {
-    releaseGalaxyLeynos();
+    releaseGalaxyAnsimuzSF();
 }

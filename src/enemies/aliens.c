@@ -13,7 +13,7 @@
 #include "../../inc/enemy.h"
 #include "../../inc/fwk/commons.h"
 #include "../../inc/fwk/physics.h"
-#include "../../res/sprite.h"
+#include "../../res/zx.h"
 
 #define ALIEN_WIDTH    		16
 #define ALIEN_HEIGHT    	14

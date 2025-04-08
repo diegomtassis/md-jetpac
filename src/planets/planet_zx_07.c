@@ -13,7 +13,7 @@
 #include "../../inc/planet.h"
 #include "../../inc/spaceship.h"
 #include "../../inc/planet.h"
-#include "../../res/sprite.h"
+#include "../../res/zx.h"
 
 Planet* createPlanetZX07() {
 

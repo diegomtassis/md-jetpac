@@ -11,7 +11,7 @@
 
 #include "../../inc/fwk/blinker.h"
 #include "../../inc/fwk/commons.h"
-#include "../../res/sprite.h"
+#include "../../res/zx.h"
 
 static void printChar(const char* text, u16 pos, int is_last, V2u16* offset);
 

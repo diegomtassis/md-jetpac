@@ -14,7 +14,7 @@
 #include "../inc/planet.h"
 #include "../inc/items.h"
 #include "../inc/events.h"
-#include "../res/sprite.h"
+#include "../res/zx.h"
 #include "../inc/players.h"
 #include "../inc/jetman.h"
 

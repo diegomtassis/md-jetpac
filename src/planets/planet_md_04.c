@@ -13,7 +13,7 @@
 #include "../../inc/planet.h"
 #include "../../inc/planet.h"
 #include "../../inc/spaceship.h"
-#include "../../res/sprite.h"
+#include "../../res/zx.h"
 #include "../../inc/galaxies.h"
 
 static void createPlatforms(Planet planet[static 1]);

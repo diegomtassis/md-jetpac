@@ -20,7 +20,7 @@
 #include "../inc/items.h"
 #include "../inc/planet.h"
 #include "../inc/timers.h"
-#include "../res/sprite.h"
+#include "../res/zx.h"
 
 #define MAX_COLLECTABLES 5
 #define BLINK_TIME 15
