@@ -31,8 +31,8 @@ void setV2s16(V2s16* pos, s16 x, s16 y) {
 
 f16 randomInRangeFix16(f16 lower, f16 higher) {
 
-	int min = abs(fix16ToInt(lower));
-	int max = abs(fix16ToInt(higher));
+	int min = abs(F16_toInt(lower));
+	int max = abs(F16_toInt(higher));
 
 	return FIX16(min + random() % (max + 1 - min));
 }

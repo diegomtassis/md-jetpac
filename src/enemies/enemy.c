@@ -54,8 +54,8 @@ void initBox(Enemy enemy[static 1]) {
 	enemy->object.box.w = enemy->definition->size_t.x;
 	enemy->object.box.h = enemy->definition->size_t.y;
 
-	enemy->object.box.min.x = fix16ToInt(enemy->object.pos.x);
-	enemy->object.box.min.y = fix16ToInt(enemy->object.pos.y);
+	enemy->object.box.min.x = F16_toInt(enemy->object.pos.x);
+	enemy->object.box.min.y = F16_toInt(enemy->object.pos.y);
 }
 
 void updatePosition(Enemy* enemy, Box_s16 target) {

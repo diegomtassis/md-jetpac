@@ -65,8 +65,8 @@ static f16 blockedByLeft(Box_s16, const Planet*);
 
 static void drawJetman(Jetman*);
 
-bool joy_pushed[2];
-bool joy_flank[2];
+bool joy_pushed[256];
+bool joy_flank[256];
 
 void startJetmen(Planet planet[static 1]) {
 
@@ -249,7 +249,7 @@ static void moveToStart(Jetman* jetman, V2f16 init_pos) {
 
 static void shapeJetman(Jetman jetman[static 1], const SpriteDefinition* sprite, u16 ammo) {
 
-	jetman->sprite = SPR_addSprite(sprite, fix16ToInt(jetman->object.pos.x), fix16ToInt(jetman->object.pos.y),
+	jetman->sprite = SPR_addSprite(sprite, F16_toInt(jetman->object.pos.x), F16_toInt(jetman->object.pos.y),
 			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	jetman->ammo = ammo;
 }
@@ -279,13 +279,13 @@ static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player_id) 
 	return init_pos;
 }
 
-static void moveJetman(Jetman* jetman, Planet planet[static 1]) {
+static void moveJetman(Jetman* jetman, Planet* planet) {
 
 	if (BOOST & calculateNextMovement(jetman)) {
 		boost(jetman->object.box, planet);
 	}
 	updatePosition(jetman, planet);
-	SPR_setPosition(jetman->sprite, fix16ToInt(jetman->object.pos.x), fix16ToInt(jetman->object.pos.y));
+	SPR_setPosition(jetman->sprite, F16_toInt(jetman->object.pos.x), F16_toInt(jetman->object.pos.y));
 }
 
 static u8 calculateNextMovement(Jetman* jetman) {
@@ -365,7 +365,7 @@ static u8 calculateNextMovement(Jetman* jetman) {
 	return movement;
 }
 
-static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
+static void updatePosition(Jetman* jetman, Planet* planet) {
 
 	// horizontal position
 	Box_s16 target_h = targetHBox(&jetman->object);
@@ -448,7 +448,7 @@ static void updatePosition(Jetman* jetman, Planet planet[static 1]) {
 	updateBox(&jetman->object);
 }
 
-static f16 reachedTop(Box_s16 subject_box, const Planet planet[static 1]) {
+static f16 reachedTop(Box_s16 subject_box, const Planet* planet) {
 
 	if (subject_box.min.y <= MIN_POS_V_PX_S16) {
 		return MIN_POS_V_PX_F16;
@@ -457,7 +457,7 @@ static f16 reachedTop(Box_s16 subject_box, const Planet planet[static 1]) {
 	return FIX16_0;
 }
 
-static f16 hitPlatformUnder(Box_s16 subject_box, const Planet planet[static 1]) {
+static f16 hitPlatformUnder(Box_s16 subject_box, const Planet* planet) {
 
 	for (u8 idx = planet->num_platforms; idx;) {
 		Box_s16 object_box = planet->platforms[--idx]->object.box;
@@ -473,7 +473,7 @@ static f16 hitPlatformUnder(Box_s16 subject_box, const Planet planet[static 1]) 
 	return FIX16_0;
 }
 
-static f16 blockedByRight(Box_s16 target_box, const Planet planet[static 1]) {
+static f16 blockedByRight(Box_s16 target_box, const Planet* planet) {
 
 	if (planet->floor && hitLeft(&target_box, &planet->floor->object.box)) {
 		return FIX16(adjacentXOnTheLeft(&target_box, &planet->floor->object.box));
@@ -489,7 +489,7 @@ static f16 blockedByRight(Box_s16 target_box, const Planet planet[static 1]) {
 	return FIX16_0;
 }
 
-static f16 blockedByLeft(Box_s16 target_box, const Planet planet[static 1]) {
+static f16 blockedByLeft(Box_s16 target_box, const Planet* planet) {
 
 	if (planet->floor && hitRight(&target_box, &planet->floor->object.box)) {
 		return FIX16(adjacentXOnTheRight(&target_box, &planet->floor->object.box));

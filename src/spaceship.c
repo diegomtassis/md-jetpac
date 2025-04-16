@@ -91,17 +91,17 @@ void startSpaceship(Planet planet[static 1]) {
 
 		spaceship->top_object = createModule(TOP, spaceship_definition.top_pos);
 		spaceship->top_sprite = SPR_addSprite(spaceship_definition.type_definition.top_sprite_def,
-				fix16ToInt(spaceship->top_object->pos.x), fix16ToInt(spaceship->top_object->pos.y),
+				F16_toInt(spaceship->top_object->pos.x), F16_toInt(spaceship->top_object->pos.y),
 				default_sprite_attrs);
 
 		spaceship->mid_object = createModule(MID, spaceship_definition.middle_pos);
 		spaceship->mid_sprite = SPR_addSprite(spaceship_definition.type_definition.middle_sprite_def,
-				fix16ToInt(spaceship->mid_object->pos.x), fix16ToInt(spaceship->mid_object->pos.y),
+				F16_toInt(spaceship->mid_object->pos.x), F16_toInt(spaceship->mid_object->pos.y),
 				default_sprite_attrs);
 
 		spaceship->base_object = createModule(BASE, spaceship_definition.base_pos);
 		spaceship->base_sprite = SPR_addSprite(spaceship_definition.type_definition.base_sprite_def,
-				fix16ToInt(spaceship->base_object->pos.x), fix16ToInt(spaceship->base_object->pos.y),
+				F16_toInt(spaceship->base_object->pos.x), F16_toInt(spaceship->base_object->pos.y),
 				default_sprite_attrs);
 
 		spaceship->fire_sprite = 0;
@@ -357,8 +357,8 @@ static void handleFuelling(Planet planet[static 1]) {
 		spaceship->substep = FALLING;
 
 		if (!spaceship->fuel_sprite) {
-			spaceship->fuel_sprite = SPR_addSprite(&fuel_sprite, fix16ToInt(spaceship->fuel_object->pos.x),
-					fix16ToInt(spaceship->fuel_object->pos.y), default_sprite_attrs);
+			spaceship->fuel_sprite = SPR_addSprite(&fuel_sprite, F16_toInt(spaceship->fuel_object->pos.x),
+					F16_toInt(spaceship->fuel_object->pos.y), default_sprite_attrs);
 		}
 
 	} else if (spaceship->substep & WAITING) {
@@ -443,8 +443,8 @@ static void handleFuelling(Planet planet[static 1]) {
 	}
 
 	updateBox(spaceship->fuel_object);
-	SPR_setPosition(spaceship->fuel_sprite, fix16ToInt(spaceship->fuel_object->pos.x),
-			fix16ToInt(spaceship->fuel_object->pos.y));
+	SPR_setPosition(spaceship->fuel_sprite, F16_toInt(spaceship->fuel_object->pos.x),
+			F16_toInt(spaceship->fuel_object->pos.y));
 }
 
 static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offset_px, Planet planet[static 1]) {
@@ -496,7 +496,7 @@ static void handlePart(Object_f16* part, Sprite* sprite, u16 goal, fix16 v_offse
 	}
 
 	updateBox(part);
-	SPR_setPosition(sprite, fix16ToInt(part->pos.x), fix16ToInt(part->pos.y));
+	SPR_setPosition(sprite, F16_toInt(part->pos.x), F16_toInt(part->pos.y));
 }
 
 static void mergeParts(Spaceship* spaceship) {
@@ -512,7 +512,7 @@ static void mergeParts(Spaceship* spaceship) {
 	spaceship->base_object->size.y = 48;
 	SPR_releaseSprite(spaceship->base_sprite);
 	spaceship->base_sprite = SPR_addSprite(spaceship->definition.type_definition.sprite_def,
-			fix16ToInt(spaceship->base_object->pos.x), fix16ToInt(spaceship->base_object->pos.y),
+			F16_toInt(spaceship->base_object->pos.x), F16_toInt(spaceship->base_object->pos.y),
 			TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
 }
 
@@ -536,8 +536,8 @@ static void handleLanding(Spaceship* spaceship, Planet planet[static 1]) {
 
 	updateBox(spaceship->base_object);
 
-	u16 h_pos_u16 = fix16ToInt(spaceship->base_object->pos.x);
-	u16 v_pos_u16 = fix16ToInt(spaceship->base_object->pos.y);
+	u16 h_pos_u16 = F16_toInt(spaceship->base_object->pos.x);
+	u16 v_pos_u16 = F16_toInt(spaceship->base_object->pos.y);
 	SPR_setPosition(spaceship->base_sprite, h_pos_u16, v_pos_u16);
 
 	// fire
@@ -565,8 +565,8 @@ static void handleFlight(Spaceship* spaceship, Planet planet[static 1]) {
 			// spaceship
 			spaceship->base_object->pos.y += spaceship->base_object->mov.y;
 			updateBox(spaceship->base_object);
-			u16 h_pos_u16 = fix16ToInt(spaceship->base_object->pos.x);
-			u16 v_pos_u16 = fix16ToInt(spaceship->base_object->pos.y);
+			u16 h_pos_u16 = F16_toInt(spaceship->base_object->pos.x);
+			u16 v_pos_u16 = F16_toInt(spaceship->base_object->pos.y);
 			SPR_setPosition(spaceship->base_sprite, h_pos_u16, v_pos_u16);
 
 			// fire

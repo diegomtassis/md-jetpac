@@ -82,8 +82,8 @@ static Enemy* createFighter() {
 	initBox(enemy);
 
 	// sprite
-	Sprite* enemySprite = SPR_addSprite(&fighter_sprite, fix16ToInt(enemy->object.pos.x),
-			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	Sprite* enemySprite = SPR_addSprite(&fighter_sprite, F16_toInt(enemy->object.pos.x),
+			F16_toInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	SPR_setAnim(enemySprite, fighter->step & WAITING ? (abs(random())) % 5 : ANIM_WHITE); // the chasing fighters are all white
 	SPR_setHFlip(enemySprite, fighter->headed_left);
 	enemy->sprite = enemySprite;

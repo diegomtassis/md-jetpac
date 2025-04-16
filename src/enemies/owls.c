@@ -55,7 +55,7 @@ static Enemy* createOwl() {
 	initBox(enemy);
 
 	// sprite
-	Sprite* enemySprite = SPR_addSprite(&owl_sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y),
+	Sprite* enemySprite = SPR_addSprite(&owl_sprite, F16_toInt(enemy->object.pos.x), F16_toInt(enemy->object.pos.y),
 			TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	SPR_setAnim(enemySprite, (abs(random())) % 4);
 	SPR_setFrame(enemySprite, (abs(random())) % 2);

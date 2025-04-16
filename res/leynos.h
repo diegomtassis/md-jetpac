@@ -1,3 +1,5 @@
+#include <genesis.h>
+
 #ifndef _RES_LEYNOS_H_
 #define _RES_LEYNOS_H_
 

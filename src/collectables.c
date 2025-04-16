@@ -145,8 +145,8 @@ static void createCollectable(Planet planet[static 1]) {
 	collectable->step = FALLING;
 
 	collectable->sprite = SPR_addSprite(collectableDef.spriteDefinition, //
-			fix16ToInt(collectable->object.pos.x), //
-			fix16ToInt(collectable->object.pos.y), //
+			F16_toInt(collectable->object.pos.x), //
+			F16_toInt(collectable->object.pos.y), //
 			default_sprite_attrs);
 
 	if (collectableDef.blinks) {
@@ -194,8 +194,8 @@ static void updateCollectable(Collectable* collectable, Planet planet[static 1])
 			}
 
 			updateBox(&collectable->object);
-			SPR_setPosition(collectable->sprite, fix16ToInt(collectable->object.pos.x),
-					fix16ToInt(collectable->object.pos.y));
+			SPR_setPosition(collectable->sprite, F16_toInt(collectable->object.pos.x),
+					F16_toInt(collectable->object.pos.y));
 		}
 
 	} else if (collectable->step == WAITING) {

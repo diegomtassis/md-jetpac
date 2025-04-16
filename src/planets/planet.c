@@ -126,7 +126,7 @@ void releasePlanet(Planet *planet) {
     MEM_free(planet);
 }
 
-f16 landed(Box_s16 subject_box, const Planet planet[static 1]) {
+f16 landed(Box_s16 subject_box, const Planet* planet) {
     if (hitAbove(&subject_box, &planet->floor->object.box)) {
         return FIX16(adjacentYAbove(&subject_box, &planet->floor->object.box));
     }

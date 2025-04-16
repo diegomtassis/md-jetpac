@@ -1,3 +1,5 @@
+#include <genesis.h>
+
 #ifndef _RES_ANSIMUZ_H_
 #define _RES_ANSIMUZ_H_
 

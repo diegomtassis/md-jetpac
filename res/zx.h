@@ -1,3 +1,5 @@
+#include <genesis.h>
+
 #ifndef _RES_ZX_H_
 #define _RES_ZX_H_
 

@@ -63,7 +63,7 @@ void enemiesAct(Planet planet[static 1]) {
 					killEnemy(enemy, planet, TRUE);
 				} else {
 					enemyActs(enemy, planet);
-					SPR_setPosition(enemy->sprite, fix16ToInt(enemy->object.pos.x), fix16ToInt(enemy->object.pos.y));
+					SPR_setPosition(enemy->sprite, F16_toInt(enemy->object.pos.x), F16_toInt(enemy->object.pos.y));
 				}
 			}
 		}

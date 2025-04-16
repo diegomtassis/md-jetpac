@@ -55,8 +55,8 @@ static Enemy* createBubble() {
 	initBox(enemy);
 
 	// sprite
-	Sprite* enemySprite = SPR_addSprite(&bubble_sprite, fix16ToInt(enemy->object.pos.x),
-			fix16ToInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+	Sprite* enemySprite = SPR_addSprite(&bubble_sprite, F16_toInt(enemy->object.pos.x),
+			F16_toInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
 	SPR_setAnim(enemySprite, (abs(random())) % 8); // 8 animations
 	enemy->sprite = enemySprite;
 
