@@ -30,7 +30,19 @@ typedef enum {
 	TWO_PLAYERS,
 } Players;
 
-void initConfig();
-Config setUpGame();
+struct Config {
+	u8 mode;
+	u8 difficulty;
+	u8 players;
+	u8 lives;
+	bool limited_ammo;
+	Planet* (*const* createPlanet)(void);
+	u8 num_planets;
+};
+
+extern Config config;
+
+void CONFIG_init(void);
+void CONFIG_setUp(void);
 
 #endif /* INC_GAME_CONFIG_H_ */

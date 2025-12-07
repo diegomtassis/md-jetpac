@@ -24,8 +24,8 @@
 
 #define DEFAULT_FLASH_WAIT 2000
 
-static Game* createGame(const Config config[static 1]);
-static void releaseGame(Game *game);
+static void initGame(const Config *config);
+static void resetGame();
 
 /**
  * @brief run a planet.
@@ -54,10 +54,10 @@ volatile bool paused = FALSE;
 
 static const V2u16 message_pos = { .x = 16, .y = 7 };
 
-static Game *current_game;
+Game game;
 
-GameResult runGame(const Config config[static 1]) {
-    current_game = createGame(config);
+GameResult runGame(const Config *config) {
+    initGame(config);
 
     SPR_init();
 
@@ -74,9 +74,8 @@ GameResult runGame(const Config config[static 1]) {
 
     while (!game_over) {
         //	log_memory();
-        current_game->planet = config->createPlanet[planet_number]();
-        current_planet = current_game->planet;
-        current_planet->game = current_game;
+        game.planet = config->createPlanet[planet_number]();
+        current_planet = game.planet;
 
         startPlanet(current_planet);
 
@@ -121,7 +120,7 @@ GameResult runGame(const Config config[static 1]) {
         }
 
         releasePlanet(current_planet);
-        current_game->planet = 0;
+        game.planet = 0;
         current_planet = 0;
 
         SPR_update();
@@ -131,22 +130,21 @@ GameResult runGame(const Config config[static 1]) {
 
     GameResult result = {
         //
-        .p1_score = current_game->p1->score,  //
-        .p2_score = current_game->p2->score   //
+        .p1_score = game.p1 ? game.p1->score : 0,
+        .p2_score = game.p2 ? game.p2->score : 0
     };
 
-    releaseGame(current_game);
-    current_game = 0;
+    resetGame();
 
     return result;
 }
 
 void scoreByEvent(GameEvent event, u8 player_id) {
-    if (!current_game) {
+    if (!config.createPlanet) {
         return;
     }
 
-    Player *player = player_id == P1 ? current_game->p1 : current_game->p2;
+    Player *player = player_id == P1 ? game.p1 : game.p2;
     if (!player) {
         return;
     }
@@ -181,47 +179,39 @@ void scoreByEvent(GameEvent event, u8 player_id) {
     }
 }
 
-static Game *createGame(const Config config[static 1]) {
-    Game *game = MEM_calloc(sizeof * game);
+static void initGame(const Config *config) {
+    memset(&game, 0, sizeof game);
 
-    game->config = config;
-
-    game->p1 = MEM_calloc(sizeof(*game->p1));
-    game->p1->id = P1;
-    game->p1->lives = config->lives;
-    game->p1->score = 0;
+    game.p1 = MEM_calloc(sizeof(*game.p1));
+    game.p1->id = P1;
+    game.p1->lives = config->lives;
+    game.p1->score = 0;
 
     if (config->players == TWO_PLAYERS) {
-        game->p2 = MEM_calloc(sizeof(*game->p2));
-        game->p2->id = P2;
-        game->p2->lives = config->lives;
-        game->p2->score = 0;
+        game.p2 = MEM_calloc(sizeof(*game.p2));
+        game.p2->id = P2;
+        game.p2->lives = config->lives;
+        game.p2->score = 0;
     }
-
-    return game;
 }
 
-static void releaseGame(Game *game) {
-    if (!game) {
-        return;
+static void resetGame() {
+    if (game.planet) {
+        releasePlanet(game.planet);
+        game.planet = 0;
     }
 
-    if (game->planet) {
-        releasePlanet(game->planet);
-        game->planet = 0;
+    if (game.p1) {
+        MEM_free(game.p1);
+        game.p1 = 0;
     }
 
-    if (game->p1) {
-        MEM_free(game->p1);
-        game->p1 = 0;
+    if (game.p2) {
+        MEM_free(game.p2);
+        game.p2 = 0;
     }
 
-    if (game->p2) {
-        MEM_free(game->p2);
-        game->p2 = 0;
-    }
-
-    MEM_free(game);
+    memset(&game, 0, sizeof game);
 }
 
 static bool runPlanet(Planet current_planet[static 1]) {
@@ -313,7 +303,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
                 spaceship_ready && (p1_alive || p2_alive)  //
                 && (!j1 || j1->finished)                   //
                 && (!j2 || j2->finished);
-            game_over = (!current_game->p1->lives && (!current_game->p2 || !current_game->p2->lives)) &&
+            game_over = (!game.p1->lives && (!game.p2 || !game.p2->lives)) &&
                 !current_planet->booms.count;
             SPR_update();
         }
@@ -403,7 +393,7 @@ static void leavePlanet(Planet planet[static 1]) {
 }
 
 static void scoreBonus(Planet planet[static 1]) {
-    if (current_game->config->mode == MD) {
+    if (config.mode == MD) {
         u16 ammo_bonus = 0;
         char bonus_message[22];
 
@@ -452,15 +442,19 @@ static void scoreBonus(Planet planet[static 1]) {
 }
 
 static void scorePoints(u16 points, u8 player_id) {
-    if (!current_game) {
+    if (!config.createPlanet) {
         return;
     }
 
     if (player_id == P1) {
-        current_game->p1->score += points;
+        if (game.p1) {
+            game.p1->score += points;
+        }
 
     } else if (player_id == P2) {
-        current_game->p2->score += points;
+        if (game.p2) {
+            game.p2->score += points;
+        }
     }
 }
 

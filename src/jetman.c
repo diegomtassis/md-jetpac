@@ -20,6 +20,7 @@
 #include "../inc/hud.h"
 #include "../inc/spaceship.h"
 #include "../inc/game_config.h"
+#include "../inc/game.h"
 
 #define ANIM_WALK		0
 #define ANIM_FLY		1
@@ -70,18 +71,16 @@ bool joy_flank[256];
 
 void startJetmen(Planet planet[static 1]) {
 
-	Game* game = planet->game;
+	bool immunity = config.difficulty == EASY;
 
-	bool immunity = game->config->difficulty == EASY;
-
-	if (game->p1->lives > 0) {
-		planet->j1 = startJetman(game->p1, planet);
+	if (game.p1 && game.p1->lives > 0) {
+		planet->j1 = startJetman(game.p1, planet);
 		planet->j1->immunity = immunity;
 		j1 = planet->j1;
 	}
 
-	if (game->p2 && game->p2->lives > 0) {
-		planet->j2 = startJetman(game->p2, planet);
+	if (game.p2 && game.p2->lives > 0) {
+		planet->j2 = startJetman(game.p2, planet);
 		planet->j2->immunity = immunity;
 		j2 = planet->j2;
 	}
@@ -135,10 +134,12 @@ void jetmanActs(Jetman* jetman, Planet planet[static 1]) {
 	handleInputJetman(jetman);
 	moveJetman(jetman, planet);
 
+	const bool limited_ammo = config.limited_ammo;
+
 	if (spaceship_ready && shareBase(&jetman->object.box, &planet->spaceship->base_object->box)) {
 		jetman->finished = TRUE;
 
-	} else if (joy_flank[jetman->joystick] && (jetman->ammo || !planet->game->config->limited_ammo)) {
+	} else if (joy_flank[jetman->joystick] && (jetman->ammo || !limited_ammo)) {
 
 		shoot(jetman, planet);
 		jetman->ammo--;

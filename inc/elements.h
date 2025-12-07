@@ -36,27 +36,10 @@ typedef struct Grape Grape;
 typedef struct Shot Shot;
 typedef struct Explosion Explosion;
 
-struct Config {
-    u8 mode;
-    u8 difficulty;
-    u8 players;
-    u8 lives;
-    bool limited_ammo;
-    Planet* (*const* createPlanet)(void);
-    u8 num_planets;
-};
-
 struct Player {
     u8 id;
     u8 lives;
     u16 score;
-};
-
-struct Game {
-    const Config* config;
-    Player* p1;
-    Player* p2;
-    Planet* planet;
 };
 
 struct GameResult {
@@ -179,7 +162,6 @@ struct Explosion {
 
 struct Planet {
     PlanetDefinition* def;
-    Game* game;
     Platform* floor;
     Platform** platforms;
     u8 num_platforms;

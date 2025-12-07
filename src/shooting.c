@@ -6,6 +6,8 @@
  */
 
 #include "../inc/shooting.h"
+#include "../inc/game.h"
+#include "../inc/game_config.h"
 
 #include <maths.h>
 #include <memory.h>
@@ -56,7 +58,8 @@ static bool checkGrapeHit(Grape grape[static 1], Box_s16 object_box);
 
 void initShots(Planet planet[static 1]) {
 
-	arrayFixedListInit(&planet->shots, MAX_SHOTS_PER_PLAYER * planet->game->config->players);
+	const u8 players = config.players ? config.players : ONE_PLAYER;
+	arrayFixedListInit(&planet->shots, MAX_SHOTS_PER_PLAYER * players);
 }
 
 void releaseShots(Planet planet[static 1]) {

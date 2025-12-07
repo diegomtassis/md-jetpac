@@ -11,8 +11,16 @@
 #include "elements.h"
 #include "events.h"
 
-GameResult runGame(const Config config[static 1]);
+struct Game {
+	Player* p1;
+	Player* p2;
+	Planet* planet;
+};
+
+GameResult runGame(const Config *config);
 
 void scoreByEvent(GameEvent event, u8 player_id);
+
+extern Game game;
 
 #endif /* INC_GAME_H_ */

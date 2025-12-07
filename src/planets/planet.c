@@ -110,10 +110,6 @@ void releasePlanet(Planet *planet) {
         planet->def->p2_init_pos = 0;
     }
 
-    if (planet->game) {
-        planet->game = 0;
-    }
-
     // planet release custom
     if (planet->def->planet_release_func) {
         planet->def->planet_release_func(planet);

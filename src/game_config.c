@@ -56,7 +56,7 @@ volatile enum option {
 	OPTION_START,
 } current_option;
 
-static Config* current_config;
+Config config;
 
 volatile bool start = FALSE;
 volatile bool refresh = TRUE;
@@ -91,24 +91,17 @@ Planet* (* const mdCreatePlanet[5])(void) = { //
 			createPlanetMD04,//
 };
 
-void initConfig() {
-
-	// whatever is the current config is trash, no need to free
-	current_config = 0;
+void CONFIG_init() {
+	config.mode = ZX;
+	config.difficulty = NORMAL;
+	config.players = ONE_PLAYER;
 }
 
-Config setUpGame() {
+void CONFIG_setUp(void) {
 
 	setUpDefaults();
 
 	u8 prev_priority = VDP_getTextPriority();
-
-	if (!current_config) {
-		current_config = MEM_calloc(sizeof(*current_config));
-		current_config->mode = ZX;
-		current_config->difficulty = NORMAL;
-		current_config->players = ONE_PLAYER;
-	}
 
 	current_option = OPTION_MODE;
 
@@ -120,18 +113,16 @@ Config setUpGame() {
 	JOY_setEventHandler(joyEvent);
 
 	do {
-		displayConfig(*current_config, pos_init);
+		displayConfig(config, pos_init);
 		SYS_doVBlankProcess();
 	} while (!start);
 
 	setRandomSeed(getTick());
 
-	expandGameConfig(current_config);
+	expandGameConfig(&config);
 
 	clearConfigScreen();
 	VDP_setTextPriority(prev_priority);
-
-	return *current_config;
 }
 
 static void setUpDefaults() {
@@ -250,7 +241,7 @@ static void displayOption(const char *option, const char *value, u8 highlighted,
 
 static void expandGameConfig(Config config[static 1]) {
 
-	if (current_config->mode == ZX) {
+	if (config->mode == ZX) {
 		config->limited_ammo = FALSE;
 		config->num_planets = ZX_NUM_PLANETS;
 		config->createPlanet = zxCreatePlanet;
@@ -260,18 +251,18 @@ static void expandGameConfig(Config config[static 1]) {
 		config->createPlanet = mdCreatePlanet;
 	}
 
-	switch (current_config->difficulty) {
+	switch (config->difficulty) {
 	case MANIAC:
-		current_config->lives = 1;
+		config->lives = 1;
 		break;
 	case HARD:
-		current_config->lives = 3;
+		config->lives = 3;
 		break;
 	case NORMAL:
-		current_config->lives = 5;
+		config->lives = 5;
 		break;
 	default: // EASY
-		current_config->lives = 10;
+		config->lives = 10;
 	}
 }
 
@@ -299,15 +290,15 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 	if (BUTTON_ABC & changed & ~state) {
 
 		if (current_option == OPTION_MODE) {
-			changeMode(current_config);
+			changeMode(&config);
 			refresh = TRUE;
 
 		} else if (current_option == OPTION_PLAYERS) {
-			changePlayers(current_config);
+			changePlayers(&config);
 			refresh = TRUE;
 
 		} else if (current_option == OPTION_DIFFICULTY) {
-			changeDifficulty(current_config);
+			changeDifficulty(&config);
 			refresh = TRUE;
 		}
 

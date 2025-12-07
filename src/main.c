@@ -48,12 +48,12 @@ int main(bool hard) {
 	resetTileMemory();
 	initHud();
 
-	initConfig();
+	CONFIG_init();
 
 	while (1) {
 
 		// log_memory();
-		Config config = setUpGame();
+		CONFIG_setUp();
 
 		GameResult result = runGame(&config);
 
