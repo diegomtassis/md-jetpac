@@ -29,23 +29,33 @@ static const char* PRESS_START_BUTTON = "START GAME";
 
 static const u16 BUTTON_ABC = BUTTON_A | BUTTON_B | BUTTON_C;
 
+typedef struct ConfigView {
+	u8 mode;
+	u8 difficulty;
+	u8 players;
+	u8 lives;
+	bool limited_ammo;
+	Planet* (*const* createPlanet)(void);
+	u8 num_planets;
+} ConfigView;
+
 static void setUpDefaults();
 
 static void initConfigScreen();
 static void clearConfigScreen();
 
-static void displayConfig(Config config, V2u16 pos);
+static void displayConfig(V2u16 pos);
 static void displayOption(const char *option, const char *value, u8 highlighted, u16 x, u16 y);
 
-static const char* printableMode(Config config);
-static const char* printablePlayers(Config config);
-static const char* printableDifficulty(Config config);
+static const char* printableMode(void);
+static const char* printablePlayers(void);
+static const char* printableDifficulty(void);
 
-static void changeMode(Config config[static 1]);
-static void changePlayers(Config config[static 1]);
-static void changeDifficulty(Config config[static 1]);
+static void changeMode(void);
+static void changePlayers(void);
+static void changeDifficulty(void);
 
-static void expandGameConfig(Config config[static 1]);
+static void expandGameConfig(void);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
@@ -55,6 +65,8 @@ volatile enum option {
 	OPTION_DIFFICULTY, //
 	OPTION_START,
 } current_option;
+
+static ConfigView config_view;
 
 Config config;
 
@@ -91,15 +103,12 @@ Planet* (* const mdCreatePlanet[5])(void) = { //
 			createPlanetMD04,//
 };
 
-void CONFIG_init() {
-	config.mode = ZX;
-	config.difficulty = NORMAL;
-	config.players = ONE_PLAYER;
+void CONFIG_init(void) {
+
+	setUpDefaults();
 }
 
 void CONFIG_setUp(void) {
-
-	setUpDefaults();
 
 	u8 prev_priority = VDP_getTextPriority();
 
@@ -113,20 +122,26 @@ void CONFIG_setUp(void) {
 	JOY_setEventHandler(joyEvent);
 
 	do {
-		displayConfig(config, pos_init);
+		displayConfig(pos_init);
 		SYS_doVBlankProcess();
 	} while (!start);
 
 	setRandomSeed(getTick());
 
-	expandGameConfig(&config);
+	expandGameConfig();
 
 	clearConfigScreen();
 	VDP_setTextPriority(prev_priority);
 }
 
 static void setUpDefaults() {
-
+	config_view.mode = ZX;
+	config_view.difficulty = NORMAL;
+	config_view.players = ONE_PLAYER;
+	config_view.lives = 0;
+	config_view.limited_ammo = FALSE;
+	config_view.createPlanet = NULL;
+	config_view.num_planets = 0;
 }
 
 static void initConfigScreen() {
@@ -144,20 +159,20 @@ static void clearConfigScreen() {
 	VDP_setHilightShadow(FALSE);
 }
 
-static void displayConfig(Config config, V2u16 pos) {
+static void displayConfig(V2u16 pos) {
 
 	if (refresh) {
 
 		VDP_drawText(JETPAC_GAME_SELECTION, pos.x, pos.y);
 
 		pos.y += 4;
-		displayOption(TEXT_MODE, printableMode(config), current_option == OPTION_MODE, pos.x, pos.y);
+		displayOption(TEXT_MODE, printableMode(), current_option == OPTION_MODE, pos.x, pos.y);
 
 		pos.y += 2;
-		displayOption(TEXT_PLAYERS, printablePlayers(config), current_option == OPTION_PLAYERS, pos.x, pos.y);
+		displayOption(TEXT_PLAYERS, printablePlayers(), current_option == OPTION_PLAYERS, pos.x, pos.y);
 
 		pos.y += 2;
-		displayOption(TEXT_DIFFICULTY, printableDifficulty(config), current_option == OPTION_DIFFICULTY, pos.x, pos.y);
+		displayOption(TEXT_DIFFICULTY, printableDifficulty(), current_option == OPTION_DIFFICULTY, pos.x, pos.y);
 
 		pos.y += 4;
 		displayOption(PRESS_START_BUTTON, 0, current_option == OPTION_START, pos.x, pos.y);
@@ -166,9 +181,9 @@ static void displayConfig(Config config, V2u16 pos) {
 	}
 }
 
-static const char* printableMode(Config config) {
+static const char* printableMode(void) {
 
-	switch (config.mode) {
+	switch (config_view.mode) {
 	case ZX:
 		return TEXT_ZX;
 	default:
@@ -176,9 +191,9 @@ static const char* printableMode(Config config) {
 	}
 }
 
-static const char* printablePlayers(Config config) {
+static const char* printablePlayers(void) {
 
-	switch (config.players) {
+	switch (config_view.players) {
 	case ONE_PLAYER:
 		return TEXT_ONE_PLAYER;
 
@@ -187,9 +202,9 @@ static const char* printablePlayers(Config config) {
 	}
 }
 
-static const char* printableDifficulty(Config config) {
+static const char* printableDifficulty(void) {
 
-	switch (config.difficulty) {
+	switch (config_view.difficulty) {
 	case EASY:
 		return TEXT_EASY;
 	case NORMAL:
@@ -201,30 +216,30 @@ static const char* printableDifficulty(Config config) {
 	}
 }
 
-static void changeMode(Config config[static 1]) {
+static void changeMode(void) {
 
-	if (config->mode == MD) {
-		config->mode = ZX;
+	if (config_view.mode == MD) {
+		config_view.mode = ZX;
 	} else {
-		config->mode++;
+		config_view.mode++;
 	}
 }
 
-static void changePlayers(Config config[static 1]) {
+static void changePlayers(void) {
 
-	if (config->players == TWO_PLAYERS) {
-		config->players = ONE_PLAYER;
+	if (config_view.players == TWO_PLAYERS) {
+		config_view.players = ONE_PLAYER;
 	} else {
-		config->players++;
+		config_view.players++;
 	}
 }
 
-static void changeDifficulty(Config config[static 1]) {
+static void changeDifficulty(void) {
 
-	if (config->difficulty == MANIAC) {
-		config->difficulty = EASY;
+	if (config_view.difficulty == MANIAC) {
+		config_view.difficulty = EASY;
 	} else {
-		config->difficulty++;
+		config_view.difficulty++;
 	}
 }
 
@@ -239,31 +254,39 @@ static void displayOption(const char *option, const char *value, u8 highlighted,
 	VDP_setTextPriority(0);
 }
 
-static void expandGameConfig(Config config[static 1]) {
+static void expandGameConfig(void) {
 
-	if (config->mode == ZX) {
-		config->limited_ammo = FALSE;
-		config->num_planets = ZX_NUM_PLANETS;
-		config->createPlanet = zxCreatePlanet;
+	if (config_view.mode == ZX) {
+		config_view.limited_ammo = FALSE;
+		config_view.num_planets = ZX_NUM_PLANETS;
+		config_view.createPlanet = zxCreatePlanet;
 	} else {
-		config->limited_ammo = TRUE;
-		config->num_planets = MD_NUM_PLANETS;
-		config->createPlanet = mdCreatePlanet;
+		config_view.limited_ammo = TRUE;
+		config_view.num_planets = MD_NUM_PLANETS;
+		config_view.createPlanet = mdCreatePlanet;
 	}
 
-	switch (config->difficulty) {
+	switch (config_view.difficulty) {
 	case MANIAC:
-		config->lives = 1;
+		config_view.lives = 1;
 		break;
 	case HARD:
-		config->lives = 3;
+		config_view.lives = 3;
 		break;
 	case NORMAL:
-		config->lives = 5;
+		config_view.lives = 5;
 		break;
 	default: // EASY
-		config->lives = 10;
+		config_view.lives = 10;
 	}
+
+	config.mode = config_view.mode;
+	config.difficulty = config_view.difficulty;
+	config.players = config_view.players;
+	config.lives = config_view.lives;
+	config.limited_ammo = config_view.limited_ammo;
+	config.createPlanet = config_view.createPlanet;
+	config.num_planets = config_view.num_planets;
 }
 
 static void joyEvent(u16 joy, u16 changed, u16 state) {
@@ -290,15 +313,15 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 	if (BUTTON_ABC & changed & ~state) {
 
 		if (current_option == OPTION_MODE) {
-			changeMode(&config);
+			changeMode();
 			refresh = TRUE;
 
 		} else if (current_option == OPTION_PLAYERS) {
-			changePlayers(&config);
+			changePlayers();
 			refresh = TRUE;
 
 		} else if (current_option == OPTION_DIFFICULTY) {
-			changeDifficulty(&config);
+			changeDifficulty();
 			refresh = TRUE;
 		}
 

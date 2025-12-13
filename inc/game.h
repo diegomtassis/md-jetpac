@@ -17,9 +17,9 @@ struct Game {
 	Planet* planet;
 };
 
-GameResult runGame(const Config *config);
+GameResult GAME_run(const Config *config);
 
-void scoreByEvent(GameEvent event, u8 player_id);
+void GAME_scoreByEvent(GameEvent event, u8 player_id);
 
 extern Game game;
 

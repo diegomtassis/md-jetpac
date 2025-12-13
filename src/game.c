@@ -56,7 +56,7 @@ static const V2u16 message_pos = { .x = 16, .y = 7 };
 
 Game game;
 
-GameResult runGame(const Config *config) {
+GameResult GAME_run(const Config *config) {
     initGame(config);
 
     SPR_init();
@@ -139,7 +139,7 @@ GameResult runGame(const Config *config) {
     return result;
 }
 
-void scoreByEvent(GameEvent event, u8 player_id) {
+void GAME_scoreByEvent(GameEvent event, u8 player_id) {
     if (!config.createPlanet) {
         return;
     }
