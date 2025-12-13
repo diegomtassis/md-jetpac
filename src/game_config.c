@@ -35,8 +35,6 @@ typedef struct ConfigView {
 	u8 players;
 	u8 lives;
 	bool limited_ammo;
-	Planet* (*const* createPlanet)(void);
-	u8 num_planets;
 } ConfigView;
 
 static void setUpDefaults();
@@ -66,10 +64,9 @@ volatile enum option {
 	OPTION_START,
 } current_option;
 
-static ConfigView config_view;
-
 Config config;
 
+static ConfigView config_view;
 volatile bool start = FALSE;
 volatile bool refresh = TRUE;
 
@@ -140,8 +137,6 @@ static void setUpDefaults() {
 	config_view.players = ONE_PLAYER;
 	config_view.lives = 0;
 	config_view.limited_ammo = FALSE;
-	config_view.createPlanet = NULL;
-	config_view.num_planets = 0;
 }
 
 static void initConfigScreen() {
@@ -256,37 +251,33 @@ static void displayOption(const char *option, const char *value, u8 highlighted,
 
 static void expandGameConfig(void) {
 
+	config.mode = config_view.mode;
+	config.difficulty = config_view.difficulty;
+	config.players = config_view.players;
+
 	if (config_view.mode == ZX) {
-		config_view.limited_ammo = FALSE;
-		config_view.num_planets = ZX_NUM_PLANETS;
-		config_view.createPlanet = zxCreatePlanet;
+		config.limited_ammo = FALSE;
+		config.num_planets = ZX_NUM_PLANETS;
+		config.createPlanet = zxCreatePlanet;
 	} else {
-		config_view.limited_ammo = TRUE;
-		config_view.num_planets = MD_NUM_PLANETS;
-		config_view.createPlanet = mdCreatePlanet;
+		config.limited_ammo = TRUE;
+		config.num_planets = MD_NUM_PLANETS;
+		config.createPlanet = mdCreatePlanet;
 	}
 
 	switch (config_view.difficulty) {
 	case MANIAC:
-		config_view.lives = 1;
+		config.lives = 1;
 		break;
 	case HARD:
-		config_view.lives = 3;
+		config.lives = 3;
 		break;
 	case NORMAL:
-		config_view.lives = 5;
+		config.lives = 5;
 		break;
 	default: // EASY
-		config_view.lives = 10;
+		config.lives = 10;
 	}
-
-	config.mode = config_view.mode;
-	config.difficulty = config_view.difficulty;
-	config.players = config_view.players;
-	config.lives = config_view.lives;
-	config.limited_ammo = config_view.limited_ammo;
-	config.createPlanet = config_view.createPlanet;
-	config.num_planets = config_view.num_planets;
 }
 
 static void joyEvent(u16 joy, u16 changed, u16 state) {
