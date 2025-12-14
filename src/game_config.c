@@ -13,28 +13,58 @@
 #include "../inc/elements.h"
 #include "../inc/planets.h"
 
-static const char* JETPAC_GAME_SELECTION = "JETPAC GAME SELECTION";
-static const char* TEXT_MODE = "MODE";
-static const char* TEXT_ZX = "ZX";
-static const char* TEXT_MD = "MD";
-static const char* TEXT_PLAYERS = "PLAYERS";
-static const char* TEXT_ONE_PLAYER = "1";
-static const char* TEXT_TWO_PLAYERS = "2";
-static const char* TEXT_DIFFICULTY = "DIFFICULTY";
-static const char* TEXT_EASY = "EASY";
-static const char* TEXT_NORMAL = "NORMAL";
-static const char* TEXT_HARD = "HARD";
-static const char* TEXT_MANIAC = "MANIAC";
-static const char* PRESS_START_BUTTON = "START GAME";
+static const char* TEXT_CONFIGURATION = "JETPAC GAME SELECTION";
+
+static const char* TEXT_ENTRY_MODE = "MODE";
+static const char* TEXT_OPTION_ZX = "ZX";
+static const char* TEXT_OPTION_MD = "MD";
+
+static const char* TEXT_ENTRY_PLAYERS = "PLAYERS";
+static const char* TEXT_OPTION_ONE_PLAYER = "1";
+static const char* TEXT_OPTION_TWO_PLAYERS = "2";
+
+static const char* TEXT_ENTRY_DIFFICULTY = "DIFFICULTY";
+static const char* TEXT_OPTION_EASY = "EASY";
+static const char* TEXT_OPTION_NORMAL = "NORMAL";
+static const char* TEXT_OPTION_HARD = "HARD";
+static const char* TEXT_OPTION_MANIAC = "MANIAC";
+
+static const char* TEXT_ENTRY_START = "START GAME";
 
 static const u16 BUTTON_ABC = BUTTON_A | BUTTON_B | BUTTON_C;
+
+typedef struct ConfigOption {
+	const char* text;
+	u8 value;
+	u8 text_pos;
+} ConfigOption;
+
+typedef enum ConfigEntryId {
+	ENTRY_MODE, //
+	ENTRY_PLAYERS, //
+	ENTRY_DIFFICULTY, //
+	ENTRY_START,
+} ConfigEntryId;
+
+volatile enum ConfigEntryId current_entry;
+
+typedef struct ConfigEntry {
+	u8 entry;
+	const char* text;
+	u8 text_pos;
+	u8 num_options;
+	u8 current_option;
+	ConfigOption *options;
+} ConfigEntry;
 
 typedef struct ConfigView {
 	u8 mode;
 	u8 difficulty;
 	u8 players;
-	u8 lives;
-	bool limited_ammo;
+
+	u8 num_entries;
+	u8 current_entry;
+	ConfigEntry *entries;
 } ConfigView;
 
 static void setUpDefaults();
@@ -56,13 +86,10 @@ static void changeDifficulty(void);
 static void expandGameConfig(void);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
-
-volatile enum option {
-	OPTION_MODE, //
-	OPTION_PLAYERS, //
-	OPTION_DIFFICULTY, //
-	OPTION_START,
-} current_option;
+static void createModeEntry(ConfigEntry* entry);
+static void createPlayersEntry(ConfigEntry* entry);
+static void createDifficultyEntry(ConfigEntry* entry);
+static void createStartEntry(ConfigEntry* entry);
 
 Config config;
 
@@ -102,14 +129,21 @@ Planet* (* const mdCreatePlanet[5])(void) = { //
 
 void CONFIG_init(void) {
 
-	setUpDefaults();
+	config_view.num_entries = 4;
+	config_view.current_entry = 0;
+	config_view.entries = MEM_calloc(sizeof(ConfigEntry) * config_view.num_entries);
+
+	createModeEntry(&config_view.entries[0]);
+	createPlayersEntry(&config_view.entries[1]);
+	createDifficultyEntry(&config_view.entries[2]);
+	createStartEntry(&config_view.entries[3]);
 }
 
 void CONFIG_setUp(void) {
 
 	u8 prev_priority = VDP_getTextPriority();
 
-	current_option = OPTION_MODE;
+	current_entry = ENTRY_MODE;
 
 	initConfigScreen();
 
@@ -132,11 +166,7 @@ void CONFIG_setUp(void) {
 }
 
 static void setUpDefaults() {
-	config_view.mode = ZX;
-	config_view.difficulty = NORMAL;
-	config_view.players = ONE_PLAYER;
-	config_view.lives = 0;
-	config_view.limited_ammo = FALSE;
+
 }
 
 static void initConfigScreen() {
@@ -158,19 +188,19 @@ static void displayConfig(V2u16 pos) {
 
 	if (refresh) {
 
-		VDP_drawText(JETPAC_GAME_SELECTION, pos.x, pos.y);
+		VDP_drawText(TEXT_CONFIGURATION, pos.x, pos.y);
 
 		pos.y += 4;
-		displayOption(TEXT_MODE, printableMode(), current_option == OPTION_MODE, pos.x, pos.y);
+		displayOption(TEXT_ENTRY_MODE, printableMode(), current_entry == ENTRY_MODE, pos.x, pos.y);
 
 		pos.y += 2;
-		displayOption(TEXT_PLAYERS, printablePlayers(), current_option == OPTION_PLAYERS, pos.x, pos.y);
+		displayOption(TEXT_ENTRY_PLAYERS, printablePlayers(), current_entry == ENTRY_PLAYERS, pos.x, pos.y);
 
 		pos.y += 2;
-		displayOption(TEXT_DIFFICULTY, printableDifficulty(), current_option == OPTION_DIFFICULTY, pos.x, pos.y);
+		displayOption(TEXT_ENTRY_DIFFICULTY, printableDifficulty(), current_entry == ENTRY_DIFFICULTY, pos.x, pos.y);
 
 		pos.y += 4;
-		displayOption(PRESS_START_BUTTON, 0, current_option == OPTION_START, pos.x, pos.y);
+		displayOption(TEXT_ENTRY_START, 0, current_entry == ENTRY_START, pos.x, pos.y);
 
 		refresh = FALSE;
 	}
@@ -180,9 +210,9 @@ static const char* printableMode(void) {
 
 	switch (config_view.mode) {
 	case ZX:
-		return TEXT_ZX;
+		return TEXT_OPTION_ZX;
 	default:
-		return TEXT_MD;
+		return TEXT_OPTION_MD;
 	}
 }
 
@@ -190,10 +220,10 @@ static const char* printablePlayers(void) {
 
 	switch (config_view.players) {
 	case ONE_PLAYER:
-		return TEXT_ONE_PLAYER;
+		return TEXT_OPTION_ONE_PLAYER;
 
 	default:
-		return TEXT_TWO_PLAYERS;
+		return TEXT_OPTION_TWO_PLAYERS;
 	}
 }
 
@@ -201,13 +231,13 @@ static const char* printableDifficulty(void) {
 
 	switch (config_view.difficulty) {
 	case EASY:
-		return TEXT_EASY;
+		return TEXT_OPTION_EASY;
 	case NORMAL:
-		return TEXT_NORMAL;
+		return TEXT_OPTION_NORMAL;
 	case HARD:
-		return TEXT_HARD;
+		return TEXT_OPTION_HARD;
 	default:
-		return TEXT_MANIAC;
+		return TEXT_OPTION_MANIAC;
 	}
 }
 
@@ -284,34 +314,34 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 
 	if (BUTTON_DOWN & changed & ~state) {
 
-		if (current_option == OPTION_START) {
-			current_option = OPTION_MODE;
+		if (current_entry == ENTRY_START) {
+			current_entry = ENTRY_MODE;
 		} else {
-			current_option++;
+			current_entry++;
 		}
 		refresh = TRUE;
 	}
 
 	if (BUTTON_UP & changed & ~state) {
-		if (current_option == OPTION_MODE) {
-			current_option = OPTION_START;
+		if (current_entry == ENTRY_MODE) {
+			current_entry = ENTRY_START;
 		} else {
-			current_option--;
+			current_entry--;
 		}
 		refresh = TRUE;
 	}
 
 	if (BUTTON_ABC & changed & ~state) {
 
-		if (current_option == OPTION_MODE) {
+		if (current_entry == ENTRY_MODE) {
 			changeMode();
 			refresh = TRUE;
 
-		} else if (current_option == OPTION_PLAYERS) {
+		} else if (current_entry == ENTRY_PLAYERS) {
 			changePlayers();
 			refresh = TRUE;
 
-		} else if (current_option == OPTION_DIFFICULTY) {
+		} else if (current_entry == ENTRY_DIFFICULTY) {
 			changeDifficulty();
 			refresh = TRUE;
 		}
@@ -319,8 +349,80 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 	}
 
 	if (BUTTON_START & changed & ~state) {
-		if (current_option == OPTION_START) {
+		if (current_entry == ENTRY_START) {
 			start = TRUE;
 		}
 	}
+}
+
+static void createModeEntry(ConfigEntry* entry) {
+
+	entry->entry = ENTRY_MODE;
+	entry->text = TEXT_ENTRY_MODE;
+	entry->text_pos = 0;
+	entry->num_options = 2;
+	entry->current_option = config_view.mode;
+	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
+
+	entry->options[0].text = TEXT_OPTION_ZX;
+	entry->options[0].value = ZX;
+	entry->options[0].text_pos = 0;
+
+	entry->options[1].text = TEXT_OPTION_MD;
+	entry->options[1].value = MD;
+	entry->options[1].text_pos = 0;
+}
+
+static void createPlayersEntry(ConfigEntry* entry) {
+
+	entry->entry = ENTRY_PLAYERS;
+	entry->text = TEXT_ENTRY_PLAYERS;
+	entry->text_pos = 0;
+	entry->num_options = 2;
+	entry->current_option = config_view.players - 1;
+	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
+
+	entry->options[0].text = TEXT_OPTION_ONE_PLAYER;
+	entry->options[0].value = ONE_PLAYER;
+	entry->options[0].text_pos = 0;
+
+	entry->options[1].text = TEXT_OPTION_TWO_PLAYERS;
+	entry->options[1].value = TWO_PLAYERS;
+	entry->options[1].text_pos = 0;
+}
+
+static void createDifficultyEntry(ConfigEntry* entry) {
+
+	entry->entry = ENTRY_DIFFICULTY;
+	entry->text = TEXT_ENTRY_DIFFICULTY;
+	entry->text_pos = 0;
+	entry->num_options = 4;
+	entry->current_option = config_view.difficulty;
+	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
+
+	entry->options[0].text = TEXT_OPTION_EASY;
+	entry->options[0].value = EASY;
+	entry->options[0].text_pos = 0;
+
+	entry->options[1].text = TEXT_OPTION_NORMAL;
+	entry->options[1].value = NORMAL;
+	entry->options[1].text_pos = 0;
+
+	entry->options[2].text = TEXT_OPTION_HARD;
+	entry->options[2].value = HARD;
+	entry->options[2].text_pos = 0;
+
+	entry->options[3].text = TEXT_OPTION_MANIAC;
+	entry->options[3].value = MANIAC;
+	entry->options[3].text_pos = 0;
+}
+
+static void createStartEntry(ConfigEntry* entry) {
+
+	entry->entry = ENTRY_START;
+	entry->text = TEXT_ENTRY_START;
+	entry->text_pos = 0;
+	entry->num_options = 0;
+	entry->current_option = 0;
+	entry->options = NULL;
 }
