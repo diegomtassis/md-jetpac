@@ -15,23 +15,25 @@
 
 Config config;
 
-static const char* TEXT_CONFIGURATION = "JETPAC GAME SELECTION";
+static const u16 MARGIN = 3;
 
-static const char* TEXT_ENTRY_MODE = "MODE";
+static const char* TEXT_CONFIGURATION = "JETPAC Configuration";
+
+static const char* TEXT_ENTRY_MODE = "Mode";
 static const char* TEXT_OPTION_ZX = "ZX";
 static const char* TEXT_OPTION_MD = "MD";
 
-static const char* TEXT_ENTRY_PLAYERS = "PLAYERS";
+static const char* TEXT_ENTRY_PLAYERS = "Players";
 static const char* TEXT_OPTION_ONE_PLAYER = "1";
 static const char* TEXT_OPTION_TWO_PLAYERS = "2";
 
-static const char* TEXT_ENTRY_DIFFICULTY = "DIFFICULTY";
-static const char* TEXT_OPTION_EASY = "EASY";
-static const char* TEXT_OPTION_NORMAL = "NORMAL";
-static const char* TEXT_OPTION_HARD = "HARD";
-static const char* TEXT_OPTION_MANIAC = "MANIAC";
+static const char* TEXT_ENTRY_DIFFICULTY = "Difficulty";
+static const char* TEXT_OPTION_EASY = "Easy";
+static const char* TEXT_OPTION_NORMAL = "Normal";
+static const char* TEXT_OPTION_HARD = "Hard";
+static const char* TEXT_OPTION_MANIAC = "Maniac";
 
-static const char* TEXT_ENTRY_START = "START GAME";
+static const char* TEXT_ENTRY_START = "Start Game";
 
 static const u16 BUTTON_ABC = BUTTON_A | BUTTON_B | BUTTON_C;
 
@@ -70,10 +72,11 @@ static void clearConfigScreen();
 static void displayConfig(V2u16 pos);
 
 static void displayConfigEntry(const ConfigEntry *entry, u8 highlighted, u16 x, u16 y);
-static void incEntryCurrentOption(ConfigEntry *entry);
-static void decEntryCurrentOption(ConfigEntry *entry);
+static void incrementOption(ConfigEntry *entry);
+static void decrementOption(ConfigEntry *entry);
 static const char* printableOptionValue(const ConfigEntry *entry);
 static u8 entrySpacing(u8 entryId);
+static void setOption(ConfigOption *option, const char* text, u8 value);
 
 static void expandGameConfig(void);
 
@@ -197,28 +200,24 @@ static void displayConfig(V2u16 pos) {
 	refresh = FALSE;
 }
 
-static void incEntryCurrentOption(ConfigEntry *entry) {
+static void incrementOption(ConfigEntry *entry) {
 
 	if (!entry || !entry->num_options) {
 		return;
 	}
 
-	if (entry->current_option + 1 >= entry->num_options) {
-		entry->current_option = 0;
-	} else {
+	if (entry->current_option + 1 < entry->num_options) {
 		entry->current_option++;
 	}
 }
 
-static void decEntryCurrentOption(ConfigEntry *entry) {
+static void decrementOption(ConfigEntry *entry) {
 
 	if (!entry || !entry->num_options) {
 		return;
 	}
 
-	if (entry->current_option == 0) {
-		entry->current_option = entry->num_options - 1;
-	} else {
+	if (entry->current_option > 0) {
 		entry->current_option--;
 	}
 }
@@ -231,10 +230,10 @@ static void displayConfigEntry(const ConfigEntry *entry, u8 highlighted, u16 x, 
 
 	VDP_clearTextLine(y);
 	VDP_setTextPriority(highlighted);
-	VDP_drawText(entry->text, x, y);
+	VDP_drawText(entry->text, entry->text_pos, y);
 	const char *value = printableOptionValue(entry);
 	if (value) {
-		VDP_drawText(value, x + 15, y);
+		VDP_drawText(value, entry->options[entry->current_option].text_pos, y);
 	}
 	VDP_setTextPriority(0);
 }
@@ -251,6 +250,17 @@ static const char* printableOptionValue(const ConfigEntry *entry) {
 static u8 entrySpacing(u8 entryId) {
 
 	return (entryId == ENTRY_START) ? 4 : 2;
+}
+
+static void setOption(ConfigOption *option, const char* text, u8 value) {
+
+	if (!option || !text) {
+		return;
+	}
+
+	option->text = text;
+	option->value = value;
+	option->text_pos = (u8) (31 - MARGIN - strlen(text));
 }
 
 static void expandGameConfig(void) {
@@ -287,7 +297,6 @@ static void expandGameConfig(void) {
 static void joyEvent(u16 joy, u16 changed, u16 state) {
 
 	if (BUTTON_DOWN & changed & ~state) {
-
 		if (config_view.current_entry + 1 < config_view.num_entries) {
 			config_view.current_entry++;
 		}
@@ -302,19 +311,17 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 	}
 
 	if (BUTTON_RIGHT & changed & ~state) {
-
 		ConfigEntry *entry = &config_view.entries[config_view.current_entry];
 		if (entry->entry_id != ENTRY_START && entry->num_options) {
-			incEntryCurrentOption(entry);
+			incrementOption(entry);
 			refresh = TRUE;
 		}
 	}
 
 	if (BUTTON_LEFT & changed & ~state) {
-
 		ConfigEntry *entry = &config_view.entries[config_view.current_entry];
 		if (entry->entry_id != ENTRY_START && entry->num_options) {
-			decEntryCurrentOption(entry);
+			decrementOption(entry);
 			refresh = TRUE;
 		}
 	}
@@ -330,69 +337,48 @@ static void createModeEntry(ConfigEntry* entry) {
 
 	entry->entry_id = ENTRY_MODE;
 	entry->text = TEXT_ENTRY_MODE;
-	entry->text_pos = 0;
+	entry->text_pos = MARGIN;
 	entry->num_options = 2;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
-	entry->current_option = 1;
+	entry->current_option = 0;
 
-	entry->options[0].text = TEXT_OPTION_ZX;
-	entry->options[0].value = ZX;
-	entry->options[0].text_pos = 0;
-
-	entry->options[1].text = TEXT_OPTION_MD;
-	entry->options[1].value = MD;
-	entry->options[1].text_pos = 0;
+	setOption(&entry->options[0], TEXT_OPTION_ZX, ZX);
+	setOption(&entry->options[1], TEXT_OPTION_MD, MD);
 }
 
 static void createPlayersEntry(ConfigEntry* entry) {
 
 	entry->entry_id = ENTRY_PLAYERS;
 	entry->text = TEXT_ENTRY_PLAYERS;
-	entry->text_pos = 0;
+	entry->text_pos = MARGIN;
 	entry->num_options = 2;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
-	entry->current_option = 1;
+	entry->current_option = 0;
 
-	entry->options[0].text = TEXT_OPTION_ONE_PLAYER;
-	entry->options[0].value = ONE_PLAYER;
-	entry->options[0].text_pos = 0;
-
-	entry->options[1].text = TEXT_OPTION_TWO_PLAYERS;
-	entry->options[1].value = TWO_PLAYERS;
-	entry->options[1].text_pos = 0;
+	setOption(&entry->options[0], TEXT_OPTION_ONE_PLAYER, ONE_PLAYER);
+	setOption(&entry->options[1], TEXT_OPTION_TWO_PLAYERS, TWO_PLAYERS);
 }
 
 static void createDifficultyEntry(ConfigEntry* entry) {
 
 	entry->entry_id = ENTRY_DIFFICULTY;
 	entry->text = TEXT_ENTRY_DIFFICULTY;
-	entry->text_pos = 0;
+	entry->text_pos = MARGIN;
 	entry->num_options = 4;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
-	entry->current_option = 1;
+	entry->current_option = 0;
 
-	entry->options[0].text = TEXT_OPTION_EASY;
-	entry->options[0].value = EASY;
-	entry->options[0].text_pos = 0;
-
-	entry->options[1].text = TEXT_OPTION_NORMAL;
-	entry->options[1].value = NORMAL;
-	entry->options[1].text_pos = 0;
-
-	entry->options[2].text = TEXT_OPTION_HARD;
-	entry->options[2].value = HARD;
-	entry->options[2].text_pos = 0;
-
-	entry->options[3].text = TEXT_OPTION_MANIAC;
-	entry->options[3].value = MANIAC;
-	entry->options[3].text_pos = 0;
+	setOption(&entry->options[0], TEXT_OPTION_EASY, EASY);
+	setOption(&entry->options[1], TEXT_OPTION_NORMAL, NORMAL);
+	setOption(&entry->options[2], TEXT_OPTION_HARD, HARD);
+	setOption(&entry->options[3], TEXT_OPTION_MANIAC, MANIAC);
 }
 
 static void createStartEntry(ConfigEntry* entry) {
 
 	entry->entry_id = ENTRY_START;
 	entry->text = TEXT_ENTRY_START;
-	entry->text_pos = 0;
+	entry->text_pos = MARGIN;
 	entry->options = NULL;
 	entry->num_options = 0;
 	entry->current_option = 0;
