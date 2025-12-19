@@ -8,9 +8,11 @@
 #include "../../inc/config/game_config.h"
 
 #include <genesis.h>
+#include <kdebug.h>
 
 #include "../../inc/fwk/commons.h"
 #include "../../inc/config/config.h"
+#include "../../inc/config/sandbox_config.h"
 #include "../../inc/elements.h"
 #include "../../inc/planets.h"
 
@@ -36,7 +38,6 @@ static const char* TEXT_OPTION_HARD = "Hard";
 static const char* TEXT_OPTION_MANIAC = "Maniac";
 
 static const char* TEXT_ENTRY_START = "Start Game";
-
 
 static const u16 BUTTON_ABC = BUTTON_A | BUTTON_B | BUTTON_C;
 
@@ -119,6 +120,8 @@ void CONFIG_GAME_init(void) {
 
 	start_entry = &config_view.entries[3];
 	createStartEntry(start_entry);
+
+	CONFIG_SANDBOX_init();
 }
 
 void CONFIG_GAME_setUp(void) {
@@ -198,7 +201,7 @@ static void displayConfigEntry(const MenuEntry *entry, u8 highlighted, u16 x, u1
 
 static u8 entrySpacing(u8 type) {
 
-	return (type == ENTRY_START) ? 4 : 2;
+	return (type == ENTRY_CONFIG) ? 2 : 4;
 }
 
 
@@ -265,6 +268,20 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 		}
 	}
 
+	if (BUTTON_ABC & changed & ~state) {
+		MenuEntry *entry = &config_view.entries[config_view.current_entry];
+		if (entry->type == ENTRY_CONFIG && entry->num_options) {
+			ConfigOption *option = &entry->options[entry->current_option];
+			if (option->showNestedConfig) {
+				option->showNestedConfig();
+				clearConfigScreen();
+				initConfigScreen();
+				JOY_setEventHandler(joyEvent);
+				refresh = TRUE;
+			}
+		}
+	}
+
 	if (BUTTON_START & changed & ~state) {
 		if (config_view.entries[config_view.current_entry].type == ENTRY_START) {
 			start = TRUE;
@@ -284,7 +301,7 @@ static void createModeEntry(MenuEntry* entry) {
 
 	CONFIG_setOption(&entry->options[0], TEXT_OPTION_ZX, ZX, NULL);
 	CONFIG_setOption(&entry->options[1], TEXT_OPTION_MD, MD, NULL);
-	CONFIG_setOption(&entry->options[2], TEXT_OPTION_SANDBOX, SANDBOX, NULL);
+	CONFIG_setOption(&entry->options[2], TEXT_OPTION_SANDBOX, SANDBOX, CONFIG_SANDBOX_setUp);
 }
 
 static void createPlayersEntry(MenuEntry* entry) {

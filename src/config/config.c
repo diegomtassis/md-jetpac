@@ -14,7 +14,7 @@ void CONFIG_setOption(ConfigOption *option, const char* text, u8 value, void (*a
     option->text = text;
     option->value = value;
     option->text_pos = (u8) (31 - 3 - strlen(text));
-    option->action = action;
+    option->showNestedConfig = action;
 }
 
 const char* CONFIG_printableOptionValue(const MenuEntry *entry) {

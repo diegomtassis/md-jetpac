@@ -13,7 +13,7 @@ typedef struct ConfigOption {
     const char* text;
     u8 value;
     u8 text_pos;
-    void (*action)(void);
+    void (*showNestedConfig)(void);
 } ConfigOption;
 
 typedef enum MenuEntryType {
