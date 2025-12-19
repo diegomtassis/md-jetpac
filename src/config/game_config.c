@@ -5,13 +5,14 @@
  *      Author: diegomtassis
  */
 
-#include "../inc/game_config.h"
+#include "../../inc/config/game_config.h"
 
 #include <genesis.h>
 
-#include "../inc/fwk/commons.h"
-#include "../inc/elements.h"
-#include "../inc/planets.h"
+#include "../../inc/fwk/commons.h"
+#include "../../inc/config/config.h"
+#include "../../inc/elements.h"
+#include "../../inc/planets.h"
 
 Config config;
 
@@ -22,6 +23,7 @@ static const char* TEXT_CONFIGURATION = "JETPAC Configuration";
 static const char* TEXT_ENTRY_MODE = "Mode";
 static const char* TEXT_OPTION_ZX = "ZX";
 static const char* TEXT_OPTION_MD = "MD";
+static const char* TEXT_OPTION_SANDBOX = "Sandbox";
 
 static const char* TEXT_ENTRY_PLAYERS = "Players";
 static const char* TEXT_OPTION_ONE_PLAYER = "1";
@@ -35,67 +37,42 @@ static const char* TEXT_OPTION_MANIAC = "Maniac";
 
 static const char* TEXT_ENTRY_START = "Start Game";
 
+
 static const u16 BUTTON_ABC = BUTTON_A | BUTTON_B | BUTTON_C;
 
-typedef struct ConfigOption {
-	const char* text;
-	u8 value;
-	u8 text_pos;
-} ConfigOption;
-
 typedef enum ConfigEntryId {
-	ENTRY_MODE, //
-	ENTRY_PLAYERS, //
-	ENTRY_DIFFICULTY, //
-	ENTRY_START,
+	CONFIG_NONE = 0, //
+	CONFIG_MODE, //
+	CONFIG_PLAYERS, //
+	CONFIG_DIFFICULTY //
 } ConfigEntryId;
-
-
-typedef struct ConfigEntry {
-	u8 entry_id;
-	const char* text;
-	u8 text_pos;
-	u8 num_options;
-	u8 current_option;
-	ConfigOption *options;
-} ConfigEntry;
-
-typedef struct ConfigView {
-	ConfigEntry *entries;
-	u8 num_entries;
-	u8 current_entry;
-} ConfigView;
 
 static void initConfigScreen();
 static void clearConfigScreen();
 
 static void displayConfig(V2u16 pos);
 
-static void displayConfigEntry(const ConfigEntry *entry, u8 highlighted, u16 x, u16 y);
-static void incrementOption(ConfigEntry *entry);
-static void decrementOption(ConfigEntry *entry);
-static const char* printableOptionValue(const ConfigEntry *entry);
+static void displayConfigEntry(const MenuEntry *entry, u8 highlighted, u16 x, u16 y);
 static u8 entrySpacing(u8 entryId);
-static void setOption(ConfigOption *option, const char* text, u8 value);
 
 static void expandGameConfig(void);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
-static void createModeEntry(ConfigEntry* entry);
-static void createPlayersEntry(ConfigEntry* entry);
-static void createDifficultyEntry(ConfigEntry* entry);
-static void createStartEntry(ConfigEntry* entry);
+static void createModeEntry(MenuEntry* entry);
+static void createPlayersEntry(MenuEntry* entry);
+static void createDifficultyEntry(MenuEntry* entry);
+static void createStartEntry(MenuEntry* entry);
 
-static ConfigView config_view;
+static MenuView config_view;
 static volatile bool start = FALSE;
 static volatile bool refresh = TRUE;
 
-static const V2u16 pos_init = { .x = 6, .y = 8 };
+static const V2u16 pos_init = { .x = 6, .y = 6 };
 
-static ConfigEntry *mode_entry = NULL;
-static ConfigEntry *players_entry = NULL;
-static ConfigEntry *difficulty_entry = NULL;
-static ConfigEntry *start_entry = NULL;
+static MenuEntry *mode_entry = NULL;
+static MenuEntry *players_entry = NULL;
+static MenuEntry *difficulty_entry = NULL;
+static MenuEntry *start_entry = NULL;
 
 static const u8 ZX_NUM_PLANETS = 16;
 Planet* (* const zxCreatePlanet[16])(void) = { //
@@ -125,24 +102,26 @@ Planet* (* const mdCreatePlanet[5])(void) = { //
 			createPlanetMD04,//
 };
 
-void CONFIG_init(void) {
+void CONFIG_GAME_init(void) {
 
 	config_view.num_entries = 4;
 	config_view.current_entry = 0;
-	config_view.entries = MEM_calloc(sizeof(ConfigEntry) * config_view.num_entries);
+	config_view.entries = MEM_calloc(sizeof(MenuEntry) * config_view.num_entries);
 
 	mode_entry = &config_view.entries[0];
-	players_entry = &config_view.entries[1];
-	difficulty_entry = &config_view.entries[2];
-	start_entry = &config_view.entries[3];
-
 	createModeEntry(mode_entry);
+
+	players_entry = &config_view.entries[1];
 	createPlayersEntry(players_entry);
+
+	difficulty_entry = &config_view.entries[2];
 	createDifficultyEntry(difficulty_entry);
+
+	start_entry = &config_view.entries[3];
 	createStartEntry(start_entry);
 }
 
-void CONFIG_setUp(void) {
+void CONFIG_GAME_setUp(void) {
 
 	u8 prev_priority = VDP_getTextPriority();
 
@@ -191,38 +170,17 @@ static void displayConfig(V2u16 pos) {
 
 	u16 current_y = pos.y + 2;
 	for (u8 idx = 0; idx < config_view.num_entries; idx++) {
-		ConfigEntry *entry = &config_view.entries[idx];
+		MenuEntry *entry = &config_view.entries[idx];
 		u8 highlighted = (idx == config_view.current_entry);
-		current_y += entrySpacing(entry->entry_id);
+		current_y += entrySpacing(entry->type);
 		displayConfigEntry(entry, highlighted, pos.x, current_y);
 	}
 
 	refresh = FALSE;
 }
 
-static void incrementOption(ConfigEntry *entry) {
 
-	if (!entry || !entry->num_options) {
-		return;
-	}
-
-	if (entry->current_option + 1 < entry->num_options) {
-		entry->current_option++;
-	}
-}
-
-static void decrementOption(ConfigEntry *entry) {
-
-	if (!entry || !entry->num_options) {
-		return;
-	}
-
-	if (entry->current_option > 0) {
-		entry->current_option--;
-	}
-}
-
-static void displayConfigEntry(const ConfigEntry *entry, u8 highlighted, u16 x, u16 y) {
+static void displayConfigEntry(const MenuEntry *entry, u8 highlighted, u16 x, u16 y) {
 
 	if (!entry || !entry->text) {
 		return;
@@ -231,37 +189,18 @@ static void displayConfigEntry(const ConfigEntry *entry, u8 highlighted, u16 x, 
 	VDP_clearTextLine(y);
 	VDP_setTextPriority(highlighted);
 	VDP_drawText(entry->text, entry->text_pos, y);
-	const char *value = printableOptionValue(entry);
+	const char *value = CONFIG_printableOptionValue(entry);
 	if (value) {
 		VDP_drawText(value, entry->options[entry->current_option].text_pos, y);
 	}
 	VDP_setTextPriority(0);
 }
 
-static const char* printableOptionValue(const ConfigEntry *entry) {
+static u8 entrySpacing(u8 type) {
 
-	if (!entry || !entry->options || entry->current_option >= entry->num_options) {
-		return NULL;
-	}
-
-	return entry->options[entry->current_option].text;
+	return (type == ENTRY_START) ? 4 : 2;
 }
 
-static u8 entrySpacing(u8 entryId) {
-
-	return (entryId == ENTRY_START) ? 4 : 2;
-}
-
-static void setOption(ConfigOption *option, const char* text, u8 value) {
-
-	if (!option || !text) {
-		return;
-	}
-
-	option->text = text;
-	option->value = value;
-	option->text_pos = (u8) (31 - MARGIN - strlen(text));
-}
 
 static void expandGameConfig(void) {
 
@@ -311,72 +250,77 @@ static void joyEvent(u16 joy, u16 changed, u16 state) {
 	}
 
 	if (BUTTON_RIGHT & changed & ~state) {
-		ConfigEntry *entry = &config_view.entries[config_view.current_entry];
-		if (entry->entry_id != ENTRY_START && entry->num_options) {
-			incrementOption(entry);
+		MenuEntry *entry = &config_view.entries[config_view.current_entry];
+		if (entry->type == ENTRY_CONFIG && entry->num_options) {
+			CONFIG_incrementOption(entry);
 			refresh = TRUE;
 		}
 	}
 
 	if (BUTTON_LEFT & changed & ~state) {
-		ConfigEntry *entry = &config_view.entries[config_view.current_entry];
-		if (entry->entry_id != ENTRY_START && entry->num_options) {
-			decrementOption(entry);
+		MenuEntry *entry = &config_view.entries[config_view.current_entry];
+		if (entry->type == ENTRY_CONFIG && entry->num_options) {
+			CONFIG_decrementOption(entry);
 			refresh = TRUE;
 		}
 	}
 
 	if (BUTTON_START & changed & ~state) {
-		if (config_view.entries[config_view.current_entry].entry_id == ENTRY_START) {
+		if (config_view.entries[config_view.current_entry].type == ENTRY_START) {
 			start = TRUE;
 		}
 	}
 }
 
-static void createModeEntry(ConfigEntry* entry) {
+static void createModeEntry(MenuEntry* entry) {
 
-	entry->entry_id = ENTRY_MODE;
+	entry->type = ENTRY_CONFIG;
+	entry->entry_id = CONFIG_MODE;
 	entry->text = TEXT_ENTRY_MODE;
 	entry->text_pos = MARGIN;
-	entry->num_options = 2;
+	entry->num_options = 3;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
 	entry->current_option = 0;
 
-	setOption(&entry->options[0], TEXT_OPTION_ZX, ZX);
-	setOption(&entry->options[1], TEXT_OPTION_MD, MD);
+	CONFIG_setOption(&entry->options[0], TEXT_OPTION_ZX, ZX, NULL);
+	CONFIG_setOption(&entry->options[1], TEXT_OPTION_MD, MD, NULL);
+	CONFIG_setOption(&entry->options[2], TEXT_OPTION_SANDBOX, SANDBOX, NULL);
 }
 
-static void createPlayersEntry(ConfigEntry* entry) {
+static void createPlayersEntry(MenuEntry* entry) {
 
-	entry->entry_id = ENTRY_PLAYERS;
+	entry->type = ENTRY_CONFIG;
+	entry->entry_id = CONFIG_PLAYERS;
 	entry->text = TEXT_ENTRY_PLAYERS;
 	entry->text_pos = MARGIN;
 	entry->num_options = 2;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
 	entry->current_option = 0;
 
-	setOption(&entry->options[0], TEXT_OPTION_ONE_PLAYER, ONE_PLAYER);
-	setOption(&entry->options[1], TEXT_OPTION_TWO_PLAYERS, TWO_PLAYERS);
+	CONFIG_setOption(&entry->options[0], TEXT_OPTION_ONE_PLAYER, ONE_PLAYER, NULL);
+	CONFIG_setOption(&entry->options[1], TEXT_OPTION_TWO_PLAYERS, TWO_PLAYERS, NULL);
 }
 
-static void createDifficultyEntry(ConfigEntry* entry) {
+static void createDifficultyEntry(MenuEntry* entry) {
 
-	entry->entry_id = ENTRY_DIFFICULTY;
+	entry->type = ENTRY_CONFIG;
+	entry->entry_id = CONFIG_DIFFICULTY;
 	entry->text = TEXT_ENTRY_DIFFICULTY;
 	entry->text_pos = MARGIN;
 	entry->num_options = 4;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
 	entry->current_option = 0;
 
-	setOption(&entry->options[0], TEXT_OPTION_EASY, EASY);
-	setOption(&entry->options[1], TEXT_OPTION_NORMAL, NORMAL);
-	setOption(&entry->options[2], TEXT_OPTION_HARD, HARD);
-	setOption(&entry->options[3], TEXT_OPTION_MANIAC, MANIAC);
+	CONFIG_setOption(&entry->options[0], TEXT_OPTION_EASY, EASY, NULL);
+	CONFIG_setOption(&entry->options[1], TEXT_OPTION_NORMAL, NORMAL, NULL);
+	CONFIG_setOption(&entry->options[2], TEXT_OPTION_HARD, HARD, NULL);
+	CONFIG_setOption(&entry->options[3], TEXT_OPTION_MANIAC, MANIAC, NULL);
 }
 
-static void createStartEntry(ConfigEntry* entry) {
+static void createStartEntry(MenuEntry* entry) {
 
-	entry->entry_id = ENTRY_START;
+	entry->type = ENTRY_START;
+	entry->entry_id = CONFIG_NONE;
 	entry->text = TEXT_ENTRY_START;
 	entry->text_pos = MARGIN;
 	entry->options = NULL;

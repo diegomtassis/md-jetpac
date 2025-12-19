@@ -7,7 +7,7 @@
 
 #include "../inc/shooting.h"
 #include "../inc/game.h"
-#include "../inc/game_config.h"
+#include "../inc/config/game_config.h"
 
 #include <maths.h>
 #include <memory.h>

@@ -5,17 +5,18 @@
  *      Author: diegomtassis
  */
 
-#ifndef INC_GAME_CONFIG_H_
-#define INC_GAME_CONFIG_H_
+#ifndef INC_CONFIG_GAME_CONFIG_H_
+#define INC_CONFIG_GAME_CONFIG_H_
 
 #include <genesis.h>
 
-#include "elements.h"
-#include "game.h"
+#include "../elements.h"
+#include "../game.h"
 
 typedef enum {
 	ZX, //
-	MD,
+	MD, //
+	SANDBOX,
 } Mode;
 
 typedef enum {
@@ -42,7 +43,7 @@ struct Config {
 
 extern Config config;
 
-void CONFIG_init(void);
-void CONFIG_setUp(void);
+void CONFIG_GAME_init(void);
+void CONFIG_GAME_setUp(void);
 
-#endif /* INC_GAME_CONFIG_H_ */
+#endif /* INC_CONFIG_GAME_CONFIG_H_ */

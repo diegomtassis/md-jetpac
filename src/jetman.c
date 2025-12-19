@@ -19,7 +19,7 @@
 #include "../res/zx.h"
 #include "../inc/hud.h"
 #include "../inc/spaceship.h"
-#include "../inc/game_config.h"
+#include "../inc/config/game_config.h"
 #include "../inc/game.h"
 
 #define ANIM_WALK		0

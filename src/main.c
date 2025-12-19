@@ -7,7 +7,7 @@
 
 #include <genesis.h>
 
-#include "../inc/game_config.h"
+#include "../inc/config/game_config.h"
 #include "../inc/elements.h"
 #include "../inc/fwk/printer.h"
 #include "../inc/fwk/vdp_utils.h"
@@ -48,12 +48,12 @@ int main(bool hard) {
 	resetTileMemory();
 	initHud();
 
-	CONFIG_init();
+	CONFIG_GAME_init();
 
 	while (1) {
 
 		// log_memory();
-		CONFIG_setUp();
+		CONFIG_GAME_setUp();
 
 		GameResult result = GAME_run(&config);
 

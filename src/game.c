@@ -10,7 +10,7 @@
 #include <genesis.h>
 
 #include "../inc/collectables.h"
-#include "../inc/game_config.h"
+#include "../inc/config/game_config.h"
 #include "../inc/enemies.h"
 #include "../inc/explosions.h"
 #include "../inc/fwk/commons.h"
