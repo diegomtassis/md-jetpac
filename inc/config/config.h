@@ -38,9 +38,19 @@ typedef struct MenuView {
     u8 current_entry;
 } MenuView;
 
+typedef struct MenuContext {
+    MenuView *current_menu;
+    volatile bool back;
+    volatile bool refresh;
+    volatile bool start;
+} MenuContext;
+
+extern MenuContext menuContext;
+
 void CONFIG_setOption(ConfigOption *option, const char* text, u8 value, void (*action)(void));
-const char* CONFIG_printableOptionValue(const MenuEntry *entry);
-void CONFIG_incrementOption(MenuEntry *entry);
-void CONFIG_decrementOption(MenuEntry *entry);
+void CONFIG_displayMenu(const char* title, V2u16 pos);
+void CONFIG_handleJoyEvent(u16 joy, u16 changed, u16 state);
+void CONFIG_initScreen(void);
+void CONFIG_clearScreen(void);
 
 #endif /* INC_FWK_CONFIG_H_ */
