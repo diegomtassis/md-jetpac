@@ -55,7 +55,7 @@ int main(bool hard) {
 		// log_memory();
 		CONFIG_GAME_setUp();
 
-		GameResult result = GAME_run(&config);
+		GameResult result = GAME_run(&game_config);
 
 		registerScore(result.p1_score);
 		registerScore(result.p2_score);

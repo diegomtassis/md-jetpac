@@ -1,5 +1,5 @@
 /*
- * config.c
+ * game_config.c
  *
  *  Created on: May 5, 2019
  *      Author: diegomtassis
@@ -16,9 +16,7 @@
 #include "../../inc/elements.h"
 #include "../../inc/planets.h"
 
-Config config;
-
-static const u16 MARGIN = 3;
+GameConfig game_config;
 
 static const char* TEXT_CONFIGURATION = "JETPAC Configuration";
 
@@ -39,19 +37,19 @@ static const char* TEXT_OPTION_MANIAC = "Maniac";
 
 static const char* TEXT_ENTRY_START = "Start Game";
 
-typedef enum ConfigEntryId {
+typedef enum GameConfigEntryId {
 	CONFIG_NONE = 0, //
 	CONFIG_MODE, //
 	CONFIG_PLAYERS, //
 	CONFIG_DIFFICULTY //
-} ConfigEntryId;
-
-static void expandGameConfig(void);
+} GameConfigEntryId;
 
 static void createModeEntry(MenuEntry* entry);
 static void createPlayersEntry(MenuEntry* entry);
 static void createDifficultyEntry(MenuEntry* entry);
 static void createStartEntry(MenuEntry* entry);
+
+static void expandGameConfig(void);
 
 static MenuView config_view;
 
@@ -113,61 +111,30 @@ void CONFIG_GAME_init(void) {
 
 void CONFIG_GAME_setUp(void) {
 
-	menuContext.current_menu = &config_view;
+	menu_context.current_menu = &config_view;
 
 	u8 prev_priority = VDP_getTextPriority();
 
 	CONFIG_initScreen();
 
-	menuContext.start = FALSE;
-	menuContext.refresh = TRUE;
+	menu_context.start = FALSE;
+	menu_context.refresh = TRUE;
 
 	JOY_setEventHandler(CONFIG_handleJoyEvent);
 
 	do {
 		CONFIG_displayMenu(TEXT_CONFIGURATION, pos_init);
 		SYS_doVBlankProcess();
-	} while (!menuContext.start);
+	} while (!menu_context.start);
 
-	menuContext.start = FALSE;
+	menu_context.start = FALSE;
 
 	setRandomSeed(getTick());
 
-	expandGameConfig();
+	expandSandboxConfig();
 
 	CONFIG_clearScreen();
 	VDP_setTextPriority(prev_priority);
-}
-
-static void expandGameConfig(void) {
-
-	config.mode = mode_entry->options[mode_entry->current_option].value;
-	config.difficulty = difficulty_entry->options[difficulty_entry->current_option].value;
-	config.players = players_entry->options[players_entry->current_option].value;
-
-	if (config.mode == ZX) {
-		config.limited_ammo = FALSE;
-		config.num_planets = ZX_NUM_PLANETS;
-		config.createPlanet = zxCreatePlanet;
-	} else {
-		config.limited_ammo = TRUE;
-		config.num_planets = MD_NUM_PLANETS;
-		config.createPlanet = mdCreatePlanet;
-	}
-
-	switch (config.difficulty) {
-	case MANIAC:
-		config.lives = 1;
-		break;
-	case HARD:
-		config.lives = 3;
-		break;
-	case NORMAL:
-		config.lives = 5;
-		break;
-	default: // EASY
-		config.lives = 10;
-	}
 }
 
 static void createModeEntry(MenuEntry* entry) {
@@ -175,7 +142,7 @@ static void createModeEntry(MenuEntry* entry) {
 	entry->type = ENTRY_CONFIG;
 	entry->entry_id = CONFIG_MODE;
 	entry->text = TEXT_ENTRY_MODE;
-	entry->text_pos = MARGIN;
+	entry->text_pos = MARGIN_L1;
 	entry->num_options = 3;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
 	entry->current_option = 0;
@@ -190,7 +157,7 @@ static void createPlayersEntry(MenuEntry* entry) {
 	entry->type = ENTRY_CONFIG;
 	entry->entry_id = CONFIG_PLAYERS;
 	entry->text = TEXT_ENTRY_PLAYERS;
-	entry->text_pos = MARGIN;
+	entry->text_pos = MARGIN_L1;
 	entry->num_options = 2;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
 	entry->current_option = 0;
@@ -204,7 +171,7 @@ static void createDifficultyEntry(MenuEntry* entry) {
 	entry->type = ENTRY_CONFIG;
 	entry->entry_id = CONFIG_DIFFICULTY;
 	entry->text = TEXT_ENTRY_DIFFICULTY;
-	entry->text_pos = MARGIN;
+	entry->text_pos = MARGIN_L1;
 	entry->num_options = 4;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
 	entry->current_option = 0;
@@ -220,8 +187,39 @@ static void createStartEntry(MenuEntry* entry) {
 	entry->type = ENTRY_START;
 	entry->entry_id = CONFIG_NONE;
 	entry->text = TEXT_ENTRY_START;
-	entry->text_pos = MARGIN;
+	entry->text_pos = MARGIN_L1;
 	entry->options = NULL;
 	entry->num_options = 0;
 	entry->current_option = 0;
+}
+
+static void expandGameConfig(void) {
+
+	game_config.mode = mode_entry->options[mode_entry->current_option].value;
+	game_config.difficulty = difficulty_entry->options[difficulty_entry->current_option].value;
+	game_config.players = players_entry->options[players_entry->current_option].value;
+
+	if (game_config.mode == ZX) {
+		game_config.limited_ammo = FALSE;
+		game_config.num_planets = ZX_NUM_PLANETS;
+		game_config.createPlanet = zxCreatePlanet;
+	} else {
+		game_config.limited_ammo = TRUE;
+		game_config.num_planets = MD_NUM_PLANETS;
+		game_config.createPlanet = mdCreatePlanet;
+	}
+
+	switch (game_config.difficulty) {
+	case MANIAC:
+		game_config.lives = 1;
+		break;
+	case HARD:
+		game_config.lives = 3;
+		break;
+	case NORMAL:
+		game_config.lives = 5;
+		break;
+	default: // EASY
+		game_config.lives = 10;
+	}
 }

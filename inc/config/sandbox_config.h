@@ -10,9 +10,9 @@
 #include <genesis.h>
 
 typedef enum {
-	LEYNOS, //
-	ANSIMUZ //,
-} PlanetCode;
+	P_CENTAURI, //
+	ERIDANI //,
+} SystemCode;
 
 typedef enum {
 	ALIEN, //
@@ -26,7 +26,7 @@ typedef enum {
 } EnemyCode;
 
 typedef struct SandboxConfig {
-    u8 planet;
+    u8 system;
     u8 enemy;        
 } SandboxConfig;
 

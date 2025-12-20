@@ -9,11 +9,13 @@
 
 #include <genesis.h>
 
+#define MARGIN_L1 3
+
 typedef struct ConfigOption {
     const char* text;
     u8 value;
     u8 text_pos;
-    void (*showNestedConfig)(void);
+    void (*showSubMenu)(void);
 } ConfigOption;
 
 typedef enum MenuEntryType {
@@ -27,9 +29,9 @@ typedef struct MenuEntry {
     u8 entry_id;
     const char* text;
     u8 text_pos;
+    ConfigOption *options;
     u8 num_options;
     u8 current_option;
-    ConfigOption *options;
 } MenuEntry;
 
 typedef struct MenuView {
@@ -40,17 +42,17 @@ typedef struct MenuView {
 
 typedef struct MenuContext {
     MenuView *current_menu;
-    volatile bool back;
     volatile bool refresh;
+    volatile bool back;
     volatile bool start;
 } MenuContext;
 
-extern MenuContext menuContext;
+extern MenuContext menu_context;
 
 void CONFIG_setOption(ConfigOption *option, const char* text, u8 value, void (*action)(void));
-void CONFIG_displayMenu(const char* title, V2u16 pos);
 void CONFIG_handleJoyEvent(u16 joy, u16 changed, u16 state);
 void CONFIG_initScreen(void);
 void CONFIG_clearScreen(void);
+void CONFIG_displayMenu(const char* title, V2u16 pos);
 
 #endif /* INC_FWK_CONFIG_H_ */

@@ -58,7 +58,7 @@ static bool checkGrapeHit(Grape grape[static 1], Box_s16 object_box);
 
 void initShots(Planet planet[static 1]) {
 
-	const u8 players = config.players ? config.players : ONE_PLAYER;
+	const u8 players = game_config.players ? game_config.players : ONE_PLAYER;
 	arrayFixedListInit(&planet->shots, MAX_SHOTS_PER_PLAYER * players);
 }
 

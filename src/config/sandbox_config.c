@@ -12,13 +12,11 @@
 
 SandboxConfig sandbox_config;
 
-static const u16 MARGIN = 3;
-
 static const char* TEXT_CONFIGURATION = "Sandbox Configuration";
 
-static const char* TEXT_ENTRY_PLANET = "Planet";
-static const char* TEXT_OPTION_LEYNOS = "Leynos";
-static const char* TEXT_OPTION_ANSIMUZ = "Ansimuz";
+static const char* TEXT_ENTRY_SYSTEM = "System";
+static const char* TEXT_OPTION_P_CENTAURI = "P Centauri";
+static const char* TEXT_OPTION_ERIDANI = "Eridani";
 
 static const char* TEXT_ENTRY_ENEMY = "Enemy";
 static const char* TEXT_OPTION_ALIEN = "Alien";
@@ -32,15 +30,17 @@ static const char* TEXT_OPTION_SAUCER = "Saucer";
 
 static const char* TEXT_ENTRY_BACK = "Back";
 
-typedef enum ConfigEntryId {
+typedef enum SandboxConfigEntryId {
     CONFIG_NONE = 0, //
-	CONFIG_PLANET, //
+	CONFIG_SYSTEM, //
 	CONFIG_ENEMY//
-} ConfigEntryId;
+} SandboxConfigEntryId;
 
 static void createPlanetEntry(MenuEntry* entry);
 static void createEnemyEntry(MenuEntry* entry);
 static void createBackEntry(MenuEntry* entry);
+
+static void expandSandboxConfig(void);
 
 static MenuView config_view;
 
@@ -68,42 +68,44 @@ void CONFIG_SANDBOX_init(void) {
 
 void CONFIG_SANDBOX_setUp(void) {
 
-	menuContext.current_menu = &config_view;
+	menu_context.current_menu = &config_view;
 
 	CONFIG_clearScreen();
 	CONFIG_initScreen();
 
-	menuContext.back = FALSE;
-	menuContext.refresh = TRUE;
+	menu_context.back = FALSE;
+	menu_context.refresh = TRUE;
 
 	JOY_setEventHandler(CONFIG_handleJoyEvent);
 
 	do {
 		CONFIG_displayMenu(TEXT_CONFIGURATION, pos_init);
 		SYS_doVBlankProcess();
-	} while (!menuContext.back);
+	} while (!menu_context.back);
 
-	menuContext.back = FALSE;
+	menu_context.back = FALSE;
 }
 
 static void createPlanetEntry(MenuEntry* entry) {
 
     entry->type = ENTRY_CONFIG;
-    entry->text = TEXT_ENTRY_PLANET;
-	entry->text_pos = MARGIN;
+	entry->entry_id = CONFIG_SYSTEM;
+    entry->text = TEXT_ENTRY_SYSTEM;
+	entry->text_pos = MARGIN_L1;
 	entry->num_options = 2;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
 	entry->current_option = 0;
 
-	CONFIG_setOption(&entry->options[0], TEXT_OPTION_LEYNOS, LEYNOS, NULL);
-	CONFIG_setOption(&entry->options[1], TEXT_OPTION_ANSIMUZ, ANSIMUZ, NULL);
+	CONFIG_setOption(&entry->options[0], TEXT_OPTION_P_CENTAURI, P_CENTAURI, NULL);
+	CONFIG_setOption(&entry->options[1], TEXT_OPTION_ERIDANI, ERIDANI, NULL);
 }
 
 static void createEnemyEntry(MenuEntry* entry) {
 
     entry->type = ENTRY_CONFIG;
+	entry->entry_id = CONFIG_ENEMY;
     entry->text = TEXT_ENTRY_ENEMY;
-    entry->text_pos = MARGIN;
+    entry->text_pos = MARGIN_L1;
     entry->num_options = 8;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
     entry->current_option = 0;
@@ -123,9 +125,14 @@ static void createBackEntry(MenuEntry* entry) {
 	entry->type = ENTRY_BACK;
 	entry->entry_id = CONFIG_NONE;
 	entry->text = TEXT_ENTRY_BACK;
-	entry->text_pos = MARGIN;
+	entry->text_pos = MARGIN_L1;
 	entry->options = NULL;
 	entry->num_options = 0;
 	entry->current_option = 0;
+}
+
+static void expandSandboxConfig(void) {
+	sandbox_config.system = planet_entry->options[planet_entry->current_option].value;
+	sandbox_config.enemy = enemy_entry->options[enemy_entry->current_option].value;
 }
 

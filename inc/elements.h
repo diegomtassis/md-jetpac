@@ -17,7 +17,7 @@
 #define ALIVE 0x01
 #define DEAD 0x02
 
-typedef struct Config Config;
+typedef struct GameConfig GameConfig;
 typedef struct Game Game;
 typedef struct GameResult GameResult;
 typedef struct Player Player;

@@ -71,7 +71,7 @@ bool joy_flank[256];
 
 void startJetmen(Planet planet[static 1]) {
 
-	bool immunity = config.difficulty == EASY;
+	bool immunity = game_config.difficulty == EASY;
 
 	if (game.p1 && game.p1->lives > 0) {
 		planet->j1 = startJetman(game.p1, planet);
@@ -134,7 +134,7 @@ void jetmanActs(Jetman* jetman, Planet planet[static 1]) {
 	handleInputJetman(jetman);
 	moveJetman(jetman, planet);
 
-	const bool limited_ammo = config.limited_ammo;
+	const bool limited_ammo = game_config.limited_ammo;
 
 	if (spaceship_ready && shareBase(&jetman->object.box, &planet->spaceship->base_object->box)) {
 		jetman->finished = TRUE;

@@ -31,7 +31,7 @@ typedef enum {
 	TWO_PLAYERS,
 } Players;
 
-struct Config {
+struct GameConfig {
 	u8 mode;
 	u8 difficulty;
 	u8 players;
@@ -41,7 +41,7 @@ struct Config {
 	u8 num_planets;
 };
 
-extern Config config;
+extern GameConfig game_config;
 
 void CONFIG_GAME_init(void);
 void CONFIG_GAME_setUp(void);

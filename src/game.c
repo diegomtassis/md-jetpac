@@ -24,7 +24,7 @@
 
 #define DEFAULT_FLASH_WAIT 2000
 
-static void initGame(const Config *config);
+static void initGame(const GameConfig *game_config);
 static void resetGame();
 
 /**
@@ -56,8 +56,8 @@ static const V2u16 message_pos = { .x = 16, .y = 7 };
 
 Game game;
 
-GameResult GAME_run(const Config *config) {
-    initGame(config);
+GameResult GAME_run(const GameConfig *game_config) {
+    initGame(game_config);
 
     SPR_init();
 
@@ -68,13 +68,13 @@ GameResult GAME_run(const Config *config) {
     u8 planet_number = 0;
     Planet *current_planet;
 
-    displayAmmo(config->mode == MD);
+    displayAmmo(game_config->mode == MD);
 
     loadPlanetsBaseResources();
 
     while (!game_over) {
         //	log_memory();
-        game.planet = config->createPlanet[planet_number]();
+        game.planet = game_config->createPlanet[planet_number]();
         current_planet = game.planet;
 
         startPlanet(current_planet);
@@ -112,7 +112,7 @@ GameResult GAME_run(const Config *config) {
 
             scoreBonus(current_planet);
 
-            if (++planet_number == config->num_planets) {
+            if (++planet_number == game_config->num_planets) {
                 planet_number = 0;
             }
 
@@ -140,7 +140,7 @@ GameResult GAME_run(const Config *config) {
 }
 
 void GAME_scoreByEvent(GameEvent event, u8 player_id) {
-    if (!config.createPlanet) {
+    if (!game_config.createPlanet) {
         return;
     }
 
@@ -179,18 +179,18 @@ void GAME_scoreByEvent(GameEvent event, u8 player_id) {
     }
 }
 
-static void initGame(const Config *config) {
+static void initGame(const GameConfig *game_config) {
     memset(&game, 0, sizeof game);
 
     game.p1 = MEM_calloc(sizeof(*game.p1));
     game.p1->id = P1;
-    game.p1->lives = config->lives;
+    game.p1->lives = game_config->lives;
     game.p1->score = 0;
 
-    if (config->players == TWO_PLAYERS) {
+    if (game_config->players == TWO_PLAYERS) {
         game.p2 = MEM_calloc(sizeof(*game.p2));
         game.p2->id = P2;
-        game.p2->lives = config->lives;
+        game.p2->lives = game_config->lives;
         game.p2->score = 0;
     }
 }
@@ -393,7 +393,7 @@ static void leavePlanet(Planet planet[static 1]) {
 }
 
 static void scoreBonus(Planet planet[static 1]) {
-    if (config.mode == MD) {
+    if (game_config.mode == MD) {
         u16 ammo_bonus = 0;
         char bonus_message[22];
 
@@ -442,7 +442,7 @@ static void scoreBonus(Planet planet[static 1]) {
 }
 
 static void scorePoints(u16 points, u8 player_id) {
-    if (!config.createPlanet) {
+    if (!game_config.createPlanet) {
         return;
     }
 
