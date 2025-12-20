@@ -10,20 +10,20 @@
 #include <genesis.h>
 
 typedef enum {
-	P_CENTAURI, //
-	ERIDANI //,
-} SystemCode;
+    SANDBOX_SYSTEM_P_CENTAURI,
+    SANDBOX_SYSTEM_ERIDANI
+} SandboxSystemOption;
 
 typedef enum {
-	ALIEN, //
-    BUBBLE, //
-    CROSS, //
-    FALCON, //
-    FIGHTER, //
-    METEORITE, //
-    OWL, //
-    SAUCER, //
-} EnemyCode;
+    SANDBOX_ENEMY_ALIEN,
+    SANDBOX_ENEMY_BUBBLE,
+    SANDBOX_ENEMY_CROSS,
+    SANDBOX_ENEMY_FALCON,
+    SANDBOX_ENEMY_FIGHTER,
+    SANDBOX_ENEMY_METEORITE,
+    SANDBOX_ENEMY_OWL,
+    SANDBOX_ENEMY_SAUCER
+} SandboxEnemyOption;
 
 typedef struct SandboxConfig {
     u8 system;

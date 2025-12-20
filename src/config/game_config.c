@@ -37,13 +37,6 @@ static const char* TEXT_OPTION_MANIAC = "Maniac";
 
 static const char* TEXT_ENTRY_START = "Start Game";
 
-typedef enum GameConfigEntryId {
-	CONFIG_NONE = 0, //
-	CONFIG_MODE, //
-	CONFIG_PLAYERS, //
-	CONFIG_DIFFICULTY //
-} GameConfigEntryId;
-
 static void createModeEntry(MenuEntry* entry);
 static void createPlayersEntry(MenuEntry* entry);
 static void createDifficultyEntry(MenuEntry* entry);
@@ -86,6 +79,11 @@ Planet* (* const mdCreatePlanet[5])(void) = { //
 			createPlanetMD02,//
 			createPlanetMD03,//
 			createPlanetMD04,//
+};
+
+static const u8 SANDBOX_NUM_PLANETS = 1;
+Planet* (* const sandboxCreatePlanet[1])(void) = { //
+			createPlanetSandbox,//
 };
 
 void CONFIG_GAME_init(void) {
@@ -131,7 +129,7 @@ void CONFIG_GAME_setUp(void) {
 
 	setRandomSeed(getTick());
 
-	expandSandboxConfig();
+	expandGameConfig();
 
 	CONFIG_clearScreen();
 	VDP_setTextPriority(prev_priority);
@@ -140,7 +138,6 @@ void CONFIG_GAME_setUp(void) {
 static void createModeEntry(MenuEntry* entry) {
 
 	entry->type = ENTRY_CONFIG;
-	entry->entry_id = CONFIG_MODE;
 	entry->text = TEXT_ENTRY_MODE;
 	entry->text_pos = MARGIN_L1;
 	entry->num_options = 3;
@@ -155,7 +152,6 @@ static void createModeEntry(MenuEntry* entry) {
 static void createPlayersEntry(MenuEntry* entry) {
 
 	entry->type = ENTRY_CONFIG;
-	entry->entry_id = CONFIG_PLAYERS;
 	entry->text = TEXT_ENTRY_PLAYERS;
 	entry->text_pos = MARGIN_L1;
 	entry->num_options = 2;
@@ -169,7 +165,6 @@ static void createPlayersEntry(MenuEntry* entry) {
 static void createDifficultyEntry(MenuEntry* entry) {
 
 	entry->type = ENTRY_CONFIG;
-	entry->entry_id = CONFIG_DIFFICULTY;
 	entry->text = TEXT_ENTRY_DIFFICULTY;
 	entry->text_pos = MARGIN_L1;
 	entry->num_options = 4;
@@ -185,7 +180,6 @@ static void createDifficultyEntry(MenuEntry* entry) {
 static void createStartEntry(MenuEntry* entry) {
 
 	entry->type = ENTRY_START;
-	entry->entry_id = CONFIG_NONE;
 	entry->text = TEXT_ENTRY_START;
 	entry->text_pos = MARGIN_L1;
 	entry->options = NULL;
@@ -203,10 +197,14 @@ static void expandGameConfig(void) {
 		game_config.limited_ammo = FALSE;
 		game_config.num_planets = ZX_NUM_PLANETS;
 		game_config.createPlanet = zxCreatePlanet;
-	} else {
+	} else if (game_config.mode == MD) {
 		game_config.limited_ammo = TRUE;
 		game_config.num_planets = MD_NUM_PLANETS;
 		game_config.createPlanet = mdCreatePlanet;
+	} else { // SANDBOX
+		game_config.limited_ammo = FALSE;
+		game_config.num_planets = SANDBOX_NUM_PLANETS;
+		game_config.createPlanet = sandboxCreatePlanet;
 	}
 
 	switch (game_config.difficulty) {

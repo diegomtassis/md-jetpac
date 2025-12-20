@@ -9,6 +9,7 @@
 
 #include "../../inc/fwk/commons.h"
 #include "../../inc/config/config.h"
+#include "../../inc/planets.h"
 
 SandboxConfig sandbox_config;
 
@@ -29,12 +30,6 @@ static const char* TEXT_OPTION_OWL = "Owl";
 static const char* TEXT_OPTION_SAUCER = "Saucer";
 
 static const char* TEXT_ENTRY_BACK = "Back";
-
-typedef enum SandboxConfigEntryId {
-    CONFIG_NONE = 0, //
-	CONFIG_SYSTEM, //
-	CONFIG_ENEMY//
-} SandboxConfigEntryId;
 
 static void createPlanetEntry(MenuEntry* entry);
 static void createEnemyEntry(MenuEntry* entry);
@@ -83,47 +78,46 @@ void CONFIG_SANDBOX_setUp(void) {
 		SYS_doVBlankProcess();
 	} while (!menu_context.back);
 
+	expandSandboxConfig();
+
 	menu_context.back = FALSE;
 }
 
 static void createPlanetEntry(MenuEntry* entry) {
 
     entry->type = ENTRY_CONFIG;
-	entry->entry_id = CONFIG_SYSTEM;
     entry->text = TEXT_ENTRY_SYSTEM;
 	entry->text_pos = MARGIN_L1;
 	entry->num_options = 2;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
 	entry->current_option = 0;
 
-	CONFIG_setOption(&entry->options[0], TEXT_OPTION_P_CENTAURI, P_CENTAURI, NULL);
-	CONFIG_setOption(&entry->options[1], TEXT_OPTION_ERIDANI, ERIDANI, NULL);
+	CONFIG_setOption(&entry->options[0], TEXT_OPTION_P_CENTAURI, SANDBOX_SYSTEM_P_CENTAURI, NULL);
+	CONFIG_setOption(&entry->options[1], TEXT_OPTION_ERIDANI, SANDBOX_SYSTEM_ERIDANI, NULL);
 }
 
 static void createEnemyEntry(MenuEntry* entry) {
 
     entry->type = ENTRY_CONFIG;
-	entry->entry_id = CONFIG_ENEMY;
     entry->text = TEXT_ENTRY_ENEMY;
     entry->text_pos = MARGIN_L1;
     entry->num_options = 8;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
     entry->current_option = 0;
 
-	CONFIG_setOption(&entry->options[0], TEXT_OPTION_ALIEN, ALIEN, NULL);
-	CONFIG_setOption(&entry->options[1], TEXT_OPTION_BUBBLE, BUBBLE, NULL);
-	CONFIG_setOption(&entry->options[2], TEXT_OPTION_CROSS, CROSS, NULL);
-	CONFIG_setOption(&entry->options[3], TEXT_OPTION_FALCON, FALCON, NULL);
-	CONFIG_setOption(&entry->options[4], TEXT_OPTION_FIGHTER, FIGHTER, NULL);
-	CONFIG_setOption(&entry->options[5], TEXT_OPTION_METEORITE, METEORITE, NULL);
-	CONFIG_setOption(&entry->options[6], TEXT_OPTION_OWL, OWL, NULL);
-	CONFIG_setOption(&entry->options[7], TEXT_OPTION_SAUCER, SAUCER, NULL);
+	CONFIG_setOption(&entry->options[0], TEXT_OPTION_ALIEN, SANDBOX_ENEMY_ALIEN, NULL);
+	CONFIG_setOption(&entry->options[1], TEXT_OPTION_BUBBLE, SANDBOX_ENEMY_BUBBLE, NULL);
+	CONFIG_setOption(&entry->options[2], TEXT_OPTION_CROSS, SANDBOX_ENEMY_CROSS, NULL);
+	CONFIG_setOption(&entry->options[3], TEXT_OPTION_FALCON, SANDBOX_ENEMY_FALCON, NULL);
+	CONFIG_setOption(&entry->options[4], TEXT_OPTION_FIGHTER, SANDBOX_ENEMY_FIGHTER, NULL);
+	CONFIG_setOption(&entry->options[5], TEXT_OPTION_METEORITE, SANDBOX_ENEMY_METEORITE, NULL);
+	CONFIG_setOption(&entry->options[6], TEXT_OPTION_OWL, SANDBOX_ENEMY_OWL, NULL);
+	CONFIG_setOption(&entry->options[7], TEXT_OPTION_SAUCER, SANDBOX_ENEMY_SAUCER, NULL);
 }
 
 static void createBackEntry(MenuEntry* entry) {
 
 	entry->type = ENTRY_BACK;
-	entry->entry_id = CONFIG_NONE;
 	entry->text = TEXT_ENTRY_BACK;
 	entry->text_pos = MARGIN_L1;
 	entry->options = NULL;

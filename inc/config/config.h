@@ -26,7 +26,6 @@ typedef enum MenuEntryType {
 
 typedef struct MenuEntry {
     MenuEntryType type;
-    u8 entry_id;
     const char* text;
     u8 text_pos;
     ConfigOption *options;
