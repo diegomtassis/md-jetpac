@@ -1,5 +1,5 @@
 /*
- * galaxy_leynos.c
+ * planetary_system_lalande.c
  *
  *  Created on: Jun 6, 2023
  *      Author: diegomtassis
@@ -7,7 +7,7 @@
 
 #include <genesis.h>
 
-#include "../../inc/galaxies.h"
+#include "../../inc/planetary_systems.h"
 #include "../../res/leynos.h"
 #include "../../inc/fwk/vdp_utils.h"
 
@@ -15,7 +15,7 @@ static u16 idx_tile_bg_leynos;
 
 static Map *bg;
 
-void initGalaxyLeynos() {
+void initPlanetarySystemLalande() {
 
     PAL_setPalette(PAL2, palette_leynos.data, DMA);
 
@@ -33,7 +33,7 @@ void initGalaxyLeynos() {
     MAP_scrollTo(bg, 0, 0);
 }
 
-void releaseGalaxyLeynos() {
+void releasePlanetarySystemLalande() {
 
     VDP_clearPlane(BG_B, TRUE);
 

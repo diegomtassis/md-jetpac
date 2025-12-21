@@ -14,7 +14,7 @@
 #include "../../inc/spaceship.h"
 #include "../../inc/enemies.h"
 #include "../../res/zx.h"
-#include "../../inc/galaxies.h"
+#include "../../inc/planetary_systems.h"
 
 static void createPlatforms(Planet planet[static 1]);
 static void defineJetman(Planet planet[static 1]);
@@ -63,9 +63,9 @@ static void defineSpaceship(Planet planet[static 1]) {
 }
 
 static void initMD02(Planet planet[static 1]) {
-    initGalaxyAnsimuzLegacy();
+	initPlanetarySystemRan();
 }
 
 static void releaseMD02(Planet planet[static 1]) {
-    releaseGalaxyAnsimuzLegacy();
+	releasePlanetarySystemRan();
 }

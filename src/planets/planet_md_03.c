@@ -15,7 +15,7 @@
 #include "../../inc/spaceship.h"
 #include "../../inc/enemies.h"
 #include "../../res/zx.h"
-#include "../../inc/galaxies.h"
+#include "../../inc/planetary_systems.h"
 
 
 static void createPlatforms(Planet planet[static 1]);
@@ -65,9 +65,9 @@ static void defineSpaceship(Planet planet[static 1]) {
 }
 
 static void initMD03(Planet planet[static 1]) {
-    initGalaxyLeynos();
+	initPlanetarySystemLalande();
 }
 
 static void releaseMD03(Planet planet[static 1]) {
-    releaseGalaxyLeynos();
+	releasePlanetarySystemLalande();
 }

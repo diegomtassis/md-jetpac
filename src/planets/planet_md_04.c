@@ -14,7 +14,7 @@
 #include "../../inc/planet.h"
 #include "../../inc/spaceship.h"
 #include "../../res/zx.h"
-#include "../../inc/galaxies.h"
+#include "../../inc/planetary_systems.h"
 
 static void createPlatforms(Planet planet[static 1]);
 static void defineJetman(Planet planet[static 1]);
@@ -87,9 +87,9 @@ static void defineJetman(Planet planet[static 1]) {
 }
 
 static void initMD04(Planet planet[static 1]) {
-    initGalaxyLeynos();
+	initPlanetarySystemLalande();
 }
 
 static void releaseMD04(Planet planet[static 1]) {
-    releaseGalaxyLeynos();
+	releasePlanetarySystemLalande();
 }

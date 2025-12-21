@@ -17,7 +17,8 @@ static const char* TEXT_CONFIGURATION = "Sandbox Configuration";
 
 static const char* TEXT_ENTRY_SYSTEM = "System";
 static const char* TEXT_OPTION_P_CENTAURI = "P Centauri";
-static const char* TEXT_OPTION_ERIDANI = "Eridani";
+static const char* TEXT_OPTION_RAN = "Ran";
+static const char* TEXT_OPTION_LALANDE = "Lalande";
 
 static const char* TEXT_ENTRY_ENEMY = "Enemy";
 static const char* TEXT_OPTION_ALIEN = "Alien";
@@ -88,12 +89,13 @@ static void createPlanetEntry(MenuEntry* entry) {
     entry->type = ENTRY_CONFIG;
     entry->text = TEXT_ENTRY_SYSTEM;
 	entry->text_pos = MARGIN_L1;
-	entry->num_options = 2;
+	entry->num_options = 3;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
 	entry->current_option = 0;
 
 	CONFIG_setOption(&entry->options[0], TEXT_OPTION_P_CENTAURI, SANDBOX_SYSTEM_P_CENTAURI, NULL);
-	CONFIG_setOption(&entry->options[1], TEXT_OPTION_ERIDANI, SANDBOX_SYSTEM_ERIDANI, NULL);
+	CONFIG_setOption(&entry->options[1], TEXT_OPTION_RAN, SANDBOX_SYSTEM_RAN, NULL);
+	CONFIG_setOption(&entry->options[2], TEXT_OPTION_LALANDE, SANDBOX_SYSTEM_LALANDE, NULL);
 }
 
 static void createEnemyEntry(MenuEntry* entry) {

@@ -11,7 +11,8 @@
 
 typedef enum {
     SANDBOX_SYSTEM_P_CENTAURI,
-    SANDBOX_SYSTEM_ERIDANI
+    SANDBOX_SYSTEM_RAN,
+    SANDBOX_SYSTEM_LALANDE,
 } SandboxSystemOption;
 
 typedef enum {
@@ -22,7 +23,7 @@ typedef enum {
     SANDBOX_ENEMY_FIGHTER,
     SANDBOX_ENEMY_METEORITE,
     SANDBOX_ENEMY_OWL,
-    SANDBOX_ENEMY_SAUCER
+    SANDBOX_ENEMY_SAUCER,
 } SandboxEnemyOption;
 
 typedef struct SandboxConfig {
