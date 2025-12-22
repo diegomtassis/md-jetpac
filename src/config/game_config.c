@@ -18,24 +18,24 @@
 
 GameConfig game_config;
 
-static const char* TEXT_CONFIGURATION = "JETPAC Configuration";
+static const char* TEXT_CONFIGURATION = "GAME OPTIONS";
 
-static const char* TEXT_ENTRY_MODE = "Mode";
+static const char* TEXT_ENTRY_MODE = "MODE";
 static const char* TEXT_OPTION_ZX = "ZX";
 static const char* TEXT_OPTION_MD = "MD";
-static const char* TEXT_OPTION_SANDBOX = "Sandbox";
+static const char* TEXT_OPTION_SANDBOX = "SANDBOX";
 
-static const char* TEXT_ENTRY_PLAYERS = "Players";
+static const char* TEXT_ENTRY_PLAYERS = "PLAYERS";
 static const char* TEXT_OPTION_ONE_PLAYER = "1";
 static const char* TEXT_OPTION_TWO_PLAYERS = "2";
 
-static const char* TEXT_ENTRY_DIFFICULTY = "Difficulty";
-static const char* TEXT_OPTION_EASY = "Easy";
-static const char* TEXT_OPTION_NORMAL = "Normal";
-static const char* TEXT_OPTION_HARD = "Hard";
-static const char* TEXT_OPTION_MANIAC = "Maniac";
+static const char* TEXT_ENTRY_DIFFICULTY = "DIFFICULTY";
+static const char* TEXT_OPTION_EASY = "EASY";
+static const char* TEXT_OPTION_NORMAL = "NORMAL";
+static const char* TEXT_OPTION_HARD = "HARD";
+static const char* TEXT_OPTION_MANIAC = "MANIAC";
 
-static const char* TEXT_ENTRY_START = "Start Game";
+static const char* TEXT_ENTRY_START = "START GAME";
 
 static void createModeEntry(MenuEntry* entry);
 static void createPlayersEntry(MenuEntry* entry);

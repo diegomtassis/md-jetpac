@@ -13,25 +13,24 @@
 
 SandboxConfig sandbox_config;
 
-static const char* TEXT_CONFIGURATION = "Sandbox Configuration";
+static const char* TEXT_CONFIGURATION = "SANDBOX OPTIONS";
 
-static const char* TEXT_ENTRY_SYSTEM = "System";
-static const char* TEXT_OPTION_P_CENTAURI = "P Centauri";
-static const char* TEXT_OPTION_RAN = "Ran";
-static const char* TEXT_OPTION_LALANDE = "Lalande";
+static const char* TEXT_ENTRY_SYSTEM = "SYSTEM";
+static const char* TEXT_OPTION_P_CENTAURI = "P CENTAURI";
+static const char* TEXT_OPTION_RAN = "RAN";
+static const char* TEXT_OPTION_LALANDE = "LALANDE";
 
-static const char* TEXT_ENTRY_ENEMY = "Enemy";
-static const char* TEXT_OPTION_ALIEN = "Alien";
-static const char* TEXT_OPTION_BUBBLE = "Bubble";
-static const char* TEXT_OPTION_CROSS = "Cross";
-static const char* TEXT_OPTION_FALCON = "Falcon";
-static const char* TEXT_OPTION_FIGHTER = "Fighter";
-static const char* TEXT_OPTION_METEORITE = "Meteorite";
-static const char* TEXT_OPTION_OWL = "Owl";
-static const char* TEXT_OPTION_SAUCER = "Saucer";
+static const char* TEXT_ENTRY_ENEMY = "ENEMY";
+static const char* TEXT_OPTION_ALIEN = "ALIEN";
+static const char* TEXT_OPTION_BUBBLE = "BUBBLE";
+static const char* TEXT_OPTION_CROSS = "CROSS";
+static const char* TEXT_OPTION_FALCON = "FALCON";
+static const char* TEXT_OPTION_FIGHTER = "FIGHTER";
+static const char* TEXT_OPTION_METEORITE = "METEORITE";
+static const char* TEXT_OPTION_OWL = "OWL";
+static const char* TEXT_OPTION_SAUCER = "SAUCER";
 
-static const char* TEXT_ENTRY_BACK = "Back";
-
+static const char* TEXT_ENTRY_BACK = "BACK";
 static void createPlanetEntry(MenuEntry* entry);
 static void createEnemyEntry(MenuEntry* entry);
 static void createBackEntry(MenuEntry* entry);
