@@ -29,10 +29,12 @@ typedef enum {
 typedef struct SandboxConfig {
     u8 system;
     u8 enemy;
+    u8 lives;
     bool immunity;
     bool nuke;
     u8 max_enemies;
     u8 enemy_speed;
+    u16 ammo;
 } SandboxConfig;
 
 extern SandboxConfig sandbox_config;
