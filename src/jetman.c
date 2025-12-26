@@ -71,7 +71,7 @@ bool joy_flank[256];
 
 void startJetmen(Planet planet[static 1]) {
 
-	bool immunity = game_config.difficulty == EASY;
+	bool immunity = game_config.difficulty == DIFFICULTY_EASY;
 
 	if (game.p1 && game.p1->lives > 0) {
 		planet->j1 = startJetman(game.p1, planet);

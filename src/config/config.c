@@ -124,6 +124,7 @@ void CONFIG_displayMenu(const char* title, V2u16 pos) {
     }
 
     u16 current_y = pos.y + 2;
+    
     for (u8 idx = 0; idx < view->num_entries; idx++) {
         MenuEntry *entry = &view->entries[idx];
         u8 highlighted = (idx == view->current_entry);
@@ -176,5 +177,10 @@ static void displayEntry(const MenuEntry *entry, u8 highlighted, u16 x, u16 y) {
 }
 
 static u8 entrySpacing(MenuEntryType type) {
-    return (type == ENTRY_CONFIG) ? 2 : 4;
+
+    if (type == ENTRY_CONFIG) {
+        return menu_context.current_menu->compact ? 1 : 2;
+    } else {
+        return 3;
+    }
 }

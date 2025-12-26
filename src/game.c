@@ -68,7 +68,7 @@ GameResult GAME_run(const GameConfig *game_config) {
     u8 planet_number = 0;
     Planet *current_planet;
 
-    displayAmmo(game_config->mode == MD);
+    displayAmmo(game_config->mode == MODE_MD);
 
     loadPlanetsBaseResources();
 
@@ -393,7 +393,7 @@ static void leavePlanet(Planet planet[static 1]) {
 }
 
 static void scoreBonus(Planet planet[static 1]) {
-    if (game_config.mode == MD) {
+    if (game_config.mode == MODE_MD) {
         u16 ammo_bonus = 0;
         char bonus_message[22];
 

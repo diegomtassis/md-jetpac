@@ -14,16 +14,16 @@
 #include "../game.h"
 
 typedef enum {
-	ZX, //
-	MD, //
-	SANDBOX,
+	MODE_ZX, //
+	MODE_MD, //
+	MODE_SANDBOX,
 } Mode;
 
 typedef enum {
-	EASY, //
-	NORMAL, //
-	HARD, //
-	MANIAC,
+	DIFFICULTY_EASY, //
+	DIFFICULTY_NORMAL, //
+	DIFFICULTY_HARD, //
+	DIFFICULTY_MANIAC,
 } Difficulty;
 
 typedef enum {

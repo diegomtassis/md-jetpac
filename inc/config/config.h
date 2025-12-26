@@ -37,6 +37,7 @@ typedef struct MenuView {
     MenuEntry *entries;
     u8 num_entries;
     u8 current_entry;
+    bool compact;
 } MenuView;
 
 typedef struct MenuContext {
