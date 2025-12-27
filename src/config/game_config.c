@@ -163,8 +163,8 @@ static void createPlayersEntry(MenuEntry *entry) {
     entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
     entry->current_option = 0;
 
-    CONFIG_setOption(&entry->options[0], TEXT_OPTION_ONE_PLAYER, ONE_PLAYER, NULL);
-    CONFIG_setOption(&entry->options[1], TEXT_OPTION_TWO_PLAYERS, TWO_PLAYERS, NULL);
+    CONFIG_setOption(&entry->options[0], TEXT_OPTION_ONE_PLAYER, PLAYERS_ONE, NULL);
+    CONFIG_setOption(&entry->options[1], TEXT_OPTION_TWO_PLAYERS, PLAYERS_TWO, NULL);
 }
 
 static void createDifficultyEntry(MenuEntry *entry) {
@@ -207,6 +207,7 @@ static void expandGameConfig(void) {
 		game_config.immunity = sandbox_config.immunity;
         game_config.limited_ammo = sandbox_config.limited_ammo;
 		game_config.allow_nuke = sandbox_config.allow_nuke;
+        game_config.enemy_hostility = sandbox_config.enemy_hostility;
 		
 		// Planet
         game_config.num_planets = SANDBOX_NUM_PLANETS;
@@ -227,15 +228,19 @@ static void expandGameConfig(void) {
         switch (difficulty) {
         case DIFFICULTY_MANIAC:
             game_config.lives = 1;
+            game_config.enemy_hostility = ENEMY_HOSTILITY_HIGH;
             break;
         case DIFFICULTY_HARD:
             game_config.lives = 3;
+            game_config.enemy_hostility = ENEMY_HOSTILITY_NORMAL;
             break;
         case DIFFICULTY_NORMAL:
             game_config.lives = 5;
+            game_config.enemy_hostility = ENEMY_HOSTILITY_NORMAL;
             break;
         default: // EASY
             game_config.lives = 10;
+            game_config.enemy_hostility = ENEMY_HOSTILITY_LOW;
         }
     }
 }

@@ -14,111 +14,125 @@
 #include "../../inc/fwk/commons.h"
 #include "../../res/zx.h"
 
-#define BUBBLE_WIDTH    	16
-#define BUBBLE_HEIGHT    	14
+#define BUBBLE_WIDTH 16
+#define BUBBLE_HEIGHT 14
 
-#define BUBBLE_DEFAULT_SPEED_H	FIX16(0.8)
-#define BUBBLE_DEFAULT_SPEED_V	FIX16(0.8)
+#define BUBBLE_DEFAULT_SPEED_H FIX16(0.8)
+#define BUBBLE_DEFAULT_SPEED_V FIX16(0.8)
 
-#define WAIT_BETWEEN_DIRECTION_CHANGE    	125
+#define WAIT_BETWEEN_DIRECTION_CHANGE 125
 
-static Enemy* createBubble();
+static Enemy *createBubble(EnemyHostility hostility);
 static void actBubble(Enemy enemy[static 1], Planet planet[static 1]);
 static void releaseBubble(Enemy enemy[static 1]);
 
 const EnemyDefinition bubbleDefinition = { //
-		.type = BUBBLE, //
-				.size_t.x = BUBBLE_WIDTH, //
-				.size_t.y = BUBBLE_HEIGHT, //
-				.createFunc = &createBubble, //
-				.actFunc = &actBubble, //
-				.releaseFunc = &releaseBubble };
+    .type = BUBBLE,                        //
+    .size_t.x = BUBBLE_WIDTH,              //
+    .size_t.y = BUBBLE_HEIGHT,             //
+    .createFunc = &createBubble,           //
+    .actFunc = &actBubble,                 //
+    .releaseFunc = &releaseBubble};
 
 typedef struct {
-	u16 mov_counter;
+    u16 mov_counter;
 } Bubble;
 
 static f16 randomVSpeed();
 
-static Enemy* createBubble() {
+static Enemy *createBubble(EnemyHostility hostility) {
 
-	Enemy* enemy = createEnemy(&bubbleDefinition);
+    Enemy *enemy = createEnemy(&bubbleDefinition);
 
-	Bubble* bubble = MEM_calloc(sizeof *bubble);
-	bubble->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;
-	enemy->extension = bubble;
+    Bubble *bubble = MEM_calloc(sizeof *bubble);
+    bubble->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;
+    enemy->extension = bubble;
 
-	// position & movement
-	initPosAndMov(enemy, BUBBLE_DEFAULT_SPEED_H, randomVSpeed());
+    // position & movement
+    fix16 h_speed;
+    switch (hostility) {
+    case ENEMY_HOSTILITY_LOW:
+        h_speed = F16_mul(BUBBLE_DEFAULT_SPEED_H, FIX16(0.5));
+        break;
+    case ENEMY_HOSTILITY_NORMAL:
+        h_speed = BUBBLE_DEFAULT_SPEED_H;
+        break;
+    case ENEMY_HOSTILITY_HIGH:
+    default:
+        h_speed = F16_mul(BUBBLE_DEFAULT_SPEED_H, FIX16(2));
+        break;
+    }
 
-	// box
-	initBox(enemy);
+    initPosAndMov(enemy, h_speed, randomVSpeed());
 
-	// sprite
-	Sprite* enemySprite = SPR_addSprite(&bubble_sprite, F16_toInt(enemy->object.pos.x),
-			F16_toInt(enemy->object.pos.y), TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-	SPR_setAnim(enemySprite, (abs(random())) % 8); // 8 animations
-	enemy->sprite = enemySprite;
+    // box
+    initBox(enemy);
 
-	return enemy;
+    // sprite
+    Sprite *enemySprite = SPR_addSprite(&bubble_sprite, F16_toInt(enemy->object.pos.x), F16_toInt(enemy->object.pos.y),
+                                        TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+    SPR_setAnim(enemySprite, (abs(random())) % 8); // 8 animations
+    enemy->sprite = enemySprite;
+
+    return enemy;
 }
 
 static void actBubble(Enemy enemy[static 1], Planet planet[static 1]) {
 
-	Bubble* bubble = enemy->extension;
+    Bubble *bubble = enemy->extension;
 
-	bubble->mov_counter--;
-	if (!bubble->mov_counter) {
-		enemy->object.mov.y = randomVSpeed();
-		bubble->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;
-	}
+    bubble->mov_counter--;
+    if (!bubble->mov_counter) {
+        enemy->object.mov.y = randomVSpeed();
+        bubble->mov_counter = WAIT_BETWEEN_DIRECTION_CHANGE;
+    }
 
-	Box_s16 target = targetBox(&enemy->object);
+    Box_s16 target = targetBox(&enemy->object);
 
-	if (target.min.y <= MIN_POS_V_PX_S16 || target.min.y >= MAX_POS_V_PX_S16) {
-		enemy->object.mov.y = -enemy->object.mov.y;
-		target = targetBox(&enemy->object);
+    if (target.min.y <= MIN_POS_V_PX_S16 || target.min.y >= MAX_POS_V_PX_S16) {
+        enemy->object.mov.y = -enemy->object.mov.y;
+        target = targetBox(&enemy->object);
 
-	} else if (crashedIntoPlatform(target, planet)) {
+    } else if (crashedIntoPlatform(target, planet)) {
 
-		// THIS MUST BE OPTIMIZED
+        // THIS MUST BE OPTIMIZED
 
-		// change horizontal direction
-		enemy->object.mov.x = -enemy->object.mov.x;
-		target = targetBox(&enemy->object);
+        // change horizontal direction
+        enemy->object.mov.x = -enemy->object.mov.x;
+        target = targetBox(&enemy->object);
 
-		if (crashedIntoPlatform(target, planet)) {
+        if (crashedIntoPlatform(target, planet)) {
 
-			enemy->object.mov.x = -enemy->object.mov.x;
-			enemy->object.mov.y = -enemy->object.mov.y;
-			target = targetBox(&enemy->object);
-		}
-	}
+            enemy->object.mov.x = -enemy->object.mov.x;
+            enemy->object.mov.y = -enemy->object.mov.y;
+            target = targetBox(&enemy->object);
+        }
+    }
 
-	updatePosition(enemy, target);
+    updatePosition(enemy, target);
 }
 
 static void releaseBubble(Enemy enemy[static 1]) {
 
-	if (enemy->extension) {
-		MEM_free(enemy->extension);
-		enemy->extension = 0;
-	}
+    if (enemy->extension) {
+        MEM_free(enemy->extension);
+        enemy->extension = 0;
+    }
 
-	SPR_releaseSprite(enemy->sprite);
-	releaseEnemy(enemy);
+    SPR_releaseSprite(enemy->sprite);
+    releaseEnemy(enemy);
 }
 
 static f16 randomVSpeed() {
 
-	int i = random() % 3;
-	if (i == 2) {
-		return BUBBLE_DEFAULT_SPEED_V;
-	}
+    int i = random() % 3;
+    if (i == 2) {
+        return BUBBLE_DEFAULT_SPEED_V;
+    }
 
-	if (i) {
-		return -BUBBLE_DEFAULT_SPEED_V;
-	}
+    if (i) {
+        return -BUBBLE_DEFAULT_SPEED_V;
+    }
 
-	return SPEED_ZERO;
+    return SPEED_ZERO;
 }

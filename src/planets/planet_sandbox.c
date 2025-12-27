@@ -11,6 +11,7 @@
 #include "../../inc/enemies.h"
 #include "../../inc/fwk/commons.h"
 #include "../../inc/planet.h"
+#include "../../inc/planetary_systems.h"
 #include "../../inc/spaceship.h"
 #include "../../res/zx.h"
 

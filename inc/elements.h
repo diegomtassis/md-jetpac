@@ -10,6 +10,7 @@
 
 #include <genesis.h>
 
+#include "config/enemy_hostility.h"
 #include "fwk/array_fixed_list.h"
 #include "fwk/blinker.h"
 #include "fwk/physics.h"
@@ -111,7 +112,7 @@ struct Enemy {
     u8 health;
 };
 
-typedef Enemy* (*EnemyCreateFunc)();
+typedef Enemy* (*EnemyCreateFunc)(EnemyHostility hostility);
 typedef void (*EnemyActFunc)(Enemy enemy[static 1], Planet* planet);
 typedef void (*EnemyReleaseFunc)(Enemy enemy[static 1]);
 

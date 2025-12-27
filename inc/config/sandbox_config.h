@@ -9,6 +9,8 @@
 
 #include <genesis.h>
 
+#include "enemy_hostility.h"
+
 typedef enum {
     SANDBOX_SYSTEM_P_CENTAURI,
     SANDBOX_SYSTEM_RAN,
@@ -35,7 +37,7 @@ typedef struct SandboxConfig {
     // Planet
     u8 system;
     u8 enemy;
-    u8 enemy_speed;    
+    EnemyHostility enemy_hostility;
     u8 max_enemies;
     u16 ammo;
 } SandboxConfig;

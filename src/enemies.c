@@ -10,6 +10,7 @@
 #include <genesis.h>
 
 #include "../inc/enemies.h"
+#include "../inc/config/game_config.h"
 #include "../inc/constants.h"
 #include "../inc/explosions.h"
 #include "../inc/fwk/commons.h"
@@ -134,7 +135,7 @@ static void releaseDeadEnemy(Enemy enemy[static 1]) {
 
 static void addEnemy(Planet planet[static 1]) {
 
-	arrayFixedListAdd(&planet->enemies, planet->def->enemies_def.enemy_def.createFunc(&planet->def->enemies_def.enemy_def));
+	arrayFixedListAdd(&planet->enemies, planet->def->enemies_def.enemy_def.createFunc(game_config.enemy_hostility));
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 }
 

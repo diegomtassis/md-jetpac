@@ -10,6 +10,7 @@
 
 #include <genesis.h>
 
+#include "enemy_hostility.h"
 #include "../elements.h"
 #include "../game.h"
 
@@ -27,8 +28,8 @@ typedef enum {
 } Difficulty;
 
 typedef enum {
-	ONE_PLAYER = 1, //
-	TWO_PLAYERS,
+	PLAYERS_ONE = 1, //
+	PLAYERS_TWO,
 } Players;
 
 struct GameConfig {
@@ -38,6 +39,7 @@ struct GameConfig {
     bool immunity;
 	bool limited_ammo;
     bool allow_nuke;
+	EnemyHostility enemy_hostility;
 	Planet* (*const* createPlanet)(void);
 	u8 num_planets;
 };

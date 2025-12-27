@@ -46,10 +46,10 @@ static const char* TEXT_OPTION_ONE = "1";
 static const char* TEXT_OPTION_TEN = "10";
 static const char* TEXT_OPTION_TWENTY_FIVE = "25";
 
-static const char* TEXT_ENTRY_ENEMY_SPEED = "ENEMY SPEED";
-static const char* TEXT_OPTION_SLOW = "SLOW";
+static const char* TEXT_ENTRY_ENEMY_HOSTILITY = "ENEMY HOSTILITY";
+static const char* TEXT_OPTION_LOW = "LOW";
 static const char* TEXT_OPTION_NORMAL = "NORMAL";
-static const char* TEXT_OPTION_FAST = "FAST";
+static const char* TEXT_OPTION_HIGH = "HIGH";
 
 static const char* TEXT_ENTRY_LIMIT_AMMO = "LIMIT AMMO";
 static const char* TEXT_ENTRY_AMMO = "AMMO";
@@ -62,7 +62,7 @@ static void createLivesEntry(MenuEntry* entry);
 static void createImmunityEntry(MenuEntry* entry);
 static void createNukeEntry(MenuEntry* entry);
 static void createMaxEnemiesEntry(MenuEntry* entry);
-static void createEnemySpeedEntry(MenuEntry* entry);
+static void createEnemyHostilityEntry(MenuEntry* entry);
 static void createLimitAmmoEntry(MenuEntry* entry);
 static void createAmmoEntry(MenuEntry* entry);
 static void createBackEntry(MenuEntry* entry);
@@ -80,7 +80,7 @@ static MenuEntry *ammo_entry = NULL;
 static MenuEntry *nuke_entry = NULL;
 static MenuEntry *planet_entry = NULL;
 static MenuEntry *enemy_entry = NULL;
-static MenuEntry *enemy_speed_entry = NULL;
+static MenuEntry *enemy_hostility_entry = NULL;
 static MenuEntry *max_enemies_entry = NULL;
 static MenuEntry *back_entry = NULL;
 
@@ -113,8 +113,8 @@ void CONFIG_SANDBOX_init(void) {
 	enemy_entry = &config_view.entries[6];
 	createEnemyEntry(enemy_entry);
 
-	enemy_speed_entry = &config_view.entries[7];
-	createEnemySpeedEntry(enemy_speed_entry);
+	enemy_hostility_entry = &config_view.entries[7];
+	createEnemyHostilityEntry(enemy_hostility_entry);
 
 	max_enemies_entry = &config_view.entries[8];
 	createMaxEnemiesEntry(max_enemies_entry);
@@ -233,18 +233,18 @@ static void createMaxEnemiesEntry(MenuEntry* entry) {
 	CONFIG_setOption(&entry->options[3], TEXT_OPTION_TWENTY_FIVE, 25, NULL);
 }
 
-static void createEnemySpeedEntry(MenuEntry* entry) {
+static void createEnemyHostilityEntry(MenuEntry* entry) {
 
 	entry->type = ENTRY_CONFIG;
-	entry->text = TEXT_ENTRY_ENEMY_SPEED;
+	entry->text = TEXT_ENTRY_ENEMY_HOSTILITY;
 	entry->text_pos = MARGIN_L1;
 	entry->num_options = 3;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
 	entry->current_option = 1;
 
-	CONFIG_setOption(&entry->options[0], TEXT_OPTION_SLOW, 0, NULL);
-	CONFIG_setOption(&entry->options[1], TEXT_OPTION_NORMAL, 1, NULL);
-	CONFIG_setOption(&entry->options[2], TEXT_OPTION_FAST, 2, NULL);
+	CONFIG_setOption(&entry->options[0], TEXT_OPTION_LOW, ENEMY_HOSTILITY_LOW, NULL);
+	CONFIG_setOption(&entry->options[1], TEXT_OPTION_NORMAL, ENEMY_HOSTILITY_NORMAL, NULL);
+	CONFIG_setOption(&entry->options[2], TEXT_OPTION_HIGH, ENEMY_HOSTILITY_HIGH, NULL);
 }
 
 static void createLimitAmmoEntry(MenuEntry* entry) {
@@ -296,7 +296,7 @@ static void expandSandboxConfig(void) {
 	// Planet def
 	sandbox_config.system = planet_entry->options[planet_entry->current_option].value;
 	sandbox_config.enemy = enemy_entry->options[enemy_entry->current_option].value;
-	sandbox_config.enemy_speed = enemy_speed_entry->options[enemy_speed_entry->current_option].value;
+	sandbox_config.enemy_hostility = enemy_hostility_entry->options[enemy_hostility_entry->current_option].value;
 	sandbox_config.max_enemies = max_enemies_entry->options[max_enemies_entry->current_option].value;
 	sandbox_config.ammo = ammo_entry->options[ammo_entry->current_option].value;
 }

@@ -22,7 +22,7 @@
 
 #define WAIT_BETWEEN_DIRECTION_CHANGE    	125
 
-static Enemy* createCross();
+static Enemy* createCross(EnemyHostility hostility);
 static void actCross(Enemy enemy[static 1], Planet planet[static 1]);
 static void releaseCross(Enemy enemy[static 1]);
 
@@ -40,7 +40,8 @@ typedef struct {
 
 static f16 randomVSpeed();
 
-static Enemy* createCross() {
+static Enemy* createCross(EnemyHostility hostility) {
+	(void)hostility;
 
 	Enemy* enemy = createEnemy(&crossDefinition);
 

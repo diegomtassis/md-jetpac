@@ -188,7 +188,7 @@ static void initGame(void) {
     game.p1->lives = game_config.lives;
     game.p1->score = 0;
 
-    if (game_config.players == TWO_PLAYERS) {
+    if (game_config.players == PLAYERS_TWO) {
         game.p2 = MEM_calloc(sizeof(*game.p2));
         game.p2->id = P2;
         game.p2->lives = game_config.lives;
