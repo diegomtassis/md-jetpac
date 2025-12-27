@@ -11,6 +11,7 @@
 
 #include "../inc/collectables.h"
 #include "../inc/config/game_config.h"
+#include "../inc/config/sandbox_config.h"
 #include "../inc/enemies.h"
 #include "../inc/explosions.h"
 #include "../inc/fwk/commons.h"
@@ -68,7 +69,7 @@ GameResult GAME_run(const GameConfig *game_config) {
     u8 planet_number = 0;
     Planet *current_planet;
 
-    displayAmmo(game_config->mode == MODE_MD);
+    setupAmmoCounter(game_config->limited_ammo);
 
     loadPlanetsBaseResources();
 
@@ -83,7 +84,7 @@ GameResult GAME_run(const GameConfig *game_config) {
         waitForLanding(current_planet);
 
         startJetmen(current_planet);
-        startEnemies(current_planet);
+        startEnemies(current_planet, (game_config->mode == MODE_SANDBOX) && sandbox_config.allow_nuke);
 
         startCollectables(current_planet);
         initShots(current_planet);
@@ -278,7 +279,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 
                     releaseEnemies(current_planet);
                     if (p1_alive || p2_alive) {
-                        startEnemies(current_planet);
+                        startEnemies(current_planet, (game_config.mode == MODE_SANDBOX) && sandbox_config.allow_nuke);
                     }
                 }
 

@@ -46,7 +46,7 @@ static void expandGameConfig(void);
 
 static MenuView config_view;
 
-static const V2u16 pos_init = {.x = 6, .y = 6};
+static const V2u16 pos_init = {.x = 10, .y = 6};
 
 static MenuEntry *mode_entry = NULL;
 static MenuEntry *players_entry = NULL;
@@ -198,31 +198,33 @@ static void expandGameConfig(void) {
     game_config.difficulty = difficulty_entry->options[difficulty_entry->current_option].value;
     game_config.players = players_entry->options[players_entry->current_option].value;
 
-    if (game_config.mode == MODE_ZX) {
-        game_config.limited_ammo = FALSE;
-        game_config.num_planets = ZX_NUM_PLANETS;
-        game_config.createPlanet = zxCreatePlanet;
-    } else if (game_config.mode == MODE_MD) {
-        game_config.limited_ammo = TRUE;
-        game_config.num_planets = MD_NUM_PLANETS;
-        game_config.createPlanet = mdCreatePlanet;
-    } else { // SANDBOX
-        game_config.limited_ammo = FALSE;
+    if (game_config.mode == MODE_SANDBOX) {
+        game_config.lives = sandbox_config.lives;
+        game_config.limited_ammo = sandbox_config.limited_ammo;
         game_config.num_planets = SANDBOX_NUM_PLANETS;
         game_config.createPlanet = sandboxCreatePlanet;
-    }
-
-    switch (game_config.difficulty) {
-    case DIFFICULTY_MANIAC:
-        game_config.lives = 1;
-        break;
-    case DIFFICULTY_HARD:
-        game_config.lives = 3;
-        break;
-    case DIFFICULTY_NORMAL:
-        game_config.lives = 5;
-        break;
-    default: // EASY
-        game_config.lives = 10;
+    } else {
+        if (game_config.mode == MODE_ZX) {
+            game_config.limited_ammo = FALSE;
+            game_config.num_planets = ZX_NUM_PLANETS;
+            game_config.createPlanet = zxCreatePlanet;
+        } else if (game_config.mode == MODE_MD) {
+            game_config.limited_ammo = TRUE;
+            game_config.num_planets = MD_NUM_PLANETS;
+            game_config.createPlanet = mdCreatePlanet;
+        }
+        switch (game_config.difficulty) {
+        case DIFFICULTY_MANIAC:
+            game_config.lives = 1;
+            break;
+        case DIFFICULTY_HARD:
+            game_config.lives = 3;
+            break;
+        case DIFFICULTY_NORMAL:
+            game_config.lives = 5;
+            break;
+        default: // EASY
+            game_config.lives = 10;
+        }
     }
 }

@@ -51,6 +51,7 @@ static const char* TEXT_OPTION_SLOW = "SLOW";
 static const char* TEXT_OPTION_NORMAL = "NORMAL";
 static const char* TEXT_OPTION_FAST = "FAST";
 
+static const char* TEXT_ENTRY_LIMIT_AMMO = "LIMIT AMMO";
 static const char* TEXT_ENTRY_AMMO = "AMMO";
 
 static const char* TEXT_ENTRY_BACK = "BACK";
@@ -62,6 +63,7 @@ static void createImmunityEntry(MenuEntry* entry);
 static void createNukeEntry(MenuEntry* entry);
 static void createMaxEnemiesEntry(MenuEntry* entry);
 static void createEnemySpeedEntry(MenuEntry* entry);
+static void createLimitAmmoEntry(MenuEntry* entry);
 static void createAmmoEntry(MenuEntry* entry);
 static void createBackEntry(MenuEntry* entry);
 
@@ -69,12 +71,13 @@ static void expandSandboxConfig(void);
 
 static MenuView config_view;
 
-static const V2u16 pos_init = { .x = 4, .y = 6 };
+static const V2u16 pos_init = { .x = 8, .y = 6 };
 
 static MenuEntry *planet_entry = NULL;
 static MenuEntry *enemy_entry = NULL;
 static MenuEntry *lives_entry = NULL;
 static MenuEntry *immunity_entry = NULL;
+static MenuEntry *limit_ammo_entry = NULL;
 static MenuEntry *ammo_entry = NULL;
 static MenuEntry *nuke_entry = NULL;
 static MenuEntry *max_enemies_entry = NULL;
@@ -85,7 +88,7 @@ void CONFIG_SANDBOX_init(void) {
 
 	config_view.compact = TRUE;
 
-	config_view.num_entries = 9;
+	config_view.num_entries = 10;
 	config_view.current_entry = 0;
 	config_view.entries = MEM_calloc(sizeof(MenuEntry) * config_view.num_entries);
 
@@ -101,19 +104,22 @@ void CONFIG_SANDBOX_init(void) {
 	immunity_entry = &config_view.entries[3];
 	createImmunityEntry(immunity_entry);
 
-	ammo_entry = &config_view.entries[4];
+	limit_ammo_entry = &config_view.entries[4];
+	createLimitAmmoEntry(limit_ammo_entry);
+
+	ammo_entry = &config_view.entries[5];
 	createAmmoEntry(ammo_entry);
 
-	nuke_entry = &config_view.entries[5];
+	nuke_entry = &config_view.entries[6];
 	createNukeEntry(nuke_entry);
 
-	max_enemies_entry = &config_view.entries[6];
+	max_enemies_entry = &config_view.entries[7];
 	createMaxEnemiesEntry(max_enemies_entry);
 
-	enemy_speed_entry = &config_view.entries[7];
+	enemy_speed_entry = &config_view.entries[8];
 	createEnemySpeedEntry(enemy_speed_entry);
 
-	back_entry = &config_view.entries[8];
+	back_entry = &config_view.entries[9];
 	createBackEntry(back_entry);
 }
 
@@ -146,7 +152,7 @@ static void createPlanetEntry(MenuEntry* entry) {
 	entry->text_pos = MARGIN_L1;
 	entry->num_options = 3;
 	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
-	entry->current_option = 1;
+	entry->current_option = 0;
 
 	CONFIG_setOption(&entry->options[0], TEXT_OPTION_P_CENTAURI, SANDBOX_SYSTEM_P_CENTAURI, NULL);
 	CONFIG_setOption(&entry->options[1], TEXT_OPTION_RAN, SANDBOX_SYSTEM_RAN, NULL);
@@ -241,6 +247,19 @@ static void createEnemySpeedEntry(MenuEntry* entry) {
 	CONFIG_setOption(&entry->options[2], TEXT_OPTION_FAST, 2, NULL);
 }
 
+static void createLimitAmmoEntry(MenuEntry* entry) {
+
+	entry->type = ENTRY_CONFIG;
+	entry->text = TEXT_ENTRY_LIMIT_AMMO;
+	entry->text_pos = MARGIN_L1;
+	entry->num_options = 2;
+	entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
+	entry->current_option = 0;
+
+	CONFIG_setOption(&entry->options[0], TEXT_OPTION_DISABLED, FALSE, NULL);
+	CONFIG_setOption(&entry->options[1], TEXT_OPTION_ENABLED, TRUE, NULL);
+}
+
 static void createAmmoEntry(MenuEntry* entry) {
 
 	entry->type = ENTRY_CONFIG;
@@ -271,9 +290,10 @@ static void expandSandboxConfig(void) {
 	sandbox_config.enemy = enemy_entry->options[enemy_entry->current_option].value;
 	sandbox_config.lives = lives_entry->options[lives_entry->current_option].value;
 	sandbox_config.immunity = immunity_entry->options[immunity_entry->current_option].value;
-	sandbox_config.nuke = nuke_entry->options[nuke_entry->current_option].value;
+	sandbox_config.allow_nuke = nuke_entry->options[nuke_entry->current_option].value;
 	sandbox_config.max_enemies = max_enemies_entry->options[max_enemies_entry->current_option].value;
 	sandbox_config.enemy_speed = enemy_speed_entry->options[enemy_speed_entry->current_option].value;
+	sandbox_config.limited_ammo = limit_ammo_entry->options[limit_ammo_entry->current_option].value;
 	sandbox_config.ammo = ammo_entry->options[ammo_entry->current_option].value;
 }
 

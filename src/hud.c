@@ -55,7 +55,7 @@ void initHud() {
     VDP_drawText("000000", 25, 3);
 }
 
-void displayAmmo(bool show_ammo) {
+void setupAmmoCounter(bool show_ammo) {
 
     showing_ammo = show_ammo;
     if (showing_ammo) {

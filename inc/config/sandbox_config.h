@@ -31,9 +31,10 @@ typedef struct SandboxConfig {
     u8 enemy;
     u8 lives;
     bool immunity;
-    bool nuke;
+    bool allow_nuke;
     u8 max_enemies;
     u8 enemy_speed;
+    bool limited_ammo;
     u16 ammo;
 } SandboxConfig;
 

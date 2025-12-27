@@ -11,7 +11,7 @@
 #include "game.h"
 
 void initHud();
-void displayAmmo(bool showAmmo);
+void setupAmmoCounter(bool showAmmo);
 void updatePlayerHud(Player* player, u16 ammo);
 void updateAmmo(u8 player_id, u16 ammo);
 void registerScore(u16 highest_score);

@@ -19,7 +19,7 @@
 #define FALCON		7
 #define OWL			8
 
-void startEnemies(Planet planet[static 1]);
+void startEnemies(Planet planet[static 1], bool allow_nuke);
 void releaseEnemies(Planet planet[static 1]);
 
 void enemiesAct(Planet planet[static 1]);
