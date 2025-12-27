@@ -32,11 +32,12 @@ typedef enum {
 } Players;
 
 struct GameConfig {
-	u8 mode;
-	u8 difficulty;
 	u8 players;
 	u8 lives;
+	bool bonus;
+    bool immunity;
 	bool limited_ammo;
+    bool allow_nuke;
 	Planet* (*const* createPlanet)(void);
 	u8 num_planets;
 };

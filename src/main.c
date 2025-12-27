@@ -46,7 +46,7 @@ int main(bool hard) {
 	}
 
 	resetTileMemory();
-	initHud();
+	HUD_init();
 
 	CONFIG_GAME_init();
 
@@ -55,10 +55,10 @@ int main(bool hard) {
 		// log_memory();
 		CONFIG_GAME_setUp();
 
-		GameResult result = GAME_run(&game_config);
+		GameResult result = GAME_run();
 
-		registerScore(result.p1_score);
-		registerScore(result.p2_score);
+		HUD_registerScore(result.p1_score);
+		HUD_registerScore(result.p2_score);
 
 		SYS_doVBlankProcess();
 	}

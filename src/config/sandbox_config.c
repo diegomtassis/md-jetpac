@@ -73,15 +73,15 @@ static MenuView config_view;
 
 static const V2u16 pos_init = { .x = 8, .y = 6 };
 
-static MenuEntry *planet_entry = NULL;
-static MenuEntry *enemy_entry = NULL;
 static MenuEntry *lives_entry = NULL;
 static MenuEntry *immunity_entry = NULL;
 static MenuEntry *limit_ammo_entry = NULL;
 static MenuEntry *ammo_entry = NULL;
 static MenuEntry *nuke_entry = NULL;
-static MenuEntry *max_enemies_entry = NULL;
+static MenuEntry *planet_entry = NULL;
+static MenuEntry *enemy_entry = NULL;
 static MenuEntry *enemy_speed_entry = NULL;
+static MenuEntry *max_enemies_entry = NULL;
 static MenuEntry *back_entry = NULL;
 
 void CONFIG_SANDBOX_init(void) {
@@ -92,32 +92,32 @@ void CONFIG_SANDBOX_init(void) {
 	config_view.current_entry = 0;
 	config_view.entries = MEM_calloc(sizeof(MenuEntry) * config_view.num_entries);
 
-	planet_entry = &config_view.entries[0];
-	createPlanetEntry(planet_entry);
-
-	enemy_entry = &config_view.entries[1];
-	createEnemyEntry(enemy_entry);
-
-	lives_entry = &config_view.entries[2];
+	lives_entry = &config_view.entries[0];
 	createLivesEntry(lives_entry);
 
-	immunity_entry = &config_view.entries[3];
+	immunity_entry = &config_view.entries[1];
 	createImmunityEntry(immunity_entry);
 
-	limit_ammo_entry = &config_view.entries[4];
+	limit_ammo_entry = &config_view.entries[2];
 	createLimitAmmoEntry(limit_ammo_entry);
 
-	ammo_entry = &config_view.entries[5];
+	ammo_entry = &config_view.entries[3];
 	createAmmoEntry(ammo_entry);
 
-	nuke_entry = &config_view.entries[6];
+	nuke_entry = &config_view.entries[4];
 	createNukeEntry(nuke_entry);
 
-	max_enemies_entry = &config_view.entries[7];
-	createMaxEnemiesEntry(max_enemies_entry);
+	planet_entry = &config_view.entries[5];
+	createPlanetEntry(planet_entry);
 
-	enemy_speed_entry = &config_view.entries[8];
+	enemy_entry = &config_view.entries[6];
+	createEnemyEntry(enemy_entry);
+
+	enemy_speed_entry = &config_view.entries[7];
 	createEnemySpeedEntry(enemy_speed_entry);
+
+	max_enemies_entry = &config_view.entries[8];
+	createMaxEnemiesEntry(max_enemies_entry);
 
 	back_entry = &config_view.entries[9];
 	createBackEntry(back_entry);
@@ -286,14 +286,18 @@ static void createBackEntry(MenuEntry* entry) {
 }
 
 static void expandSandboxConfig(void) {
-	sandbox_config.system = planet_entry->options[planet_entry->current_option].value;
-	sandbox_config.enemy = enemy_entry->options[enemy_entry->current_option].value;
+
+	// Game config
 	sandbox_config.lives = lives_entry->options[lives_entry->current_option].value;
 	sandbox_config.immunity = immunity_entry->options[immunity_entry->current_option].value;
-	sandbox_config.allow_nuke = nuke_entry->options[nuke_entry->current_option].value;
-	sandbox_config.max_enemies = max_enemies_entry->options[max_enemies_entry->current_option].value;
-	sandbox_config.enemy_speed = enemy_speed_entry->options[enemy_speed_entry->current_option].value;
 	sandbox_config.limited_ammo = limit_ammo_entry->options[limit_ammo_entry->current_option].value;
+	sandbox_config.allow_nuke = nuke_entry->options[nuke_entry->current_option].value;
+	
+	// Planet def
+	sandbox_config.system = planet_entry->options[planet_entry->current_option].value;
+	sandbox_config.enemy = enemy_entry->options[enemy_entry->current_option].value;
+	sandbox_config.enemy_speed = enemy_speed_entry->options[enemy_speed_entry->current_option].value;
+	sandbox_config.max_enemies = max_enemies_entry->options[max_enemies_entry->current_option].value;
 	sandbox_config.ammo = ammo_entry->options[ammo_entry->current_option].value;
 }
 

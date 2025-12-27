@@ -72,18 +72,15 @@ bool joy_flank[256];
 
 void startJetmen(Planet planet[static 1]) {
 
-    bool immunity = (game_config.mode != MODE_SANDBOX && game_config.difficulty == DIFFICULTY_EASY) ||
-                    (game_config.mode == MODE_SANDBOX && sandbox_config.immunity);
-
     if (game.p1 && game.p1->lives > 0) {
         planet->j1 = startJetman(game.p1, planet);
-        planet->j1->immunity = immunity;
+        planet->j1->immunity = game_config.immunity;
         j1 = planet->j1;
     }
 
     if (game.p2 && game.p2->lives > 0) {
         planet->j2 = startJetman(game.p2, planet);
-        planet->j2->immunity = immunity;
+        planet->j2->immunity = game_config.immunity;
         j2 = planet->j2;
     }
 }
@@ -190,7 +187,7 @@ void updateJetmanStatus(Jetman *jetman, bool *alive, Planet planet[static 1]) {
         jetman->player->lives--;
     }
 
-    updatePlayerHud(jetman->player, jetman->ammo);
+    HUD_updatePlayerHud(jetman->player, jetman->ammo);
 }
 
 static Jetman *startJetman(Player *player, Planet planet[static 1]) {

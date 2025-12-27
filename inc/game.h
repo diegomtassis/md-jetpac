@@ -17,7 +17,7 @@ struct Game {
 	Planet* planet;
 };
 
-GameResult GAME_run(const GameConfig *game_config);
+GameResult GAME_run(void);
 
 void GAME_scoreByEvent(GameEvent event, u8 player_id);
 

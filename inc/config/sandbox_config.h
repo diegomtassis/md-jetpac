@@ -1,7 +1,7 @@
 /*
  * sandbox_config.h
  *
- * Minimal sandbox configuration API.
+ * Sandbox configuration API.
  */
 
 #ifndef INC_CONFIG_SANDBOX_CONFIG_H_
@@ -27,14 +27,16 @@ typedef enum {
 } SandboxEnemyOption;
 
 typedef struct SandboxConfig {
-    u8 system;
-    u8 enemy;
+    // Game
     u8 lives;
     bool immunity;
-    bool allow_nuke;
-    u8 max_enemies;
-    u8 enemy_speed;
     bool limited_ammo;
+    bool allow_nuke;
+    // Planet
+    u8 system;
+    u8 enemy;
+    u8 enemy_speed;    
+    u8 max_enemies;
     u16 ammo;
 } SandboxConfig;
 

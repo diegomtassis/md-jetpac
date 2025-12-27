@@ -25,7 +25,7 @@
 
 #define DEFAULT_FLASH_WAIT 2000
 
-static void initGame(const GameConfig *game_config);
+static void initGame(void);
 static void resetGame();
 
 /**
@@ -57,8 +57,8 @@ static const V2u16 message_pos = { .x = 16, .y = 7 };
 
 Game game;
 
-GameResult GAME_run(const GameConfig *game_config) {
-    initGame(game_config);
+GameResult GAME_run(void) {
+    initGame();
 
     SPR_init();
 
@@ -69,13 +69,13 @@ GameResult GAME_run(const GameConfig *game_config) {
     u8 planet_number = 0;
     Planet *current_planet;
 
-    setupAmmoCounter(game_config->limited_ammo);
+    HUD_setupAmmoCounter(game_config.limited_ammo);
 
     loadPlanetsBaseResources();
 
     while (!game_over) {
         //	log_memory();
-        game.planet = game_config->createPlanet[planet_number]();
+        game.planet = game_config.createPlanet[planet_number]();
         current_planet = game.planet;
 
         startPlanet(current_planet);
@@ -84,7 +84,7 @@ GameResult GAME_run(const GameConfig *game_config) {
         waitForLanding(current_planet);
 
         startJetmen(current_planet);
-        startEnemies(current_planet, (game_config->mode == MODE_SANDBOX) && sandbox_config.allow_nuke);
+        startEnemies(current_planet, game_config.allow_nuke);
 
         startCollectables(current_planet);
         initShots(current_planet);
@@ -113,7 +113,7 @@ GameResult GAME_run(const GameConfig *game_config) {
 
             scoreBonus(current_planet);
 
-            if (++planet_number == game_config->num_planets) {
+            if (++planet_number == game_config.num_planets) {
                 planet_number = 0;
             }
 
@@ -180,18 +180,18 @@ void GAME_scoreByEvent(GameEvent event, u8 player_id) {
     }
 }
 
-static void initGame(const GameConfig *game_config) {
+static void initGame(void) {
     memset(&game, 0, sizeof game);
 
     game.p1 = MEM_calloc(sizeof(*game.p1));
     game.p1->id = P1;
-    game.p1->lives = game_config->lives;
+    game.p1->lives = game_config.lives;
     game.p1->score = 0;
 
-    if (game_config->players == TWO_PLAYERS) {
+    if (game_config.players == TWO_PLAYERS) {
         game.p2 = MEM_calloc(sizeof(*game.p2));
         game.p2->id = P2;
-        game.p2->lives = game_config->lives;
+        game.p2->lives = game_config.lives;
         game.p2->score = 0;
     }
 }
@@ -279,7 +279,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
 
                     releaseEnemies(current_planet);
                     if (p1_alive || p2_alive) {
-                        startEnemies(current_planet, (game_config.mode == MODE_SANDBOX) && sandbox_config.allow_nuke);
+                        startEnemies(current_planet, game_config.allow_nuke);
                     }
                 }
 
@@ -394,7 +394,7 @@ static void leavePlanet(Planet planet[static 1]) {
 }
 
 static void scoreBonus(Planet planet[static 1]) {
-    if (game_config.mode == MODE_MD) {
+    if (game_config.bonus) {
         u16 ammo_bonus = 0;
         char bonus_message[22];
 
@@ -407,7 +407,7 @@ static void scoreBonus(Planet planet[static 1]) {
             sprintf(bonus_message, "Bonus P1 %03d", ammo_bonus);
             printMessage(bonus_message);
             waitMs(25);
-            updateAmmo(P1, j1->ammo);
+            HUD_updateAmmo(P1, j1->ammo);
             SYS_doVBlankProcess();
         }
 
@@ -431,7 +431,7 @@ static void scoreBonus(Planet planet[static 1]) {
                 sprintf(bonus_message, "Bonus P2 %03d", ammo_bonus);
                 printMessage(bonus_message);
                 waitMs(25);
-                updateAmmo(P2, j2->ammo);
+                HUD_updateAmmo(P2, j2->ammo);
                 SYS_doVBlankProcess();
             }
 

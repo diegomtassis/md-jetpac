@@ -174,7 +174,7 @@ static void createDifficultyEntry(MenuEntry *entry) {
     entry->text_pos = MARGIN_L1;
     entry->num_options = 4;
     entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
-    entry->current_option = 0;
+    entry->current_option = 1;
 
     CONFIG_setOption(&entry->options[0], TEXT_OPTION_EASY, DIFFICULTY_EASY, NULL);
     CONFIG_setOption(&entry->options[1], TEXT_OPTION_NORMAL, DIFFICULTY_NORMAL, NULL);
@@ -194,26 +194,37 @@ static void createStartEntry(MenuEntry *entry) {
 
 static void expandGameConfig(void) {
 
-    game_config.mode = mode_entry->options[mode_entry->current_option].value;
-    game_config.difficulty = difficulty_entry->options[difficulty_entry->current_option].value;
+    u8 mode = mode_entry->options[mode_entry->current_option].value;
+    u8 difficulty = difficulty_entry->options[difficulty_entry->current_option].value;
     game_config.players = players_entry->options[players_entry->current_option].value;
 
-    if (game_config.mode == MODE_SANDBOX) {
-        game_config.lives = sandbox_config.lives;
+	game_config.bonus = mode == MODE_MD;
+
+    if (mode == MODE_SANDBOX) {
+
+		// Game
+		game_config.lives = sandbox_config.lives;
+		game_config.immunity = sandbox_config.immunity;
         game_config.limited_ammo = sandbox_config.limited_ammo;
+		game_config.allow_nuke = sandbox_config.allow_nuke;
+		
+		// Planet
         game_config.num_planets = SANDBOX_NUM_PLANETS;
         game_config.createPlanet = sandboxCreatePlanet;
+
     } else {
-        if (game_config.mode == MODE_ZX) {
+		game_config.immunity = difficulty == DIFFICULTY_EASY;
+		game_config.allow_nuke = FALSE;
+        if (mode == MODE_ZX) {
             game_config.limited_ammo = FALSE;
             game_config.num_planets = ZX_NUM_PLANETS;
             game_config.createPlanet = zxCreatePlanet;
-        } else if (game_config.mode == MODE_MD) {
+        } else if (mode == MODE_MD) {
             game_config.limited_ammo = TRUE;
             game_config.num_planets = MD_NUM_PLANETS;
             game_config.createPlanet = mdCreatePlanet;
         }
-        switch (game_config.difficulty) {
+        switch (difficulty) {
         case DIFFICULTY_MANIAC:
             game_config.lives = 1;
             break;
