@@ -154,7 +154,7 @@ static void enemyActs(Enemy enemy[static 1], Planet planet[static 1]) {
 
 static void detectNuclearBomb() {
 
-	if (JOY_readJoypad(JOY_1) & BUTTON_A) {
+	if (JOY_readJoypad(JOY_1) & BUTTON_C) {
 		nuke_triggered = TRUE;
 	}
 }

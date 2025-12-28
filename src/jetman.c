@@ -556,7 +556,7 @@ static void handleInputJetman(Jetman *jetman) {
         jetman->order.x = 0;
     }
 
-    if (value & BUTTON_C) {
+    if (value & BUTTON_A) {
         if (!joy_pushed[joy]) {
             // detect flank
             joy_flank[joy] = TRUE;
