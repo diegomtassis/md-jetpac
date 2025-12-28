@@ -36,6 +36,7 @@ typedef struct SandboxConfig {
     bool allow_nuke;
     // Planet
     u8 system;
+    f16 gravity;
     u8 enemy;
     EnemyHostility enemy_hostility;
     u8 max_enemies;

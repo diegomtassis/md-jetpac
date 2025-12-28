@@ -103,7 +103,6 @@ struct Jetman {
     bool immunity;
     Sprite* sprite;
     f16 gravity;
-    f16 terminal_velocity;
 };
 
 struct Enemy {
@@ -182,7 +181,6 @@ typedef void (*PlanetReleaseFunc)(Planet planet[static 1]);
 
 struct PlanetDefinition {
     f16 gravity;
-    f16 terminal_velocity;
     SpaceshipDefinition spaceship_def;
     EnemiesDefinition enemies_def;
     u8 mind_bottom;

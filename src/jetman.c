@@ -194,7 +194,6 @@ static Jetman *startJetman(Player *player, Planet planet[static 1]) {
     Jetman *jetman = createJetman(player);
 
 	jetman->gravity = planet->def->gravity;
-	jetman->terminal_velocity = planet->def->terminal_velocity;
 
     moveToStart(jetman, figureOutInitPosition(planet, player->id));
     shapeJetman(jetman, player->id == P1 ? &carl_sprite : &ann_sprite, planet->def->ammo);
@@ -356,8 +355,8 @@ static u8 calculateNextMovement(Jetman *jetman) {
          * so by default he's falling.
          */
         jetman->object.mov.y += jetman->gravity;
-        if (jetman->object.mov.y > jetman->terminal_velocity) {
-            jetman->object.mov.y = jetman->terminal_velocity;
+        if (jetman->object.mov.y > DEFAULT_SPEED_V_DOWN_MAX) {
+            jetman->object.mov.y = DEFAULT_SPEED_V_DOWN_MAX;
         }
         movement |= DOWN;
     }

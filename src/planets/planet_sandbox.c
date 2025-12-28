@@ -36,7 +36,6 @@ Planet *createPlanetSandbox() {
     planet->def->p1_init_pos = 0;
     planet->def->ammo = sandbox_config.ammo;
     planet->def->gravity = sandbox_config.gravity;
-    planet->def->terminal_velocity = sandbox_config.terminal_velocity;
 
     planet->def->mind_bottom = FALSE;
 

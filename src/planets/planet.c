@@ -173,7 +173,6 @@ void LOC_setDefaultPhysicalConstants(Planet planet[static 1]) {
     }
 
     planet->def->gravity = DEFAULT_GRAVITY;
-    planet->def->terminal_velocity = DEFAULT_SPEED_V_DOWN_MAX;
 }
 
 Platform* LOC_createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {

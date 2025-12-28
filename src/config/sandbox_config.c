@@ -108,7 +108,6 @@ void CONFIG_SANDBOX_init(void) {
     config_view.entries = MEM_calloc(sizeof(MenuEntry) * config_view.num_entries);
 
     sandbox_config.gravity = DEFAULT_GRAVITY;
-    sandbox_config.terminal_velocity = DEFAULT_SPEED_V_DOWN_MAX;
 
     lives_entry = &config_view.entries[0];
     createLivesEntry(lives_entry);
