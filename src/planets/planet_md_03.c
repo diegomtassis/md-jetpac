@@ -35,7 +35,7 @@ Planet* createPlanetMD03() {
 	planet->def->p1_init_pos = MEM_calloc(sizeof *planet->def->p1_init_pos);
 	setV2s16(planet->def->p1_init_pos, 68, 176);
 
-	LOC_setDefaultPhysicalConstants(planet);
+	LOC_useEarthGravity(planet);
 
 	planet->def->mind_bottom = TRUE;
 	planet->def->ammo = 20;

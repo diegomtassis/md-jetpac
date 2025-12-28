@@ -32,7 +32,7 @@ Planet* createPlanetMD04() {
 	defineSpaceship(planet);
 	defineJetman(planet);
 
-	LOC_setDefaultPhysicalConstants(planet);
+	LOC_useEarthGravity(planet);
 
 	planet->def->mind_bottom = TRUE;
 	planet->def->ammo = 5;

@@ -22,7 +22,7 @@ void LOC_releasePlanet(Planet*);
 void LOC_createDefaultPlatforms(Planet planet[static 1]);
 void LOC_defineSpaceshipInDefaultPlanet(Planet planet[static 1], SpaceshipTypeDefinition type_definition, u16 init_step);
 void LOC_defineEnemiesPopulation(Planet planet[static 1], const EnemyDefinition enemyDefinition, u16 size);
-void LOC_setDefaultPhysicalConstants(Planet planet[static 1]);
+void LOC_useEarthGravity(Planet planet[static 1]);
 
 Platform* LOC_createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
 void LOC_releasePlatform(Platform*);

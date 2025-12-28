@@ -65,7 +65,7 @@ static const char *TEXT_ENTRY_BACK = "BACK";
 #define NUM_GRAVITY_OPTIONS 3
 static const f16 GRAVITY_VALUES[NUM_GRAVITY_OPTIONS] = {
 	FIX16(0.1),
-    DEFAULT_GRAVITY,
+    EARTH_GRAVITY,
     FIX16(0.4),
 };
 
@@ -107,7 +107,7 @@ void CONFIG_SANDBOX_init(void) {
     config_view.current_entry = 0;
     config_view.entries = MEM_calloc(sizeof(MenuEntry) * config_view.num_entries);
 
-    sandbox_config.gravity = DEFAULT_GRAVITY;
+    sandbox_config.gravity = EARTH_GRAVITY;
 
     lives_entry = &config_view.entries[0];
     createLivesEntry(lives_entry);

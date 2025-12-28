@@ -167,12 +167,12 @@ void LOC_defineEnemiesPopulation(Planet planet[static 1], const EnemyDefinition 
     planet->def->enemies_def.num_enemies = size;
 }
 
-void LOC_setDefaultPhysicalConstants(Planet planet[static 1]) {
+void LOC_useEarthGravity(Planet planet[static 1]) {
     if (!planet || !planet->def) {
         return;
     }
 
-    planet->def->gravity = DEFAULT_GRAVITY;
+    planet->def->gravity = EARTH_GRAVITY;
 }
 
 Platform* LOC_createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {

@@ -23,7 +23,7 @@ Planet* createPlanetZX16() {
 	LOC_defineEnemiesPopulation(planet, owlDefinition, 5);
 	LOC_defineSpaceshipInDefaultPlanet(planet, u4Definition, ASSEMBLED);
 
-	LOC_setDefaultPhysicalConstants(planet);
+	LOC_useEarthGravity(planet);
 
 	planet->def->p1_init_pos = 0;
 	planet->def->ammo = 50;
