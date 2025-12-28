@@ -10,7 +10,8 @@
 #include <genesis.h>
 
 #include "../inc/collectables.h"
-#include "../inc/game_config.h"
+#include "../inc/config/game_config.h"
+#include "../inc/config/sandbox_config.h"
 #include "../inc/enemies.h"
 #include "../inc/explosions.h"
 #include "../inc/fwk/commons.h"
@@ -24,8 +25,8 @@
 
 #define DEFAULT_FLASH_WAIT 2000
 
-static Game* createGame(const Config config[static 1]);
-static void releaseGame(Game *game);
+static void initGame(void);
+static void resetGame();
 
 /**
  * @brief run a planet.
@@ -54,10 +55,10 @@ volatile bool paused = FALSE;
 
 static const V2u16 message_pos = { .x = 16, .y = 7 };
 
-static Game *current_game;
+Game game;
 
-GameResult runGame(const Config config[static 1]) {
-    current_game = createGame(config);
+GameResult GAME_run(void) {
+    initGame();
 
     SPR_init();
 
@@ -68,23 +69,22 @@ GameResult runGame(const Config config[static 1]) {
     u8 planet_number = 0;
     Planet *current_planet;
 
-    displayAmmo(config->mode == MD);
+    HUD_setupAmmoCounter(game_config.limited_ammo);
 
-    loadPlanetsBaseResources();
+    LOC_loadPlanetsBaseResources();
 
     while (!game_over) {
         //	log_memory();
-        current_game->planet = config->createPlanet[planet_number]();
-        current_planet = current_game->planet;
-        current_planet->game = current_game;
+        game.planet = game_config.createPlanet[planet_number]();
+        current_planet = game.planet;
 
-        startPlanet(current_planet);
+        LOC_startPlanet(current_planet);
 
         startSpaceship(current_planet);
         waitForLanding(current_planet);
 
-        startJetmen(current_planet);
-        startEnemies(current_planet);
+        JM_start(current_planet);
+        startEnemies(current_planet, game_config.allow_nuke);
 
         startCollectables(current_planet);
         initShots(current_planet);
@@ -113,15 +113,15 @@ GameResult runGame(const Config config[static 1]) {
 
             scoreBonus(current_planet);
 
-            if (++planet_number == config->num_planets) {
+            if (++planet_number == game_config.num_planets) {
                 planet_number = 0;
             }
 
             waitMs(500);
         }
 
-        releasePlanet(current_planet);
-        current_game->planet = 0;
+        LOC_releasePlanet(current_planet);
+        game.planet = 0;
         current_planet = 0;
 
         SPR_update();
@@ -131,22 +131,21 @@ GameResult runGame(const Config config[static 1]) {
 
     GameResult result = {
         //
-        .p1_score = current_game->p1->score,  //
-        .p2_score = current_game->p2->score   //
+        .p1_score = game.p1 ? game.p1->score : 0,
+        .p2_score = game.p2 ? game.p2->score : 0
     };
 
-    releaseGame(current_game);
-    current_game = 0;
+    resetGame();
 
     return result;
 }
 
-void scoreByEvent(GameEvent event, u8 player_id) {
-    if (!current_game) {
+void GAME_scoreByEvent(GameEvent event, u8 player_id) {
+    if (!game_config.createPlanet) {
         return;
     }
 
-    Player *player = player_id == P1 ? current_game->p1 : current_game->p2;
+    Player *player = player_id == P1 ? game.p1 : game.p2;
     if (!player) {
         return;
     }
@@ -181,47 +180,39 @@ void scoreByEvent(GameEvent event, u8 player_id) {
     }
 }
 
-static Game *createGame(const Config config[static 1]) {
-    Game *game = MEM_calloc(sizeof * game);
+static void initGame(void) {
+    memset(&game, 0, sizeof game);
 
-    game->config = config;
+    game.p1 = MEM_calloc(sizeof(*game.p1));
+    game.p1->id = P1;
+    game.p1->lives = game_config.lives;
+    game.p1->score = 0;
 
-    game->p1 = MEM_calloc(sizeof(*game->p1));
-    game->p1->id = P1;
-    game->p1->lives = config->lives;
-    game->p1->score = 0;
-
-    if (config->players == TWO_PLAYERS) {
-        game->p2 = MEM_calloc(sizeof(*game->p2));
-        game->p2->id = P2;
-        game->p2->lives = config->lives;
-        game->p2->score = 0;
+    if (game_config.players == PLAYERS_TWO) {
+        game.p2 = MEM_calloc(sizeof(*game.p2));
+        game.p2->id = P2;
+        game.p2->lives = game_config.lives;
+        game.p2->score = 0;
     }
-
-    return game;
 }
 
-static void releaseGame(Game *game) {
-    if (!game) {
-        return;
+static void resetGame() {
+    if (game.planet) {
+        LOC_releasePlanet(game.planet);
+        game.planet = 0;
     }
 
-    if (game->planet) {
-        releasePlanet(game->planet);
-        game->planet = 0;
+    if (game.p1) {
+        MEM_free(game.p1);
+        game.p1 = 0;
     }
 
-    if (game->p1) {
-        MEM_free(game->p1);
-        game->p1 = 0;
+    if (game.p2) {
+        MEM_free(game.p2);
+        game.p2 = 0;
     }
 
-    if (game->p2) {
-        MEM_free(game->p2);
-        game->p2 = 0;
-    }
-
-    MEM_free(game);
+    memset(&game, 0, sizeof game);
 }
 
 static bool runPlanet(Planet current_planet[static 1]) {
@@ -238,11 +229,11 @@ static bool runPlanet(Planet current_planet[static 1]) {
 
             if (num_players_playing) {
                 if (j1) {
-                    jetmanActs(j1, current_planet);
+                    JM_acts(j1, current_planet);
                 }
 
                 if (j2) {
-                    jetmanActs(j2, current_planet);
+                    JM_acts(j2, current_planet);
                 }
 
                 enemiesAct(current_planet);
@@ -254,11 +245,11 @@ static bool runPlanet(Planet current_planet[static 1]) {
                 handleSpaceship(current_planet);
 
                 if (p1_alive) {
-                    updateJetmanStatus(j1, &p1_alive, current_planet);
+                    JM_updateStatus(j1, &p1_alive, current_planet);
                 }
 
                 if (p2_alive) {
-                    updateJetmanStatus(j2, &p2_alive, current_planet);
+                    JM_updateStatus(j2, &p2_alive, current_planet);
                 }
             }
 
@@ -280,15 +271,15 @@ static bool runPlanet(Planet current_planet[static 1]) {
                     // Explosions extinguished, resurrect the player with lives
                     // if there is any
                     if (j1 && !p1_alive) {
-                        p1_alive = resurrectOrRelease(j1, current_planet);
+                        p1_alive = JM_resurrectOrRelease(j1, current_planet);
                     }
                     if (j2 && !p2_alive) {
-                        p2_alive = resurrectOrRelease(j2, current_planet);
+                        p2_alive = JM_resurrectOrRelease(j2, current_planet);
                     }
 
                     releaseEnemies(current_planet);
                     if (p1_alive || p2_alive) {
-                        startEnemies(current_planet);
+                        startEnemies(current_planet, game_config.allow_nuke);
                     }
                 }
 
@@ -296,11 +287,11 @@ static bool runPlanet(Planet current_planet[static 1]) {
                 // Scenario 2: There was 2 alive before the ACT and one has just
                 // passed. Try to resurrect it.
                 if (j1 && !p1_alive) {
-                    p1_alive = resurrectOrRelease(j1, current_planet);
+                    p1_alive = JM_resurrectOrRelease(j1, current_planet);
                     // TODO add immunity
                 }
                 if (j2 && !p2_alive) {
-                    p2_alive = resurrectOrRelease(j2, current_planet);
+                    p2_alive = JM_resurrectOrRelease(j2, current_planet);
                     // TODO add immunity
                 }
             }
@@ -313,7 +304,7 @@ static bool runPlanet(Planet current_planet[static 1]) {
                 spaceship_ready && (p1_alive || p2_alive)  //
                 && (!j1 || j1->finished)                   //
                 && (!j2 || j2->finished);
-            game_over = (!current_game->p1->lives && (!current_game->p2 || !current_game->p2->lives)) &&
+            game_over = (!game.p1->lives && (!game.p2 || !game.p2->lives)) &&
                 !current_planet->booms.count;
             SPR_update();
         }
@@ -349,12 +340,12 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
     Jetman *jetman = j1;
     if (jetman && (ALIVE & jetman->health) && jetman->object.box.min.y > BOTTOM_POS_V_PX_S16) {
-        killJetman(jetman, planet, FALSE);
+        JM_kill(jetman, planet, FALSE);
     }
 
     jetman = j2;
     if (jetman && (ALIVE & jetman->health) && jetman->object.box.min.y > BOTTOM_POS_V_PX_S16) {
-        killJetman(jetman, planet, FALSE);
+        JM_kill(jetman, planet, FALSE);
     }
 
     // enemies
@@ -372,7 +363,7 @@ static void handleCollisionBetweenJetmanAndEnemy(Jetman *jetman, Enemy *enemy, P
     }
 
     if (overlap(&jetman->object.box, &enemy->object.box)) {
-        killJetman(jetman, planet, TRUE);
+        JM_kill(jetman, planet, TRUE);
         killEnemy(enemy, planet, TRUE);
     }
 }
@@ -403,7 +394,7 @@ static void leavePlanet(Planet planet[static 1]) {
 }
 
 static void scoreBonus(Planet planet[static 1]) {
-    if (current_game->config->mode == MD) {
+    if (game_config.bonus) {
         u16 ammo_bonus = 0;
         char bonus_message[22];
 
@@ -416,7 +407,7 @@ static void scoreBonus(Planet planet[static 1]) {
             sprintf(bonus_message, "Bonus P1 %03d", ammo_bonus);
             printMessage(bonus_message);
             waitMs(25);
-            updateAmmo(P1, j1->ammo);
+            HUD_updateAmmo(P1, j1->ammo);
             SYS_doVBlankProcess();
         }
 
@@ -440,7 +431,7 @@ static void scoreBonus(Planet planet[static 1]) {
                 sprintf(bonus_message, "Bonus P2 %03d", ammo_bonus);
                 printMessage(bonus_message);
                 waitMs(25);
-                updateAmmo(P2, j2->ammo);
+                HUD_updateAmmo(P2, j2->ammo);
                 SYS_doVBlankProcess();
             }
 
@@ -452,15 +443,19 @@ static void scoreBonus(Planet planet[static 1]) {
 }
 
 static void scorePoints(u16 points, u8 player_id) {
-    if (!current_game) {
+    if (!game_config.createPlanet) {
         return;
     }
 
     if (player_id == P1) {
-        current_game->p1->score += points;
+        if (game.p1) {
+            game.p1->score += points;
+        }
 
     } else if (player_id == P2) {
-        current_game->p2->score += points;
+        if (game.p2) {
+            game.p2->score += points;
+        }
     }
 }
 

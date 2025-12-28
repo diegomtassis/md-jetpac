@@ -32,7 +32,7 @@
 
 #define ANIM_WHITE		0
 
-static Enemy* createFighter();
+static Enemy* createFighter(EnemyHostility hostility);
 static void actFighter(Enemy enemy[static 1], Planet planet[static 1]);
 static void releaseFighter(Enemy enemy[static 1]);
 
@@ -53,7 +53,8 @@ typedef struct {
 
 static f16 chaseVSpeed(Object_f16* enemy_object, Planet planet[static 1]);
 
-static Enemy* createFighter() {
+static Enemy* createFighter(EnemyHostility hostility) {
+	(void)hostility;
 
 	Enemy* enemy = createEnemy(&fighterDefinition);
 

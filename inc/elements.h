@@ -10,6 +10,7 @@
 
 #include <genesis.h>
 
+#include "config/enemy_hostility.h"
 #include "fwk/array_fixed_list.h"
 #include "fwk/blinker.h"
 #include "fwk/physics.h"
@@ -17,7 +18,7 @@
 #define ALIVE 0x01
 #define DEAD 0x02
 
-typedef struct Config Config;
+typedef struct GameConfig GameConfig;
 typedef struct Game Game;
 typedef struct GameResult GameResult;
 typedef struct Player Player;
@@ -36,27 +37,10 @@ typedef struct Grape Grape;
 typedef struct Shot Shot;
 typedef struct Explosion Explosion;
 
-struct Config {
-    u8 mode;
-    u8 difficulty;
-    u8 players;
-    u8 lives;
-    bool limited_ammo;
-    Planet* (*const* createPlanet)(void);
-    u8 num_planets;
-};
-
 struct Player {
     u8 id;
     u8 lives;
     u16 score;
-};
-
-struct Game {
-    const Config* config;
-    Player* p1;
-    Player* p2;
-    Planet* planet;
 };
 
 struct GameResult {
@@ -118,6 +102,7 @@ struct Jetman {
     Shot* last_shot;
     bool immunity;
     Sprite* sprite;
+    f16 gravity;
 };
 
 struct Enemy {
@@ -128,7 +113,7 @@ struct Enemy {
     u8 health;
 };
 
-typedef Enemy* (*EnemyCreateFunc)();
+typedef Enemy* (*EnemyCreateFunc)(EnemyHostility hostility);
 typedef void (*EnemyActFunc)(Enemy enemy[static 1], Planet* planet);
 typedef void (*EnemyReleaseFunc)(Enemy enemy[static 1]);
 
@@ -179,7 +164,6 @@ struct Explosion {
 
 struct Planet {
     PlanetDefinition* def;
-    Game* game;
     Platform* floor;
     Platform** platforms;
     u8 num_platforms;
@@ -196,6 +180,7 @@ typedef void (*PlanetInitFunc)(Planet planet[static 1]);
 typedef void (*PlanetReleaseFunc)(Planet planet[static 1]);
 
 struct PlanetDefinition {
+    f16 gravity;
     SpaceshipDefinition spaceship_def;
     EnemiesDefinition enemies_def;
     u8 mind_bottom;

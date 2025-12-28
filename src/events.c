@@ -11,5 +11,5 @@
 
 void onEvent(GameEvent game_event, u8 player_id) {
 
-	scoreByEvent(game_event, player_id);
+	GAME_scoreByEvent(game_event, player_id);
 }

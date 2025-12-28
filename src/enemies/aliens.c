@@ -21,7 +21,7 @@
 #define ALIEN_DEFAULT_SPEED_H	FIX16(0.8)
 #define ALIEN_DEFAULT_SPEED_V	FIX16(0.8)
 
-static Enemy* createAlien();
+static Enemy* createAlien(EnemyHostility hostility);
 static void actAlien(Enemy enemy[static 1], Planet planet[static 1]);
 static void releaseAlien(Enemy enemy[static 1]);
 
@@ -37,7 +37,8 @@ typedef struct {
 	Enemy* enemy;
 } Alien;
 
-static Enemy* createAlien() {
+static Enemy* createAlien(EnemyHostility hostility) {
+	(void)hostility;
 
 	Enemy* enemy = createEnemy(&alienDefinition);
 

@@ -17,11 +17,13 @@
 
 Planet* createPlanetZX11() {
 
-	Planet* planet = allocPlanet();
+	Planet* planet = LOC_allocPlanet();
 
-	createDefaultPlatforms(planet);
-	defineEnemiesPopulation(planet, bubbleDefinition, 5);
-	defineSpaceshipInDefaultPlanet(planet, u3Definition, ASSEMBLED);
+	LOC_createDefaultPlatforms(planet);
+	LOC_defineEnemiesPopulation(planet, bubbleDefinition, 5);
+	LOC_defineSpaceshipInDefaultPlanet(planet, u3Definition, ASSEMBLED);
+
+	LOC_useEarthGravity(planet);
 
 	planet->def->p1_init_pos = 0;
 	planet->def->ammo = 50;

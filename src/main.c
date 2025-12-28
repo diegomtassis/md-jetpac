@@ -7,7 +7,7 @@
 
 #include <genesis.h>
 
-#include "../inc/game_config.h"
+#include "../inc/config/game_config.h"
 #include "../inc/elements.h"
 #include "../inc/fwk/printer.h"
 #include "../inc/fwk/vdp_utils.h"
@@ -46,19 +46,19 @@ int main(bool hard) {
 	}
 
 	resetTileMemory();
-	initHud();
+	HUD_init();
 
-	initConfig();
+	CONFIG_GAME_init();
 
 	while (1) {
 
 		// log_memory();
-		Config config = setUpGame();
+		CONFIG_GAME_setUp();
 
-		GameResult result = runGame(&config);
+		GameResult result = GAME_run();
 
-		registerScore(result.p1_score);
-		registerScore(result.p2_score);
+		HUD_registerScore(result.p1_score);
+		HUD_registerScore(result.p2_score);
 
 		SYS_doVBlankProcess();
 	}

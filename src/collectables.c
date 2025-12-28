@@ -180,7 +180,7 @@ static void updateCollectable(Collectable* collectable, Planet planet[static 1])
 
 		} else {
 			Box_s16 target_v = targetVBox(&collectable->object);
-			if (landed(target_v, planet)) {
+			if (LOC_landed(target_v, planet)) {
 				collectable->step = WAITING;
 				collectable->object.mov.y = SPEED_0;
 

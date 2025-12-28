@@ -10,6 +10,7 @@
 #include <genesis.h>
 
 #include "../inc/enemies.h"
+#include "../inc/config/game_config.h"
 #include "../inc/constants.h"
 #include "../inc/explosions.h"
 #include "../inc/fwk/commons.h"
@@ -29,9 +30,11 @@ static void enemyActs(Enemy enemy[static 1], Planet planet[static 1]);
 
 static void detectNuclearBomb();
 
-bool nuclear_bomb;
+static bool nuke_allowed;
+static bool nuke_triggered;
 
-void startEnemies(Planet planet[static 1]) {
+void startEnemies(Planet planet[static 1], bool allow_nuke) {
+	nuke_allowed = allow_nuke;
 
 	arrayFixedListInit(&planet->enemies, planet->def->enemies_def.num_enemies);
 
@@ -51,7 +54,10 @@ void enemiesAct(Planet planet[static 1]) {
 		return;
 	}
 
-	// detectNuclearBomb();
+	if (nuke_allowed) {
+		detectNuclearBomb();
+	}
+
 
 	for (u8 idx = planet->enemies.size; idx;) {
 
@@ -59,7 +65,7 @@ void enemiesAct(Planet planet[static 1]) {
 		if (enemy) {
 
 			if (ALIVE & enemy->health) {
-				if (nuclear_bomb) {
+				if (nuke_triggered) {
 					killEnemy(enemy, planet, TRUE);
 				} else {
 					enemyActs(enemy, planet);
@@ -74,7 +80,7 @@ void enemiesAct(Planet planet[static 1]) {
 	// New enemies joining the party?
 	enemiesJoin(planet);
 
-	nuclear_bomb = FALSE;
+	nuke_triggered = FALSE;
 }
 
 void killEnemy(Enemy* enemy, Planet planet[static 1], u8 exploding) {
@@ -129,7 +135,7 @@ static void releaseDeadEnemy(Enemy enemy[static 1]) {
 
 static void addEnemy(Planet planet[static 1]) {
 
-	arrayFixedListAdd(&planet->enemies, planet->def->enemies_def.enemy_def.createFunc(&planet->def->enemies_def.enemy_def));
+	arrayFixedListAdd(&planet->enemies, planet->def->enemies_def.enemy_def.createFunc(game_config.enemy_hostility));
 	startCountDownRandom(ENEMY_CREATION_COUNTDOWN, MIN_TIME_BETWEEN_ENEMIES, MAX_TIME_BETWEEN_ENEMIES);
 }
 
@@ -148,7 +154,7 @@ static void enemyActs(Enemy enemy[static 1], Planet planet[static 1]) {
 
 static void detectNuclearBomb() {
 
-	if (JOY_readJoypad(JOY_1) & BUTTON_A) {
-		nuclear_bomb = TRUE;
+	if (JOY_readJoypad(JOY_1) & BUTTON_C) {
+		nuke_triggered = TRUE;
 	}
 }

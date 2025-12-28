@@ -22,7 +22,7 @@
 
 #define WAIT_BETWEEN_DIRECTION_CHANGE    	125
 
-static Enemy* createSaucer();
+static Enemy* createSaucer(EnemyHostility hostility);
 static void actSaucer(Enemy enemy[static 1], Planet planet[static 1]);
 static void releaseSaucer(Enemy enemy[static 1]);
 
@@ -40,7 +40,8 @@ typedef struct {
 
 static f16 randomVSpeed();
 
-static Enemy* createSaucer() {
+static Enemy* createSaucer(EnemyHostility hostility) {
+	(void)hostility;
 
 	Enemy* enemy = createEnemy(&saucerDefinition);
 

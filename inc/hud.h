@@ -10,10 +10,10 @@
 
 #include "game.h"
 
-void initHud();
-void displayAmmo(bool showAmmo);
-void updatePlayerHud(Player* player, u16 ammo);
-void updateAmmo(u8 player_id, u16 ammo);
-void registerScore(u16 highest_score);
+void HUD_init();
+void HUD_setupAmmoCounter(bool showAmmo);
+void HUD_updatePlayerHud(Player* player, u16 ammo);
+void HUD_updateAmmo(u8 player_id, u16 ammo);
+void HUD_registerScore(u16 highest_score);
 
 #endif /* INC_HUD_H_ */

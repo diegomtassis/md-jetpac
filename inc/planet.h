@@ -11,21 +11,22 @@
 #include "elements.h"
 #include "fwk/physics.h"
 
-Planet* allocPlanet();
+Planet* LOC_allocPlanet();
 
-void loadPlanetsBaseResources();
-void releasePlanetsBaseResources();
+void LOC_loadPlanetsBaseResources();
+void LOC_releasePlanetsBaseResources();
 
-void startPlanet(Planet planet[static 1]);
-void releasePlanet(Planet*);
+void LOC_startPlanet(Planet planet[static 1]);
+void LOC_releasePlanet(Planet*);
 
-void createDefaultPlatforms(Planet planet[static 1]);
-void defineSpaceshipInDefaultPlanet(Planet planet[static 1], SpaceshipTypeDefinition type_definition, u16 init_step);
-void defineEnemiesPopulation(Planet planet[static 1], const EnemyDefinition enemyDefinition, u16 size);
+void LOC_createDefaultPlatforms(Planet planet[static 1]);
+void LOC_defineSpaceshipInDefaultPlanet(Planet planet[static 1], SpaceshipTypeDefinition type_definition, u16 init_step);
+void LOC_defineEnemiesPopulation(Planet planet[static 1], const EnemyDefinition enemyDefinition, u16 size);
+void LOC_useEarthGravity(Planet planet[static 1]);
 
-Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
-void releasePlatform(Platform*);
+Platform* LOC_createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
+void LOC_releasePlatform(Platform*);
 
-f16 landed(Box_s16, const Planet*);
+f16 LOC_landed(Box_s16, const Planet*);
 
 #endif /* INC_PLANET_H_ */

@@ -20,7 +20,7 @@
 #define METEORITE_DEFAULT_SPEED_H	FIX16(1)
 #define METEORITE_DEFAULT_SPEED_V	FIX16(0.3)
 
-static Enemy* createMeteorite();
+static Enemy* createMeteorite(EnemyHostility hostility);
 static void actMeteorite(Enemy enemy[static 1], Planet planet[static 1]);
 static void releaseMeteorite(Enemy enemy[static 1]);
 
@@ -36,7 +36,8 @@ typedef struct {
 	Enemy* enemy;
 } Meteorite;
 
-static Enemy* createMeteorite() {
+static Enemy* createMeteorite(EnemyHostility hostility) {
+	(void)hostility;
 
 	Enemy* enemy = createEnemy(&meteoriteDefinition);
 
