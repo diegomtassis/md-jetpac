@@ -70,7 +70,7 @@ static void drawJetman(Jetman *);
 bool joy_pushed[256];
 bool joy_flank[256];
 
-void startJetmen(Planet planet[static 1]) {
+void JM_start(Planet planet[static 1]) {
 
     if (game.p1 && game.p1->lives > 0) {
         planet->j1 = startJetman(game.p1, planet);
@@ -85,7 +85,7 @@ void startJetmen(Planet planet[static 1]) {
     }
 }
 
-void releaseJetmen(Planet planet[static 1]) {
+void JM_release(Planet planet[static 1]) {
 
     if (planet->j1) {
         releaseJetman(planet->j1);
@@ -100,7 +100,7 @@ void releaseJetmen(Planet planet[static 1]) {
     }
 }
 
-void resetJetman(Jetman *jetman, Planet planet[static 1]) {
+void JM_reset(Jetman *jetman, Planet planet[static 1]) {
 
     if (!jetman) {
         return;
@@ -108,10 +108,15 @@ void resetJetman(Jetman *jetman, Planet planet[static 1]) {
 
     moveToStart(jetman, figureOutInitPosition(planet, jetman->id));
     jetman->health = ALIVE;
+
+    if (game_config.limited_ammo) {
+        jetman->ammo = planet->def->ammo;
+    }
+
     return;
 }
 
-void killJetman(Jetman *jetman, Planet planet[static 1], bool exploding) {
+void JM_kill(Jetman *jetman, Planet planet[static 1], bool exploding) {
 
     if (jetman->immunity) {
         return;
@@ -124,7 +129,7 @@ void killJetman(Jetman *jetman, Planet planet[static 1], bool exploding) {
     jetman->health = DEAD;
 }
 
-void jetmanActs(Jetman *jetman, Planet planet[static 1]) {
+void JM_acts(Jetman *jetman, Planet planet[static 1]) {
 
     if (!jetman || !(jetman->health & ALIVE) || jetman->finished) {
         return;
@@ -149,14 +154,14 @@ void jetmanActs(Jetman *jetman, Planet planet[static 1]) {
     drawJetman(jetman);
 }
 
-bool resurrectOrRelease(Jetman *jetman, Planet planet[static 1]) {
+bool JM_resurrectOrRelease(Jetman *jetman, Planet planet[static 1]) {
 
     if (!jetman) {
         return FALSE;
     }
 
     if (jetman->player->lives) {
-        resetJetman(jetman, planet);
+        JM_reset(jetman, planet);
         return TRUE;
     }
 
@@ -173,15 +178,15 @@ bool resurrectOrRelease(Jetman *jetman, Planet planet[static 1]) {
     return FALSE;
 }
 
-bool isJetmanAlive(Jetman *jetman) { return jetman && (ALIVE & jetman->health); }
+bool JM_isAlive(Jetman *jetman) { return jetman && (ALIVE & jetman->health); }
 
-void updateJetmanStatus(Jetman *jetman, bool *alive, Planet planet[static 1]) {
+void JM_updateStatus(Jetman *jetman, bool *alive, Planet planet[static 1]) {
 
     if (!(*alive)) {
         return;
     }
 
-    if (!(*alive = isJetmanAlive(jetman))) {
+    if (!(*alive = JM_isAlive(jetman))) {
 
         dropIfGrabbed(jetman, planet->spaceship);
         jetman->player->lives--;
@@ -194,7 +199,7 @@ static Jetman *startJetman(Player *player, Planet planet[static 1]) {
 
     Jetman *jetman = createJetman(player);
 
-	jetman->gravity = planet->def->gravity;
+    jetman->gravity = planet->def->gravity;
 
     moveToStart(jetman, figureOutInitPosition(planet, player->id));
     shapeJetman(jetman, player->id == P1 ? &carl_sprite : &ann_sprite, planet->def->ammo);

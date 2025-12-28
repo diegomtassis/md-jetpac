@@ -79,7 +79,7 @@ void LOC_releasePlanet(Planet *planet) {
     releaseShots(planet);
     releaseCollectables(planet);
     releaseEnemies(planet);
-    releaseJetmen(planet);
+    JM_release(planet);
     releaseSpaceship(planet);
 
     // floor

@@ -83,7 +83,7 @@ GameResult GAME_run(void) {
         startSpaceship(current_planet);
         waitForLanding(current_planet);
 
-        startJetmen(current_planet);
+        JM_start(current_planet);
         startEnemies(current_planet, game_config.allow_nuke);
 
         startCollectables(current_planet);
@@ -229,11 +229,11 @@ static bool runPlanet(Planet current_planet[static 1]) {
 
             if (num_players_playing) {
                 if (j1) {
-                    jetmanActs(j1, current_planet);
+                    JM_acts(j1, current_planet);
                 }
 
                 if (j2) {
-                    jetmanActs(j2, current_planet);
+                    JM_acts(j2, current_planet);
                 }
 
                 enemiesAct(current_planet);
@@ -245,11 +245,11 @@ static bool runPlanet(Planet current_planet[static 1]) {
                 handleSpaceship(current_planet);
 
                 if (p1_alive) {
-                    updateJetmanStatus(j1, &p1_alive, current_planet);
+                    JM_updateStatus(j1, &p1_alive, current_planet);
                 }
 
                 if (p2_alive) {
-                    updateJetmanStatus(j2, &p2_alive, current_planet);
+                    JM_updateStatus(j2, &p2_alive, current_planet);
                 }
             }
 
@@ -271,10 +271,10 @@ static bool runPlanet(Planet current_planet[static 1]) {
                     // Explosions extinguished, resurrect the player with lives
                     // if there is any
                     if (j1 && !p1_alive) {
-                        p1_alive = resurrectOrRelease(j1, current_planet);
+                        p1_alive = JM_resurrectOrRelease(j1, current_planet);
                     }
                     if (j2 && !p2_alive) {
-                        p2_alive = resurrectOrRelease(j2, current_planet);
+                        p2_alive = JM_resurrectOrRelease(j2, current_planet);
                     }
 
                     releaseEnemies(current_planet);
@@ -287,11 +287,11 @@ static bool runPlanet(Planet current_planet[static 1]) {
                 // Scenario 2: There was 2 alive before the ACT and one has just
                 // passed. Try to resurrect it.
                 if (j1 && !p1_alive) {
-                    p1_alive = resurrectOrRelease(j1, current_planet);
+                    p1_alive = JM_resurrectOrRelease(j1, current_planet);
                     // TODO add immunity
                 }
                 if (j2 && !p2_alive) {
-                    p2_alive = resurrectOrRelease(j2, current_planet);
+                    p2_alive = JM_resurrectOrRelease(j2, current_planet);
                     // TODO add immunity
                 }
             }
@@ -340,12 +340,12 @@ static void handleCollisionsBetweenMovingObjects(Planet planet[static 1]) {
 static void handleElementsLeavingScreenUnder(Planet planet[static 1]) {
     Jetman *jetman = j1;
     if (jetman && (ALIVE & jetman->health) && jetman->object.box.min.y > BOTTOM_POS_V_PX_S16) {
-        killJetman(jetman, planet, FALSE);
+        JM_kill(jetman, planet, FALSE);
     }
 
     jetman = j2;
     if (jetman && (ALIVE & jetman->health) && jetman->object.box.min.y > BOTTOM_POS_V_PX_S16) {
-        killJetman(jetman, planet, FALSE);
+        JM_kill(jetman, planet, FALSE);
     }
 
     // enemies
@@ -363,7 +363,7 @@ static void handleCollisionBetweenJetmanAndEnemy(Jetman *jetman, Enemy *enemy, P
     }
 
     if (overlap(&jetman->object.box, &enemy->object.box)) {
-        killJetman(jetman, planet, TRUE);
+        JM_kill(jetman, planet, TRUE);
         killEnemy(enemy, planet, TRUE);
     }
 }

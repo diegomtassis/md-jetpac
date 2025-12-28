@@ -101,13 +101,24 @@ static MenuEntry *back_entry = NULL;
 
 void CONFIG_SANDBOX_init(void) {
 
+	// Defaults
+    sandbox_config.lives = 5;
+	sandbox_config.immunity = FALSE;
+	sandbox_config.limited_ammo = TRUE;
+	sandbox_config.allow_nuke = TRUE;
+	sandbox_config.system = SANDBOX_SYSTEM_P_CENTAURI;
+    sandbox_config.gravity = EARTH_GRAVITY;
+	sandbox_config.enemy = SANDBOX_ENEMY_ALIEN;
+	sandbox_config.enemy_hostility = ENEMY_HOSTILITY_NORMAL;
+	sandbox_config.max_enemies = 10;
+	sandbox_config.ammo = 50;
+
+	// Menu view
     config_view.compact = TRUE;
 
     config_view.num_entries = 11;
     config_view.current_entry = 0;
     config_view.entries = MEM_calloc(sizeof(MenuEntry) * config_view.num_entries);
-
-    sandbox_config.gravity = EARTH_GRAVITY;
 
     lives_entry = &config_view.entries[0];
     createLivesEntry(lives_entry);

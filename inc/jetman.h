@@ -10,15 +10,15 @@
 
 #include "elements.h"
 
-void startJetmen(Planet planet[static 1]);
-void releaseJetmen(Planet planet[static 1]);
-void killJetman(Jetman* jetman, Planet planet[static 1], bool exploding);
-void resetJetman(Jetman* jetman, Planet planet[static 1]);
-bool resurrectOrRelease(Jetman* jetman, Planet planet[static 1]);
-bool isJetmanAlive(Jetman* jetman);
+void JM_start(Planet planet[static 1]);
+void JM_release(Planet planet[static 1]);
+void JM_kill(Jetman* jetman, Planet planet[static 1], bool exploding);
+void JM_reset(Jetman* jetman, Planet planet[static 1]);
+bool JM_resurrectOrRelease(Jetman* jetman, Planet planet[static 1]);
+bool JM_isAlive(Jetman* jetman);
 
-void jetmanActs(Jetman* jetman, Planet planet[static 1]);
-void updateJetmanStatus(Jetman* jetman, bool* alive, Planet planet[static 1]);
+void JM_acts(Jetman* jetman, Planet planet[static 1]);
+void JM_updateStatus(Jetman* jetman, bool* alive, Planet planet[static 1]);
 
 extern Jetman* j1;
 extern Jetman* j2;

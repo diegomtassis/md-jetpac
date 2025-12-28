@@ -99,6 +99,7 @@ void CONFIG_GAME_init(void) {
 
     mode_entry = &config_view.entries[0];
     createModeEntry(mode_entry);
+    CONFIG_SANDBOX_init();
 
     players_entry = &config_view.entries[1];
     createPlayersEntry(players_entry);
@@ -108,8 +109,6 @@ void CONFIG_GAME_init(void) {
 
     start_entry = &config_view.entries[3];
     createStartEntry(start_entry);
-
-    CONFIG_SANDBOX_init();
 }
 
 void CONFIG_GAME_setUp(void) {
