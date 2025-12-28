@@ -25,12 +25,14 @@ static void releaseMD02(Planet planet[static 1]);
 
 Planet* createPlanetMD02() {
 
-	Planet* planet = allocPlanet();
+	Planet* planet = LOC_allocPlanet();
 
 	createPlatforms(planet);
-	defineEnemiesPopulation(planet, alienDefinition, 5);
+	LOC_defineEnemiesPopulation(planet, alienDefinition, 5);
 	defineSpaceship(planet);
 	defineJetman(planet);
+
+	LOC_setDefaultPhysicalConstants(planet);
 
 	planet->def->mind_bottom = TRUE;
 	planet->def->ammo = 30;
@@ -43,7 +45,7 @@ Planet* createPlanetMD02() {
 
 static void createPlatforms(Planet planet[static 1]) {
 
-	planet->floor = createPlatform(14, 18, 5);
+	planet->floor = LOC_createPlatform(14, 18, 5);
 
 	planet->num_platforms = 0;
 	planet->platforms = MEM_calloc(planet->num_platforms * sizeof(Platform*));

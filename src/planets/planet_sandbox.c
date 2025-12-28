@@ -24,17 +24,19 @@ static void releasePlanetSandbox(Planet planet[static 1]);
 
 Planet *createPlanetSandbox() {
 
-    Planet *planet = allocPlanet();
+    Planet *planet = LOC_allocPlanet();
 
-    createDefaultPlatforms(planet);
+    LOC_createDefaultPlatforms(planet);
 
     EnemyDefinition *enemyDefinition = defineEnemy();
 
-    defineEnemiesPopulation(planet, *enemyDefinition, sandbox_config.max_enemies);
-    defineSpaceshipInDefaultPlanet(planet, u1Definition, UNASSEMBLED);
+    LOC_defineEnemiesPopulation(planet, *enemyDefinition, sandbox_config.max_enemies);
+    LOC_defineSpaceshipInDefaultPlanet(planet, u1Definition, UNASSEMBLED);
 
     planet->def->p1_init_pos = 0;
     planet->def->ammo = sandbox_config.ammo;
+    planet->def->gravity = sandbox_config.gravity;
+    planet->def->terminal_velocity = sandbox_config.terminal_velocity;
 
     planet->def->mind_bottom = FALSE;
 

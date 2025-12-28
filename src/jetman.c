@@ -17,6 +17,7 @@
 #include "../inc/fwk/physics.h"
 #include "../inc/game.h"
 #include "../inc/hud.h"
+#include "../inc/physical_constants.h"
 #include "../inc/planet.h"
 #include "../inc/players.h"
 #include "../inc/shooting.h"
@@ -31,10 +32,8 @@
 #define SPEED_H_WALK FIX16(1)
 #define SPEED_H_FLY FIX16(1.5)
 #define SPEED_V_UP_MAX FIX16(-1.5)
-#define SPEED_V_DOWN_MAX FIX16(1.5)
 #define ACCELERATION_H FIX16(0.2)
 #define UP_ACCELERATION FIX16(-0.2)
-#define GRAVITY FIX16(0.2)
 #define SPEED_LOST_IN_CRASH FIX16(0.15)
 
 #define UP 0x01
@@ -193,6 +192,9 @@ void updateJetmanStatus(Jetman *jetman, bool *alive, Planet planet[static 1]) {
 static Jetman *startJetman(Player *player, Planet planet[static 1]) {
 
     Jetman *jetman = createJetman(player);
+
+	jetman->gravity = planet->def->gravity;
+	jetman->terminal_velocity = planet->def->terminal_velocity;
 
     moveToStart(jetman, figureOutInitPosition(planet, player->id));
     shapeJetman(jetman, player->id == P1 ? &carl_sprite : &ann_sprite, planet->def->ammo);
@@ -353,9 +355,9 @@ static u8 calculateNextMovement(Jetman *jetman) {
          * either falling or walking. But at this point it's not known yet whether he's walking,
          * so by default he's falling.
          */
-        jetman->object.mov.y += GRAVITY;
-        if (jetman->object.mov.y > SPEED_V_DOWN_MAX) {
-            jetman->object.mov.y = SPEED_V_DOWN_MAX;
+        jetman->object.mov.y += jetman->gravity;
+        if (jetman->object.mov.y > jetman->terminal_velocity) {
+            jetman->object.mov.y = jetman->terminal_velocity;
         }
         movement |= DOWN;
     }
@@ -408,7 +410,7 @@ static void updatePosition(Jetman *jetman, Planet *planet) {
 
     // vertical position
     Box_s16 target_v = targetVBox(&jetman->object);
-    f16 landed_pos_y = landed(target_v, planet);
+    f16 landed_pos_y = LOC_landed(target_v, planet);
     jetman->airborne = !landed_pos_y;
 
     if (landed_pos_y) {

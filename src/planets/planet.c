@@ -13,6 +13,7 @@
 #include "../../inc/enemies.h"
 #include "../../inc/explosions.h"
 #include "../../inc/fwk/commons.h"
+#include "../../inc/physical_constants.h"
 #include "../../inc/fwk/vdp_utils.h"
 #include "../../inc/jetman.h"
 #include "../../inc/shooting.h"
@@ -29,24 +30,24 @@ static void drawPlatform(VDPPlane plane, Platform platform[static 1], u16 idx_ti
 
 static void clearPlatform(VDPPlane plane, Platform platform[static 1]);
 
-void loadPlanetsBaseResources() {
+void LOC_loadPlanetsBaseResources() {
     // load floor & platform
     idx_tile_floor = loadTile(&floor, &idx_tile_malloc);
     idx_tile_platform = loadTile(&platform, &idx_tile_malloc);
 }
 
-void releasePlanetsBaseResources() {
+void LOC_releasePlanetsBaseResources() {
     // release floor & platform
 }
 
-Planet* allocPlanet() {
+Planet* LOC_allocPlanet() {
     Planet *planet = (Planet *)MEM_calloc(sizeof(Planet));
     planet->def = (PlanetDefinition *)MEM_calloc(sizeof(PlanetDefinition));
 
     return planet;
 }
 
-void startPlanet(Planet planet[static 1]) {
+void LOC_startPlanet(Planet planet[static 1]) {
     SYS_disableInts();
 
     // initialization
@@ -69,7 +70,7 @@ void startPlanet(Planet planet[static 1]) {
     PAL_fadeIn(0, (1 * 16) - 1, palette, 60, FALSE);
 }
 
-void releasePlanet(Planet *planet) {
+void LOC_releasePlanet(Planet *planet) {
     if (!planet) {
         return;
     }
@@ -84,7 +85,7 @@ void releasePlanet(Planet *planet) {
     // floor
     if (planet->floor) {
         clearPlatform(BG_A, planet->floor);
-        releasePlatform(planet->floor);
+        LOC_releasePlatform(planet->floor);
         planet->floor = 0;
     }
 
@@ -92,7 +93,7 @@ void releasePlanet(Planet *planet) {
     if (planet->platforms) {
         for (u8 i = 0; i < planet->num_platforms; i++) {
             clearPlatform(BG_A, planet->platforms[i]);
-            releasePlatform(planet->platforms[i]);
+            LOC_releasePlatform(planet->platforms[i]);
             planet->platforms[i] = 0;
         }
         MEM_free(planet->platforms);
@@ -122,7 +123,7 @@ void releasePlanet(Planet *planet) {
     MEM_free(planet);
 }
 
-f16 landed(Box_s16 subject_box, const Planet* planet) {
+f16 LOC_landed(Box_s16 subject_box, const Planet* planet) {
     if (hitAbove(&subject_box, &planet->floor->object.box)) {
         return FIX16(adjacentYAbove(&subject_box, &planet->floor->object.box));
     }
@@ -137,18 +138,18 @@ f16 landed(Box_s16 subject_box, const Planet* planet) {
     return FIX16_0;
 }
 
-void createDefaultPlatforms(Planet planet[static 1]) {
-    planet->floor = createPlatform(0, 25, 32);
+void LOC_createDefaultPlatforms(Planet planet[static 1]) {
+    planet->floor = LOC_createPlatform(0, 25, 32);
 
     planet->num_platforms = 3;
     planet->platforms = MEM_calloc(planet->num_platforms * sizeof(Platform *));
 
-    planet->platforms[0] = createPlatform(4, 11, 6);
-    planet->platforms[1] = createPlatform(15, 14, 4);
-    planet->platforms[2] = createPlatform(24, 8, 6);
+    planet->platforms[0] = LOC_createPlatform(4, 11, 6);
+    planet->platforms[1] = LOC_createPlatform(15, 14, 4);
+    planet->platforms[2] = LOC_createPlatform(24, 8, 6);
 }
 
-void defineSpaceshipInDefaultPlanet(Planet planet[static 1], SpaceshipTypeDefinition type_definition, u16 init_step) {
+void LOC_defineSpaceshipInDefaultPlanet(Planet planet[static 1], SpaceshipTypeDefinition type_definition, u16 init_step) {
     planet->def->spaceship_def.type_definition = type_definition;
     planet->def->spaceship_def.init_step = init_step;
 
@@ -161,12 +162,21 @@ void defineSpaceshipInDefaultPlanet(Planet planet[static 1], SpaceshipTypeDefini
     }
 }
 
-void defineEnemiesPopulation(Planet planet[static 1], const EnemyDefinition enemyDefinition, u16 size) {
+void LOC_defineEnemiesPopulation(Planet planet[static 1], const EnemyDefinition enemyDefinition, u16 size) {
     planet->def->enemies_def.enemy_def = enemyDefinition;
     planet->def->enemies_def.num_enemies = size;
 }
 
-Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
+void LOC_setDefaultPhysicalConstants(Planet planet[static 1]) {
+    if (!planet || !planet->def) {
+        return;
+    }
+
+    planet->def->gravity = DEFAULT_GRAVITY;
+    planet->def->terminal_velocity = DEFAULT_SPEED_V_DOWN_MAX;
+}
+
+Platform* LOC_createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
     Platform *platform = MEM_calloc(sizeof * platform);
 
     V2u16 pos_t = { .x = pos_x_t, .y = pos_y_t };
@@ -188,7 +198,7 @@ Platform* createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t) {
     return platform;
 }
 
-void releasePlatform(Platform *platform) { MEM_free(platform); }
+void LOC_releasePlatform(Platform *platform) { MEM_free(platform); }
 
 static void drawPlatforms(VDPPlane plane, const Planet planet[static 1]) {
     // draw floor

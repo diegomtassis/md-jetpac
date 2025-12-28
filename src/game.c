@@ -71,14 +71,14 @@ GameResult GAME_run(void) {
 
     HUD_setupAmmoCounter(game_config.limited_ammo);
 
-    loadPlanetsBaseResources();
+    LOC_loadPlanetsBaseResources();
 
     while (!game_over) {
         //	log_memory();
         game.planet = game_config.createPlanet[planet_number]();
         current_planet = game.planet;
 
-        startPlanet(current_planet);
+        LOC_startPlanet(current_planet);
 
         startSpaceship(current_planet);
         waitForLanding(current_planet);
@@ -120,7 +120,7 @@ GameResult GAME_run(void) {
             waitMs(500);
         }
 
-        releasePlanet(current_planet);
+        LOC_releasePlanet(current_planet);
         game.planet = 0;
         current_planet = 0;
 
@@ -198,7 +198,7 @@ static void initGame(void) {
 
 static void resetGame() {
     if (game.planet) {
-        releasePlanet(game.planet);
+        LOC_releasePlanet(game.planet);
         game.planet = 0;
     }
 

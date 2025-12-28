@@ -407,7 +407,7 @@ static void handleFuelling(Planet planet[static 1]) {
 
 		} else {
 			Box_s16 target_v = targetVBox(spaceship->fuel_object);
-			if (landed(target_v, planet)) {
+			if (LOC_landed(target_v, planet)) {
 				spaceship->substep = WAITING;
 				spaceship->fuel_object->mov.y = SPEED_0;
 
@@ -525,7 +525,7 @@ static void handleLanding(Spaceship* spaceship, Planet planet[static 1]) {
 	// spaceship
 	Box_s16 target_v = targetVBox(spaceship->base_object);
 
-	f16 landed_y = landed(target_v, planet);
+	f16 landed_y = LOC_landed(target_v, planet);
 	if (landed_y) {
 		spaceship->step = ASSEMBLED;
 		spaceship->base_object->pos.y = landed_y;
