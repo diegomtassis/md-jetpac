@@ -289,10 +289,6 @@ static Grape* createGrape(V2s16 where, bool to_left, u8 type, u8 range, u8 burst
 
 static bool crashedIntoPlatform(Shot shot[static 1], Grape grape[static 1], Planet planet[static 1]) {
 
-	if (checkGrapeHit(grape, planet->floor->object.box)) {
-		return TRUE;
-	}
-
 	for (u8 idx = planet->num_platforms; idx;) {
 		if (checkGrapeHit(grape, planet->platforms[--idx]->object.box)) {
 			return TRUE;

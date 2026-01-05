@@ -73,11 +73,11 @@ void HUD_setupAmmoCounter(bool show_ammo) {
 
     showing_ammo = show_ammo;
     if (showing_ammo) {
-        VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL1, TRUE, FALSE, FALSE, idx_tile_laser), P1_LIVES_X + 2, 3);
-        VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL1, TRUE, FALSE, FALSE, idx_tile_laser), P2_LIVES_X + 2, 3);
+        VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL1, TRUE, FALSE, FALSE, idx_tile_laser), P1_LIVES_X + 2, 3);
+        VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL1, TRUE, FALSE, FALSE, idx_tile_laser), P2_LIVES_X + 2, 3);
     } else {
-        VDP_clearTileMapRect(BG_A, 10, 3, 1, 1);
-        VDP_clearText(8, 3, 2);
+        VDP_clearTileMapRect(WINDOW, 10, 3, 1, 1);
+        VDP_clearTextBG(WINDOW,8, 3, 2);
     }
 }
 
@@ -111,7 +111,7 @@ void HUD_registerScore(u16 new_score) {
 
         char str_score[6];
         sprintf(str_score, "%06d", new_score);
-        VDP_drawText(str_score, 13, 3);
+        VDP_drawTextBG(WINDOW, str_score, 13, 3);
     }
 }
 
@@ -121,12 +121,12 @@ static void updateLives(u8 lives, u16 lives_x) {
     sprintf(lives_text, "%02d", lives);
 
     if (lives > 9) {
-        VDP_drawText(lives_text, lives_x, 2);
+        VDP_drawTextBG(WINDOW,lives_text, lives_x, 2);
     } else {
         if (lives == 9) {
-            VDP_clearText(lives_x, 2, 1);
+            VDP_clearTextBG(WINDOW,lives_x, 2, 1);
         }
-        VDP_drawText(lives_text + 1, lives_x + 1, 2);
+        VDP_drawTextBG(WINDOW,lives_text + 1, lives_x + 1, 2);
     }
 }
 
@@ -134,7 +134,7 @@ static void updateScore(int score, u16 score_x) {
 
     char score_text[7];
     sprintf(score_text, "%06d", score);
-    VDP_drawText(score_text, score_x, 3);
+    VDP_drawTextBG(WINDOW,score_text, score_x, 3);
 }
 
 void updateAmmo(u8 ammo, u16 ammo_x) {
@@ -146,5 +146,5 @@ void updateAmmo(u8 ammo, u16 ammo_x) {
     char text_ammo[2];
     sprintf(text_ammo, "%02d", ammo);
 
-    VDP_drawText(text_ammo, ammo_x, 3);
+    VDP_drawTextBG(WINDOW,text_ammo, ammo_x, 3);
 }

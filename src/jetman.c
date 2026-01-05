@@ -460,18 +460,10 @@ static f16 hitPlatformUnder(Box_s16 subject_box, const Planet *planet) {
         }
     }
 
-    if (hitUnder(&subject_box, &planet->floor->object.box)) {
-        return FIX16(adjacentYUnder(&subject_box, &planet->floor->object.box));
-    }
-
     return FIX16_0;
 }
 
 static f16 blockedByRight(Box_s16 target_box, const Planet *planet) {
-
-    if (planet->floor && hitLeft(&target_box, &planet->floor->object.box)) {
-        return FIX16(adjacentXOnTheLeft(&target_box, &planet->floor->object.box));
-    }
 
     for (u8 idx = planet->num_platforms; idx;) {
         Box_s16 object_box = planet->platforms[--idx]->object.box;
@@ -484,10 +476,6 @@ static f16 blockedByRight(Box_s16 target_box, const Planet *planet) {
 }
 
 static f16 blockedByLeft(Box_s16 target_box, const Planet *planet) {
-
-    if (planet->floor && hitRight(&target_box, &planet->floor->object.box)) {
-        return FIX16(adjacentXOnTheRight(&target_box, &planet->floor->object.box));
-    }
 
     for (u8 idx = planet->num_platforms; idx;) {
         Box_s16 object_box = planet->platforms[--idx]->object.box;

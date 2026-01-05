@@ -81,14 +81,7 @@ void LOC_releasePlanet(Planet *planet) {
     releaseEnemies(planet);
     JM_release(planet);
     releaseSpaceship(planet);
-
-    // floor
-    if (planet->floor) {
-        clearPlatform(BG_A, planet->floor);
-        LOC_releasePlatform(planet->floor);
-        planet->floor = 0;
-    }
-
+    
     // platforms
     if (planet->platforms) {
         for (u8 i = 0; i < planet->num_platforms; i++) {
@@ -98,6 +91,11 @@ void LOC_releasePlanet(Planet *planet) {
         }
         MEM_free(planet->platforms);
         planet->platforms = 0;
+    }
+    
+    // floor
+    if (planet->floor) {
+        planet->floor = 0;
     }
 
     // planet release custom
@@ -113,10 +111,6 @@ void LOC_releasePlanet(Planet *planet) {
 }
 
 f16 LOC_landed(Box_s16 subject_box, const Planet* planet) {
-    if (hitAbove(&subject_box, &planet->floor->object.box)) {
-        return FIX16(adjacentYAbove(&subject_box, &planet->floor->object.box));
-    }
-
     for (u8 i = 0; i < planet->num_platforms; i++) {
         Box_s16 object_box = planet->platforms[i]->object.box;
         if (hitAbove(&subject_box, &object_box)) {
@@ -169,14 +163,15 @@ void LOC_setPlayersDefaultInitPos(Planet* planet) {
 }
 
 void LOC_createDefaultPlatforms(Planet planet[static 1]) {
-    planet->floor = LOC_createPlatform(0, 25, 32);
-
-    planet->num_platforms = 3;
+    
+    planet->num_platforms = 4;
     planet->platforms = MEM_calloc(planet->num_platforms * sizeof(Platform *));
-
-    planet->platforms[0] = LOC_createPlatform(4, 11, 6);
-    planet->platforms[1] = LOC_createPlatform(15, 14, 4);
-    planet->platforms[2] = LOC_createPlatform(24, 8, 6);
+    
+    planet->platforms[0] = LOC_createPlatform(0, 25, 32);
+    planet->floor = planet->platforms[0];
+    planet->platforms[1] = LOC_createPlatform(4, 11, 6);
+    planet->platforms[2] = LOC_createPlatform(15, 14, 4);
+    planet->platforms[3] = LOC_createPlatform(24, 8, 6);
 }
 
 void LOC_defineSpaceshipInDefaultPlanet(Planet planet[static 1], SpaceshipTypeDefinition type_definition, u16 init_step) {
@@ -233,8 +228,8 @@ static void drawPlatforms(VDPPlane plane, const Planet planet[static 1]) {
     // draw floor
     drawPlatform(plane, planet->floor, idx_tile_floor);
 
-    // draw platforms
-    for (u8 i = 0; i < planet->num_platforms; i++) {
+    // draw all the other platforms
+    for (u8 i = 1; i < planet->num_platforms; i++) {
         drawPlatform(plane, planet->platforms[i], idx_tile_platform);
     }
 }
