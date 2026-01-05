@@ -32,13 +32,13 @@ int main(bool hard) {
     if (hard) {
 
         // jetpac file
-        // VDP_setScreenWidth320();
-        // printDisclaimer();
-        // JOY_waitPress(JOY_1, BUTTON_BTN);
-        // clearDisclaimer();
-        // VDP_setScreenWidth256();
+        VDP_setScreenWidth320();
+        printDisclaimer();
+        JOY_waitPress(JOY_1, BUTTON_BTN);
+        clearDisclaimer();
+        VDP_setScreenWidth256();
 
-        // waitMs(50);
+        waitMs(50);
 
         // splash screen
         showSplashScreen();

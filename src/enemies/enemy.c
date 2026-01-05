@@ -78,10 +78,6 @@ void updatePosition(Enemy* enemy, Box_s16 target) {
 
 bool crashedIntoPlatform(Box_s16 subject_box, const Planet planet[static 1]) {
 
-	if (overlap(&subject_box, &planet->floor->object.box)) {
-		return TRUE;
-	}
-
 	for (u8 idx = planet->num_platforms; idx;) {
 		if (overlap(&subject_box, &planet->platforms[--idx]->object.box)) {
 			return TRUE;

@@ -33,10 +33,10 @@ Planet *createPlanetSandbox() {
     LOC_defineEnemiesPopulation(planet, *enemyDefinition, sandbox_config.max_enemies);
     LOC_defineSpaceshipInDefaultPlanet(planet, u1Definition, UNASSEMBLED);
 
-    planet->def->p1_init_pos = 0;
     planet->def->ammo = sandbox_config.ammo;
     planet->def->gravity = sandbox_config.gravity;
 
+    LOC_setPlayersDefaultInitPos(planet);
     planet->def->mind_bottom = FALSE;
 
     planet->def->planet_init_func = &initPlanetSandbox;

@@ -81,14 +81,7 @@ void LOC_releasePlanet(Planet *planet) {
     releaseEnemies(planet);
     JM_release(planet);
     releaseSpaceship(planet);
-
-    // floor
-    if (planet->floor) {
-        clearPlatform(BG_A, planet->floor);
-        LOC_releasePlatform(planet->floor);
-        planet->floor = 0;
-    }
-
+    
     // platforms
     if (planet->platforms) {
         for (u8 i = 0; i < planet->num_platforms; i++) {
@@ -99,16 +92,10 @@ void LOC_releasePlanet(Planet *planet) {
         MEM_free(planet->platforms);
         planet->platforms = 0;
     }
-
-    // jetman definition
-    if (planet->def->p1_init_pos) {
-        MEM_free(planet->def->p1_init_pos);
-        planet->def->p1_init_pos = 0;
-    }
-
-    if (planet->def->p2_init_pos) {
-        MEM_free(planet->def->p2_init_pos);
-        planet->def->p2_init_pos = 0;
+    
+    // floor
+    if (planet->floor) {
+        planet->floor = 0;
     }
 
     // planet release custom
@@ -124,10 +111,6 @@ void LOC_releasePlanet(Planet *planet) {
 }
 
 f16 LOC_landed(Box_s16 subject_box, const Planet* planet) {
-    if (hitAbove(&subject_box, &planet->floor->object.box)) {
-        return FIX16(adjacentYAbove(&subject_box, &planet->floor->object.box));
-    }
-
     for (u8 i = 0; i < planet->num_platforms; i++) {
         Box_s16 object_box = planet->platforms[i]->object.box;
         if (hitAbove(&subject_box, &object_box)) {
@@ -138,15 +121,57 @@ f16 LOC_landed(Box_s16 subject_box, const Planet* planet) {
     return FIX16_0;
 }
 
+void LOC_setPlayersDefaultInitPos(Planet* planet) {
+
+    if (!planet || !planet->def || !planet->floor) return;
+
+    // Constants
+    const int player_gap = 8;
+
+    // Floor platform position
+    int floor_x = F16_toInt(planet->floor->object.pos.x);
+    int floor_y = F16_toInt(planet->floor->object.pos.y);
+    int floor_w = planet->floor->object.size.x;
+
+    // Spaceship position and width (if present)
+    int ship_x = planet->def->spaceship_def.base_pos.x;
+
+    // Try to place players left and right of the spaceship, separated by 8px, not overlapping ship if possible
+    int left_limit = floor_x;
+    int right_limit = floor_x + floor_w;
+    int y = floor_y - 24; // 24px above floor (as before)
+
+    // Try left of ship for P1, right of ship for P2
+    int p1_x = ship_x - player_gap - JETMAN_WIDTH;
+    int p2_x = ship_x + SPACESHIP_WIDTH + player_gap;
+
+    // Check if both fit on the floor
+    int fits = 1;
+    if (p1_x < left_limit) fits = 0;
+    if (p2_x + JETMAN_WIDTH > right_limit) fits = 0;
+    if (p2_x - (p1_x + JETMAN_WIDTH) < player_gap) fits = 0;
+
+    if (fits) {
+        setV2s16(&planet->def->p1_init_pos, p1_x, y);
+        setV2s16(&planet->def->p2_init_pos, p2_x, y);
+    } else {
+        // Not enough space, place them centered and overlapping if needed
+        int center = floor_x + (floor_w / 2);
+        setV2s16(&planet->def->p1_init_pos, center - JETMAN_WIDTH/2 - player_gap/2, y);
+        setV2s16(&planet->def->p2_init_pos, center + player_gap/2, y);
+    }
+}
+
 void LOC_createDefaultPlatforms(Planet planet[static 1]) {
-    planet->floor = LOC_createPlatform(0, 25, 32);
-
-    planet->num_platforms = 3;
+    
+    planet->num_platforms = 4;
     planet->platforms = MEM_calloc(planet->num_platforms * sizeof(Platform *));
-
-    planet->platforms[0] = LOC_createPlatform(4, 11, 6);
-    planet->platforms[1] = LOC_createPlatform(15, 14, 4);
-    planet->platforms[2] = LOC_createPlatform(24, 8, 6);
+    
+    planet->platforms[0] = LOC_createPlatform(0, 25, 32);
+    planet->floor = planet->platforms[0];
+    planet->platforms[1] = LOC_createPlatform(4, 11, 6);
+    planet->platforms[2] = LOC_createPlatform(15, 14, 4);
+    planet->platforms[3] = LOC_createPlatform(24, 8, 6);
 }
 
 void LOC_defineSpaceshipInDefaultPlanet(Planet planet[static 1], SpaceshipTypeDefinition type_definition, u16 init_step) {
@@ -203,8 +228,8 @@ static void drawPlatforms(VDPPlane plane, const Planet planet[static 1]) {
     // draw floor
     drawPlatform(plane, planet->floor, idx_tile_floor);
 
-    // draw platforms
-    for (u8 i = 0; i < planet->num_platforms; i++) {
+    // draw all the other platforms
+    for (u8 i = 1; i < planet->num_platforms; i++) {
         drawPlatform(plane, planet->platforms[i], idx_tile_platform);
     }
 }

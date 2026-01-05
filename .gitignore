@@ -1,3 +1,4 @@
 src/boot/sega.s
+res/*.h
 out/
 .vscode/*.*

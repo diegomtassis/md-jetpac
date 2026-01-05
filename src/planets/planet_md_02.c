@@ -44,24 +44,23 @@ Planet* createPlanetMD02() {
 }
 
 static void createPlatforms(Planet planet[static 1]) {
-
-	planet->floor = LOC_createPlatform(14, 18, 5);
-
-	planet->num_platforms = 0;
+	
+	planet->num_platforms = 1;
 	planet->platforms = MEM_calloc(planet->num_platforms * sizeof(Platform*));
+	planet->platforms[0] = LOC_createPlatform(6, 26, 5);
+	planet->floor = planet->platforms[0];
 }
 
 static void defineJetman(Planet planet[static 1]) {
 
-	planet->def->p1_init_pos = MEM_calloc(sizeof *planet->def->p1_init_pos);
-	setV2s16(planet->def->p1_init_pos, 88, 72);
+	setV2s16(&planet->def->p1_init_pos, 88, 72);
 }
 
 static void defineSpaceship(Planet planet[static 1]) {
 
 	planet->def->spaceship_def.type_definition = u1Definition;
 	planet->def->spaceship_def.init_step = ASSEMBLED;
-	setV2s16(&planet->def->spaceship_def.base_pos, 124, 96);
+	setV2s16(&planet->def->spaceship_def.base_pos, 56, 96);
 }
 
 static void initMD02(Planet planet[static 1]) {

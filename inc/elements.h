@@ -184,8 +184,8 @@ struct PlanetDefinition {
     SpaceshipDefinition spaceship_def;
     EnemiesDefinition enemies_def;
     u8 mind_bottom;
-    V2s16* p1_init_pos;
-    V2s16* p2_init_pos;
+    V2s16 p1_init_pos;
+    V2s16 p2_init_pos;
     u16 ammo;
 	PlanetInitFunc planet_init_func;
 	PlanetReleaseFunc planet_release_func;

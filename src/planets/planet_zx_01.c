@@ -25,10 +25,9 @@ Planet* createPlanetZX01() {
 	LOC_defineSpaceshipInDefaultPlanet(planet, u1Definition, UNASSEMBLED);
 
 	LOC_useEarthGravity(planet);
-
-	planet->def->p1_init_pos = 0;
 	planet->def->ammo = 59;
 
+	LOC_setPlayersDefaultInitPos(planet);
 	planet->def->mind_bottom = FALSE;
 
 	return planet;
