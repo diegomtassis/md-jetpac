@@ -15,6 +15,7 @@ typedef enum {
     SANDBOX_SYSTEM_P_CENTAURI,
     SANDBOX_SYSTEM_RAN,
     SANDBOX_SYSTEM_LALANDE,
+    SANDBOX_SYSTEM_KEPLER186,
 } SandboxSystemOption;
 
 typedef enum {

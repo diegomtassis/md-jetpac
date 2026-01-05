@@ -80,6 +80,9 @@ static void initPlanetSandbox(Planet planet[static 1]) {
     case SANDBOX_SYSTEM_LALANDE:
         initPlanetarySystemLalande();
         break;
+    case SANDBOX_SYSTEM_KEPLER186:
+        initPlanetarySystemKepler186();
+        break;
     default:
         break;
     }
@@ -95,6 +98,9 @@ static void releasePlanetSandbox(Planet planet[static 1]) {
         break;
     case SANDBOX_SYSTEM_LALANDE:
         releasePlanetarySystemLalande();
+        break;
+    case SANDBOX_SYSTEM_KEPLER186:
+        releasePlanetarySystemKepler186();
         break;
     default:
         break;

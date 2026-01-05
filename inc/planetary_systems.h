@@ -17,4 +17,7 @@ void releasePlanetarySystemRan();
 void initPlanetarySystemPCentauri();
 void releasePlanetarySystemPCentauri();
 
+void initPlanetarySystemKepler186();
+void releasePlanetarySystemKepler186();
+
 #endif /* INC_PLANETARY_SYSTEMS_H_ */

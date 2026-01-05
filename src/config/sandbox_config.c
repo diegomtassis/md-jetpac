@@ -20,6 +20,7 @@ static const char *TEXT_ENTRY_SYSTEM = "SYSTEM";
 static const char *TEXT_OPTION_P_CENTAURI = "P CENTAURI";
 static const char *TEXT_OPTION_RAN = "RAN";
 static const char *TEXT_OPTION_LALANDE = "LALANDE";
+static const char *TEXT_OPTION_KEPLER186 = "KEPLER186";
 
 static const char *TEXT_ENTRY_GRAVITY = "GRAVITY";
 static const char *TEXT_OPTION_LIGHT = "LIGHT";
@@ -181,13 +182,14 @@ static void createSystemEntry(MenuEntry *entry) {
     entry->type = ENTRY_CONFIG;
     entry->text = TEXT_ENTRY_SYSTEM;
     entry->text_pos = MARGIN_L1;
-    entry->num_options = 3;
+    entry->num_options = 4;
     entry->options = MEM_calloc(sizeof(ConfigOption) * entry->num_options);
     entry->current_option = 0;
 
     CONFIG_setOption(&entry->options[0], TEXT_OPTION_P_CENTAURI, SANDBOX_SYSTEM_P_CENTAURI, NULL);
     CONFIG_setOption(&entry->options[1], TEXT_OPTION_RAN, SANDBOX_SYSTEM_RAN, NULL);
     CONFIG_setOption(&entry->options[2], TEXT_OPTION_LALANDE, SANDBOX_SYSTEM_LALANDE, NULL);
+    CONFIG_setOption(&entry->options[3], TEXT_OPTION_KEPLER186, SANDBOX_SYSTEM_KEPLER186, NULL);
 }
 
 static void createGravityEntry(MenuEntry *entry) {

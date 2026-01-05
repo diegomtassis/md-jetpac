@@ -37,6 +37,7 @@ The available planetary systems are:
 * Proxima Centauri, with graphics created by [Ansimuz](https://ansimuz.itch.io).
 * Ran, with graphics created by [Ansimuz](https://ansimuz.itch.io).
 * Lalande, with graphics extracted from [Assault Suit Leynos](https://segaretro.org/Target_Earth).
+* Kepler186, with graphics extracted from [Sol-Feace](https://segaretro.org/Sol-Feace).
 
 #### To be implemented
 * Sound.
