@@ -53,8 +53,7 @@ static void createPlatforms(Planet planet[static 1]) {
 
 static void defineJetman(Planet planet[static 1]) {
 
-	planet->def->p1_init_pos = MEM_calloc(sizeof *planet->def->p1_init_pos);
-	setV2s16(planet->def->p1_init_pos, 88, 72);
+	setV2s16(&planet->def->p1_init_pos, 88, 72);
 }
 
 static void defineSpaceship(Planet planet[static 1]) {

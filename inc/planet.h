@@ -24,6 +24,8 @@ void LOC_defineSpaceshipInDefaultPlanet(Planet planet[static 1], SpaceshipTypeDe
 void LOC_defineEnemiesPopulation(Planet planet[static 1], const EnemyDefinition enemyDefinition, u16 size);
 void LOC_useEarthGravity(Planet planet[static 1]);
 
+void LOC_setPlayersDefaultInitPos(Planet* planet);
+
 Platform* LOC_createPlatform(u16 pos_x_t, u16 pos_y_t, u16 length_t);
 void LOC_releasePlatform(Platform*);
 

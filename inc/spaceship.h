@@ -25,6 +25,8 @@
 #define LIFTING		11
 #define ORBITING	12
 
+#define SPACESHIP_WIDTH 16
+
 void startSpaceship(Planet planet[static 1]);
 void releaseSpaceship(Planet planet[static 1]);
 

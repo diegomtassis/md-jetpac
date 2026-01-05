@@ -20,6 +20,8 @@ bool JM_isAlive(Jetman* jetman);
 void JM_acts(Jetman* jetman, Planet planet[static 1]);
 void JM_updateStatus(Jetman* jetman, bool* alive, Planet planet[static 1]);
 
+#define JETMAN_WIDTH 16
+
 extern Jetman* j1;
 extern Jetman* j2;
 

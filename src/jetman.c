@@ -44,7 +44,6 @@
 #define BOOST 0x20
 
 #define JETMAN_HEIGHT 24
-#define JETMAN_WIDTH 16
 
 Jetman *j1;
 Jetman *j2;
@@ -264,21 +263,11 @@ static V2f16 figureOutInitPosition(const Planet planet[static 1], u8 player_id) 
     V2f16 init_pos;
 
     if (player_id == P1) {
-
-        if (planet->def->p1_init_pos) {
-
-            init_pos.x = FIX16(planet->def->p1_init_pos->x);
-            init_pos.y = FIX16(planet->def->p1_init_pos->y);
-
-        } else {
-            init_pos.x = FIX16(124);
-            init_pos.y = planet->floor->object.pos.y - FIX16(8 * 3);
-        }
-
+        init_pos.x = FIX16(planet->def->p1_init_pos.x);
+        init_pos.y = FIX16(planet->def->p1_init_pos.y);
     } else {
-
-        init_pos.x = FIX16(80);
-        init_pos.y = planet->floor->object.pos.y - FIX16(8 * 3);
+        init_pos.x = FIX16(planet->def->p2_init_pos.x);
+        init_pos.y = FIX16(planet->def->p2_init_pos.y);
     }
 
     return init_pos;

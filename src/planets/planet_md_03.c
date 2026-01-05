@@ -32,8 +32,7 @@ Planet* createPlanetMD03() {
 	LOC_defineEnemiesPopulation(planet, bubbleDefinition, 6);
 	defineSpaceship(planet);
 
-	planet->def->p1_init_pos = MEM_calloc(sizeof *planet->def->p1_init_pos);
-	setV2s16(planet->def->p1_init_pos, 68, 176);
+	LOC_setPlayersDefaultInitPos(planet);
 
 	LOC_useEarthGravity(planet);
 

@@ -74,8 +74,8 @@ Planet *(*const zxCreatePlanet[16])(void) = {
     createPlanetZX16, //
 };
 
-static const u8 MD_NUM_PLANETS = 5;
-Planet *(*const mdCreatePlanet[5])(void) = {
+static const u8 MD_NUM_PLANETS = 4;
+Planet *(*const mdCreatePlanet[4])(void) = {
     //
     createPlanetMD01, //
     createPlanetMD02, //
