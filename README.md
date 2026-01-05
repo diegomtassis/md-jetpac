@@ -13,12 +13,12 @@ Sega Mega Drive / Genesis port written by diegomtassis using SGDK.
 
 It's currently work in progress.
 
-This port includes 2 modes:
+This port includes 3 modes:
 * ZX mode, trying to be as faith as possible to the original ZX Sinclair game.
-* MD mode, maintaining the same visual aspect and playability while adding new level layouts.
+* MD mode, enhancing the graphics and playability and adding new level layouts.
 * SANDBOX mode, allowing to play in a customized planet.
 
-Jetpac and the jetman are a RARE property. The same applies to all the artwork in this port, which has been extracted directly from the original game. This port is free and is been built without RARE permission.
+Jetpac and the jetman are a RARE property. This port is free and is been built without RARE permission.
 
 https://github.com/diegomtassis/md-jetpac
 
@@ -33,7 +33,7 @@ https://github.com/diegomtassis/md-jetpac
 #### Planetary systems
 In MD mode each planet is part of a planetary system.
 All the planets in a planetary system share the same background.
-The availabe planetary systems are:
+The available planetary systems are:
 * Proxima Centauri, with graphics created by [Ansimuz](https://ansimuz.itch.io).
 * Ran, with graphics created by [Ansimuz](https://ansimuz.itch.io).
 * Lalande, with graphics extracted from [Assault Suit Leynos](https://segaretro.org/Target_Earth).

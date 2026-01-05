@@ -102,8 +102,6 @@ void CONFIG_clearScreen(void) {
 }
 
 void CONFIG_initScreen(void) {
-    PAL_setPalette(PAL1, palette_grey, CPU);
-    VDP_setTextPalette(PAL1);
     VDP_setTextPriority(0);
     VDP_setHilightShadow(TRUE);
 }
@@ -120,7 +118,9 @@ void CONFIG_displayMenu(const char* title, V2u16 pos) {
     }
 
     if (title) {
+        VDP_setTextPriority(TRUE);
         VDP_drawText(title, pos.x, pos.y);
+        VDP_setTextPriority(FALSE);
     }
 
     u16 current_y = pos.y + 2;

@@ -14,7 +14,8 @@
 
 void printDisclaimer() {
 
-	VDP_setTextPalette(PAL2);
+	PAL_setPalette(PAL1, palette_green, DMA);
+	VDP_setTextPalette(PAL1);
 
 	turnPrinterOn();
 	printerWait(WAIT_MS_BEFORE);
